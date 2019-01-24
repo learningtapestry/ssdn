@@ -1,0 +1,32 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: SAM Template for Nucleus
+
+Globals:
+  Function:
+    Timeout: 3
+
+Resources:
+  HelloNucleusFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./dist
+      Handler: index.lambdaHandler
+      Runtime: nodejs8.10
+      Events:
+        HelloNucleus:
+          Type: Api
+          Properties:
+            Path: /hello
+            Method: get
+
+Outputs:
+  HelloNucleusApi:
+    Description: "API Gateway endpoint URL for Prod stage for Hello Nucleus function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/"
+  HelloNucleusFunction:
+    Description: "Hello Nucleus Lambda Function ARN"
+    Value: !GetAtt HelloNucleusFunction.Arn
+  HelloNucleusFunctionIamRole:
+    Description: "Implicit IAM Role created for Hello Nucleus function"
+    Value: !GetAtt HelloNucleusFunctionRole.Arn

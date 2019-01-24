@@ -1,0 +1,43 @@
+{
+  "name": "nucleus",
+  "version": "1.0.0",
+  "description": "Amazon Nucleus",
+  "main": "src/index.js",
+  "author": {
+    "name": "Learning Tapestry",
+    "email": "social@learningtapestry.com",
+    "url": "http://learningtapestry.com/"
+  },
+  "homepage": "https://github.com/learningtapestry/nucleus",
+  "contributors": [
+    "Steve Midgley <steve@learningtapestry.com>",
+    "Abraham Sánchez <abraham@learningtapestry.com>"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/learningtapestry/nucleus"
+  },
+  "license": "Apache-2.0",
+  "private": true,
+  "engines": {
+    "node": ">= 8.10.0",
+    "npm": ">= 6.0.0"
+  },
+  "dependencies": {
+    "axios": "^0.18.0"
+  },
+  "scripts": {
+    "start": "parcel watch ./src/**/index.js --target node --bundle-node-modules",
+    "build": "parcel build ./src/**/index.js --target node --bundle-node-modules",
+    "test": "jest",
+    "test:watch": "jest --watch"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.2.2",
+    "@babel/preset-env": "^7.3.1",
+    "babel-core": "^7.0.0-bridge.0",
+    "babel-jest": "^23.6.0",
+    "jest": "^23.6.0",
+    "parcel-bundler": "^1.11.0"
+  }
+}
