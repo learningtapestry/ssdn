@@ -29,9 +29,9 @@
   "scripts": {
     "start": "parcel watch ./src/**/index.js --target node --bundle-node-modules",
     "build": "parcel build ./src/**/index.js --target node --bundle-node-modules",
-    "test": "jest src",
-    "test:watch": "jest src --watch",
-    "test:integration": "jest integration-test"
+    "test": "jest --testPathIgnorePatterns integration-test",
+    "test:watch": "jest --testPathIgnorePatterns integration-test --watch",
+    "test:integration": "jest integration.test.js"
   },
   "devDependencies": {
     "@babel/core": "^7.2.2",
