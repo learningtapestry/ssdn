@@ -1,7 +1,3 @@
-const axios = require("axios");
-const url = "http://checkip.amazonaws.com/";
-let response;
-
 /**
  *
  * Event doc: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html#api-gateway-simple-proxy-for-lambda-input-format
@@ -36,7 +32,11 @@ let response;
  * @returns {Object} object.body - JSON Payload to be returned
  *
  */
-exports.lambdaHandler = async (event, context) => {
+exports.lambdaHandler = async (event: Object, context: Object) => {
+    const axios = require("axios");
+    const url = "http://checkip.amazonaws.com/";
+    let response;
+
     try {
         const ret = await axios(url);
         response = {

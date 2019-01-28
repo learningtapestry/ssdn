@@ -1,11 +1,10 @@
 "use strict";
 
-const app = require("./index.js");
-let event, context;
+const app = require("./index.ts");
 
 describe("hello nucleus", () => {
     it("verifies successful response", async () => {
-        const result = await app.lambdaHandler(event, context);
+        const result = await app.lambdaHandler({}, {});
 
         expect(typeof result).toBe("object");
         expect(result.statusCode).toEqual(200);
