@@ -1,16 +1,16 @@
 "use strict";
 
-const app = require("./index.ts");
+import {lambdaHandler} from "./index";
 
 describe("hello nucleus", () => {
     it("verifies successful response", async () => {
-        const result = await app.lambdaHandler({}, {});
+        const result = await lambdaHandler({}, {});
 
         expect(typeof result).toBe("object");
         expect(result.statusCode).toEqual(200);
         expect(typeof result.body).toBe("string");
 
-        let response = JSON.parse(result.body);
+        const response = JSON.parse(result.body);
 
         expect(typeof response).toBe("object");
         expect(response.message).toEqual("Hello Nucleus!");

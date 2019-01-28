@@ -1,0 +1,20 @@
+{
+  "defaultSeverity": "error",
+  "extends": [
+    "tslint:recommended"
+  ],
+  "jsRules": true,
+  "rules": {
+    "no-console": false,
+    "max-line-length": [
+      true,
+      100
+    ]
+  },
+  "rulesDirectory": [],
+  "linterOptions": {
+    "exclude": [
+      "**/node_modules/**"
+    ]
+  }
+}
