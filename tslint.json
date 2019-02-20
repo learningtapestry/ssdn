@@ -9,6 +9,10 @@
     "max-line-length": [
       true,
       100
+    ],
+    "interface-name": [
+      true,
+      "never-prefix"
     ]
   },
   "rulesDirectory": [],
