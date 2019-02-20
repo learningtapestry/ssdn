@@ -1,6 +1,6 @@
 "use strict";
 
-import {lambdaHandler} from "./index";
+import {lambdaHandler} from ".";
 
 describe("hello nucleus", () => {
     it("verifies successful response", async () => {
