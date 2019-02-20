@@ -24,7 +24,9 @@
     "npm": ">= 6.0.0"
   },
   "dependencies": {
-    "axios": "^0.18.0"
+    "@types/pino": "^5.8.5",
+    "axios": "^0.18.0",
+    "pino": "^5.11.1"
   },
   "scripts": {
     "start": "parcel watch ./src/**/index.ts --target node --bundle-node-modules",
@@ -47,6 +49,7 @@
     "babel-jest": "^23.6.0",
     "jest": "^23.6.0",
     "parcel-bundler": "^1.11.0",
+    "pino-pretty": "^2.5.0",
     "ts-jest": "^23.10.5",
     "tslint": "^5.12.1",
     "typescript": "^3.2.4"
