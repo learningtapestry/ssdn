@@ -7,14 +7,18 @@
 
 import Kinesis from "aws-sdk/clients/kinesis";
 import {config} from "dotenv";
+import {readEnv} from "./app-helper";
 
 config();
 
-createKinesisStream(kinesisStreamName());
+createKinesisStream(readEnv("NUCLEUS_EVENT_PROCESSOR_STREAM_NAME"));
 
 async function createKinesisStream(name: string) {
     print(`Creating Kinesis Data Stream '${name}' `);
-    const kinesis = new Kinesis({apiVersion: "2013-12-02", endpoint: kinesisEndpoint()});
+    const kinesis = new Kinesis({
+        apiVersion: "2013-12-02",
+        endpoint: readEnv("NUCLEUS_EVENT_PROCESSOR_STREAM_ENDPOINT", ""),
+    });
     try {
         await kinesis.describeStream({StreamName: name}).promise();
         print("[ALREADY EXISTS]\n");
@@ -22,14 +26,6 @@ async function createKinesisStream(name: string) {
         await kinesis.createStream({ShardCount: 1, StreamName: name}).promise();
         print("[DONE]\n");
     }
-}
-
-function kinesisEndpoint() {
-    return process.env.NUCLEUS_EVENT_PROCESSOR_STREAM_ENDPOINT || "http://localhost:4568";
-}
-
-function kinesisStreamName() {
-    return process.env.NUCLEUS_EVENT_PROCESSOR_STREAM_NAME || "Nucleus-EventProcessor";
 }
 
 function print(text: string) {

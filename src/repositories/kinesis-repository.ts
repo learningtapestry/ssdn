@@ -5,14 +5,14 @@
 import Kinesis from "aws-sdk/clients/kinesis";
 import get from "lodash/fp/get";
 import omitBy from "lodash/fp/omitBy";
-import {isBlank} from "../app-helper";
+import {isBlank, readEnv} from "../app-helper";
 import logger from "../logger";
 
 export default class KinesisRepository implements Repository {
     private static clientOptions() {
         const options = {
             apiVersion: "2013-12-02",
-            endpoint: get("NUCLEUS_EVENT_PROCESSOR_STREAM_ENDPOINT")(process.env),
+            endpoint: readEnv("NUCLEUS_EVENT_PROCESSOR_STREAM_ENDPOINT", ""),
         };
 
         return omitBy(isBlank)(options);
@@ -30,7 +30,7 @@ export default class KinesisRepository implements Repository {
         const record = {
             Data: JSON.stringify(content),
             PartitionKey: partitionKey,
-            StreamName: get("NUCLEUS_EVENT_PROCESSOR_STREAM_NAME")(process.env),
+            StreamName: readEnv("NUCLEUS_EVENT_PROCESSOR_STREAM_NAME"),
         };
 
         return await this.client.putRecord(record).promise();
