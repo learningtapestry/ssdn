@@ -5,22 +5,54 @@ Description: SAM Template for Nucleus
 Globals:
   Function:
     Timeout: 3
+    Runtime: nodejs8.10
+    Handler: index.handler
+    Environment:
+      Variables:
+        NUCLEUS_EVENT_PROCESSOR_STREAM_ENDPOINT:
+        NUCLEUS_EVENT_PROCESSOR_STREAM_NAME: Nucleus-EventProcessor
+        NUCLEUS_LOG_LEVEL: info
 
 Resources:
+  EventProcessorStream:
+    Type: AWS::Kinesis::Stream
+    Properties:
+      Name:
+        Ref: NUCLEUS_EVENT_PROCESSOR_STREAM_NAME
+      RetentionPeriodHours: 48
+      ShardCount: 1
   HelloNucleusFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: ./dist
+      CodeUri: ./dist/hello-nucleus
       Handler: index.lambdaHandler
-      Runtime: nodejs8.10
       Events:
         HelloNucleus:
           Type: Api
           Properties:
             Path: /hello
             Method: get
+  ProcessEventFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./dist/process-event
+      Events:
+        ProcessEventApi:
+          Type: Api
+          Properties:
+            Path: /events
+            Method: post
 
 Outputs:
+  EventsApi:
+    Description: "API Gateway endpoint URL for processing Nucleus events"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/events/"
+  ProcessEventFunction:
+    Description: "Process Event Lambda function ARN"
+    Value: !GetAtt ProcessEventFunction.Arn
+  ProcessEventFunctionIamRole:
+    Description: "Implicit IAM Role created for Process Event function"
+    Value: !GetAtt ProcessEventFunctionRole.Arn
   HelloNucleusApi:
     Description: "API Gateway endpoint URL for Prod stage for Hello Nucleus function"
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/"
