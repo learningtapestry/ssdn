@@ -1,7 +1,7 @@
 /**
  * setup.ts: Initialization script that bootstraps the required application components.
  *
- * This script only intended to be used in development/testing. Please DO NOT use this script to
+ * This script is only intended to be used in development/testing. Please DO NOT use this script to
  * create the resources in production. Use the SAM/CloudFormation template instead.
  */
 
