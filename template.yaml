@@ -1,7 +1,15 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: SAM Template for Nucleus
-
+Parameters:
+  Environment:
+    Type: String
+    Description: The current environment where they deployment is taking place.
+    Default: Development
+    AllowedValues:
+      - Development
+      - Test
+      - Production
 Globals:
   Function:
     Timeout: 3
@@ -9,15 +17,14 @@ Globals:
     Handler: index.handler
     Environment:
       Variables:
-        NUCLEUS_EVENT_PROCESSOR_STREAM_NAME: Nucleus-EventProcessor
+        NUCLEUS_EVENT_PROCESSOR_STREAM_NAME: !Sub Nucleus-${Environment}-EventProcessor
         NUCLEUS_LOG_LEVEL: info
 
 Resources:
   EventProcessorStream:
     Type: AWS::Kinesis::Stream
     Properties:
-      Name:
-        Ref: NUCLEUS_EVENT_PROCESSOR_STREAM_NAME
+      Name: !Sub Nucleus-${Environment}-EventProcessor
       RetentionPeriodHours: 48
       ShardCount: 1
   HelloNucleusFunction:
