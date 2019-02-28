@@ -48,6 +48,14 @@ Resources:
           Properties:
             Path: /events
             Method: post
+      Policies:
+        - Version: 2012-10-17
+          Statement:
+            - Effect: Allow
+              Action:
+                - kinesis:PutRecord
+                - kinesis:PutRecords
+              Resource: !GetAtt EventProcessorStream.Arn
 
 Outputs:
   EventsApi:
