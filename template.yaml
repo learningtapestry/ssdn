@@ -9,7 +9,6 @@ Globals:
     Handler: index.handler
     Environment:
       Variables:
-        NUCLEUS_EVENT_PROCESSOR_STREAM_ENDPOINT:
         NUCLEUS_EVENT_PROCESSOR_STREAM_NAME: Nucleus-EventProcessor
         NUCLEUS_LOG_LEVEL: info
 
