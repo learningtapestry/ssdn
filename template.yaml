@@ -1,4 +1,4 @@
-AWSTemplateFormatVersion: '2010-09-09'
+AWSTemplateFormatVersion: 2010-09-09
 Transform: AWS::Serverless-2016-10-31
 Description: SAM Template for Nucleus
 Parameters:
@@ -19,7 +19,6 @@ Globals:
       Variables:
         NUCLEUS_EVENT_PROCESSOR_STREAM_NAME: !Sub Nucleus-${Environment}-EventProcessor
         NUCLEUS_LOG_LEVEL: info
-
 Resources:
   EventProcessorStream:
     Type: AWS::Kinesis::Stream
@@ -27,6 +26,25 @@ Resources:
       Name: !Sub Nucleus-${Environment}-EventProcessor
       RetentionPeriodHours: 48
       ShardCount: 1
+  CognitoUserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      UserPoolName: !Sub Nucleus-${Environment}-UserPool
+  CognitoUserPoolClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      ClientName: !Sub Nucleus-${Environment}-AppClient
+      GenerateSecret: false
+      UserPoolId: !Ref CognitoUserPool
+  ProcessEventApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: !Ref Environment
+      Auth:
+        DefaultAuthorizer: CognitoAuthorizer
+        Authorizers:
+          CognitoAuthorizer:
+            UserPoolArn: !GetAtt CognitoUserPool.Arn
   HelloNucleusFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -48,6 +66,7 @@ Resources:
           Properties:
             Path: /events
             Method: post
+            RestApiId: !Ref ProcessEventApi
       Policies:
         - Version: 2012-10-17
           Statement:
@@ -56,23 +75,32 @@ Resources:
                 - kinesis:PutRecord
                 - kinesis:PutRecords
               Resource: !GetAtt EventProcessorStream.Arn
-
 Outputs:
+  EventProcessorStreamName:
+    Description: Name of the Event Processor Kinesis Data Stream
+    Value: !Ref EventProcessorStream
+  CognitoUserPoolId:
+    Description: Generated identifier for the Cognito User Pool
+    Value: !Ref CognitoUserPool
+  CognitoUserPoolClientId:
+    Description: Generated identifier for the Cognito User Pool App Client
+    Value: !Ref CognitoUserPoolClient
   EventsApi:
-    Description: "API Gateway endpoint URL for processing Nucleus events"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/events/"
+    Description: API Gateway endpoint URL for processing Nucleus events
+    Value: !Sub https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/${Environment}/events/
   ProcessEventFunction:
-    Description: "Process Event Lambda function ARN"
+    Description: Process Event Lambda function ARN
     Value: !GetAtt ProcessEventFunction.Arn
   ProcessEventFunctionIamRole:
-    Description: "Implicit IAM Role created for Process Event function"
+    Description: Implicit IAM Role created for Process Event function
     Value: !GetAtt ProcessEventFunctionRole.Arn
   HelloNucleusApi:
-    Description: "API Gateway endpoint URL for Prod stage for Hello Nucleus function"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/"
+    Description: API Gateway endpoint URL for Prod stage for Hello Nucleus function
+    Value: !Sub https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/${Environment}/hello/
   HelloNucleusFunction:
-    Description: "Hello Nucleus Lambda Function ARN"
+    Description: Hello Nucleus Lambda Function ARN
     Value: !GetAtt HelloNucleusFunction.Arn
   HelloNucleusFunctionIamRole:
-    Description: "Implicit IAM Role created for Hello Nucleus function"
+    Description: Implicit IAM Role created for Hello Nucleus function
     Value: !GetAtt HelloNucleusFunctionRole.Arn
+    
