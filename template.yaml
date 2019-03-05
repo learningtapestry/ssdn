@@ -96,7 +96,7 @@ Outputs:
     Value: !GetAtt ProcessEventFunctionRole.Arn
   HelloNucleusApi:
     Description: API Gateway endpoint URL for Prod stage for Hello Nucleus function
-    Value: !Sub https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/${Environment}/hello/
+    Value: !Sub https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/
   HelloNucleusFunction:
     Description: Hello Nucleus Lambda Function ARN
     Value: !GetAtt HelloNucleusFunction.Arn
