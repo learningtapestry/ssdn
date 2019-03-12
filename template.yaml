@@ -50,11 +50,48 @@ Resources:
     Type: AWS::Serverless::Api
     Properties:
       StageName: !Ref Environment
-      Auth:
-        DefaultAuthorizer: CognitoAuthorizer
-        Authorizers:
-          CognitoAuthorizer:
-            UserPoolArn: !GetAtt CognitoUserPool.Arn
+      # The next section is needed because SAM does not implement API Usage Plans yet.
+      # See https://github.com/awslabs/serverless-application-model/issues/248
+      DefinitionBody:
+        openapi: 3.0.1
+        info:
+          title: !Ref AWS::StackName
+          version: 1.0
+        paths:
+          /events:
+            post:
+              x-amazon-apigateway-integration:
+                uri: !Sub arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ProcessEventFunction.Arn}/invocations
+                passthroughBehavior: when_no_match
+                httpMethod: POST
+                type: aws_proxy
+              security:
+                - api_key: []
+        components:
+          securitySchemes:
+            api_key:
+              type: apiKey
+              name: x-api-key
+              in: header
+  CollectionApiKey:
+    Type: AWS::ApiGateway::ApiKey
+    Properties:
+      Name: !Sub Nucleus-${Environment}-CollectionApiKey
+      Description: Default API Key to access the Nucleus collection endpoint
+      Enabled: true
+  ApiUsagePlan:
+    Type: AWS::ApiGateway::UsagePlan
+    Properties:
+      ApiStages:
+        - ApiId: !Ref ProcessEventApi
+          Stage: !Ref Environment
+      UsagePlanName: !Sub Nucleus-${Environment}-UsagePlan
+  ApiUsagePlanKey:
+    Type: AWS::ApiGateway::UsagePlanKey
+    Properties:
+      KeyId: !Ref CollectionApiKey
+      KeyType: API_KEY
+      UsagePlanId: !Ref ApiUsagePlan
   HelloNucleusFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -98,6 +135,9 @@ Outputs:
   CognitoUserPoolClientId:
     Description: Generated identifier for the Cognito User Pool App Client
     Value: !Ref CognitoUserPoolClient
+  CollectionApiKeyId:
+    Description: Generated identifier for the default collection endpoint API Key
+    Value: !Ref CollectionApiKey
   EventsApi:
     Description: API Gateway endpoint URL for processing Nucleus events
     Value: !Sub https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/${Environment}/events/
