@@ -10,6 +10,9 @@ Parameters:
       - Development
       - Test
       - Production
+  NotificationEmail:
+    Type: String
+    Description: The default e-mail address for notification purposes.
 Globals:
   Function:
     Timeout: 30
@@ -36,6 +39,13 @@ Resources:
       ClientName: !Sub Nucleus-${Environment}-AppClient
       GenerateSecret: false
       UserPoolId: !Ref CognitoUserPool
+  LambdaDeadLetterQueueTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      DisplayName: !Sub Nucleus-${Environment}-DeadLetterQueue
+      Subscription:
+        - Endpoint: !Ref NotificationEmail
+          Protocol: email
   ProcessEventApi:
     Type: AWS::Serverless::Api
     Properties:
@@ -75,6 +85,9 @@ Resources:
                 - kinesis:PutRecord
                 - kinesis:PutRecords
               Resource: !GetAtt EventProcessorStream.Arn
+      DeadLetterQueue:
+        Type: SNS
+        TargetArn: !Ref LambdaDeadLetterQueueTopic
 Outputs:
   EventProcessorStreamName:
     Description: Name of the Event Processor Kinesis Data Stream
