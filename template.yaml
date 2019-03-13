@@ -81,6 +81,8 @@ Resources:
       Enabled: true
   ApiUsagePlan:
     Type: AWS::ApiGateway::UsagePlan
+    DependsOn:
+      - ProcessEventApiStage
     Properties:
       ApiStages:
         - ApiId: !Ref ProcessEventApi
@@ -88,6 +90,9 @@ Resources:
       UsagePlanName: !Sub Nucleus-${Environment}-UsagePlan
   ApiUsagePlanKey:
     Type: AWS::ApiGateway::UsagePlanKey
+    DependsOn:
+      - CollectionApiKey
+      - ApiUsagePlan
     Properties:
       KeyId: !Ref CollectionApiKey
       KeyType: API_KEY
