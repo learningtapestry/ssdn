@@ -6,16 +6,16 @@
 import get from "lodash/fp/get";
 import logger from "../../logger";
 
-export default class EventService {
+export default class StatementService {
     public static async process(event: object, validator: Validator, repository: Repository) {
         try {
             logger.debug("Processing event: %j", event);
-            if (validator.validate(JSON.parse(get("content")(event)))) {
+            if (validator.validate({statement: get("content")(event)})) {
                 const record = await repository.store(event);
 
                 logger.info("Event has been processed, returning Kinesis record: %j", record);
 
-                return {message: "Event has been processed successfully"};
+                return [get("content.id")(event)];
             } else {
                 logger.debug("Failed event validation with errors: %j", validator.errors());
 

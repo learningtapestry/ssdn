@@ -1,8 +1,8 @@
 import sinon from "sinon";
 import nucleusEvent from "../../../test-support/data-samples/nucleus-event.json";
-import EventService from "./event-service";
+import StatementService from "./statement-service";
 
-describe("EventService", () => {
+describe("StatementService", () => {
     describe("process", () => {
         const validator = {errors: sinon.stub().returns([]), validate: sinon.stub()};
         const inMemoryRepository = {store: sinon.stub()};
@@ -13,9 +13,11 @@ describe("EventService", () => {
         });
 
         it("stores the content when validation passes", async () => {
-            const results = await EventService.process(nucleusEvent, validator, inMemoryRepository);
+            const results = await StatementService.process(
+                nucleusEvent, validator, inMemoryRepository,
+            );
 
-            expect(results).toHaveProperty("message", "Event has been processed successfully");
+            expect(results).toEqual(["d1eec41f-1e93-4ed6-acbf-5c4bd0c24269"]);
             expect(results).not.toHaveProperty("errors");
         });
 
@@ -23,7 +25,9 @@ describe("EventService", () => {
             validator.validate.returns(false);
             validator.errors.returns(["1st error", "2nd error"]);
 
-            const results = await EventService.process(nucleusEvent, validator, inMemoryRepository);
+            const results = await StatementService.process(
+                nucleusEvent, validator, inMemoryRepository,
+            );
 
             expect(results).toHaveProperty("message", "The provided document is not valid");
             expect(results).toHaveProperty("errors", ["1st error", "2nd error"]);
@@ -32,7 +36,9 @@ describe("EventService", () => {
         it("wraps any uncontrolled error", async () => {
             inMemoryRepository.store.throws(new Error("Unexpected error message"));
 
-            const results = await EventService.process(nucleusEvent, validator, inMemoryRepository);
+            const results = await StatementService.process(
+                nucleusEvent, validator, inMemoryRepository,
+            );
 
             expect(results).toHaveProperty(
                 "message",

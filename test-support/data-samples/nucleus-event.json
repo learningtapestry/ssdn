@@ -1,10 +1,65 @@
 {
-  "content": "{\n  \"about\": {\n    \"version\": \"1.0.3\"\n  },\n  \"statement_base\": {\n    \"actor\": {\n      \"name\": \"Sally Glider\",\n      \"mbox\": \"mailto:sally@example.com\"\n    },\n    \"verb\": {\n      \"id\": \"http://adlnet.gov/expapi/verbs/experienced\",\n      \"display\": {\n        \"en-US\": \"experienced\"\n      }\n    },\n    \"object\": {\n      \"id\": \"http://example.com/activities/hang-gliding-test\",\n      \"definition\": {\n        \"type\": \"http://adlnet.gov/expapi/activities/assessment\",\n        \"name\": {\n          \"en-US\": \"Hang Gliding Test\"\n        },\n        \"description\": {\n          \"en-US\": \"The Solo Hang Gliding test, consisting of a timed flight from the peak of Mount Magazine\"\n        },\n        \"extensions\": {\n          \"http://example.com/gliderClubId\": \"test-435\"\n        }\n      }\n    },\n    \"timestamp\": \"2012-07-05T18:30:32.360Z\",\n    \"stored\": \"2012-07-05T18:30:33.540Z\",\n    \"authority\": {\n      \"name\": \"Irene Instructor\",\n      \"mbox\": \"mailto:irene@example.com\"\n    }\n  },\n  \"result\": {\n    \"completion\": true,\n    \"success\": true,\n    \"score\": {\n      \"scaled\": 0.95\n    },\n    \"extensions\": {\n      \"http://example.com/flight/averagePitch\": 0.05\n    }\n  },\n  \"context\": {\n    \"instructor\": {\n      \"name\": \"Irene Instructor\",\n      \"mbox\": \"mailto:irene@example.com\"\n    },\n    \"contextActivities\": {\n      \"parent\": {\n        \"id\": \"http://example.com/activities/hang-gliding-class-a\"\n      },\n      \"grouping\": {\n        \"id\": \"http://example.com/activities/hang-gliding-school\"\n      }\n    },\n    \"extensions\": {\n      \"http://example.com/weatherConditions\": \"rainy\"\n    }\n  }\n}",
+  "content": {
+    "version": "1.0.0",
+    "id": "d1eec41f-1e93-4ed6-acbf-5c4bd0c24269",
+    "actor": {
+      "objectType": "Agent",
+      "name": "Joe Schmoe",
+      "mbox": "mailto:joe@example.com"
+    },
+    "verb": {
+      "id": "http://adlnet.gov/expapi/verbs/completed",
+      "display": {
+        "en-US": "completed"
+      }
+    },
+    "object": {
+      "objectType": "Activity",
+      "id": "http://www.example.com/activities/001",
+      "definition": {
+        "name": {
+          "en-US": "Example Activity"
+        },
+        "type": "http://adlnet.gov/expapi/activities/course"
+      }
+    },
+    "result": {
+      "completion": true
+    },
+    "context": {
+      "instructor": {
+        "objectType": "Agent",
+        "mbox": "mailto:joesdad@example.com"
+      },
+      "contextActivities": {
+        "parent": [
+          {
+            "objectType": "Activity",
+            "id": "tag:adlnet.gov,2013:expapi:0.9:activities:non-absolute-activity-id",
+            "definition": {
+              "name": {
+                "en-US": "Another Activity"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "timestamp": "2012-06-01T19:09:13.245Z",
+    "stored": "2012-06-29T15:41:39.165Z",
+    "authority": {
+      "objectType": "Agent",
+      "account": {
+        "homePage": "http://www.example.com",
+        "name": "unknown"
+      }
+    }
+  },
   "event": {
     "date": "Thu, 09 Apr 2015 12:34:56 GMT",
     "format": "xAPI",
-    "operation": "POST",
-    "origin": "1234567890.execute-api.us-east-1.amazonaws.com/prod/process-event",
+    "operation": "PUT",
+    "origin": "1234567890.execute-api.us-east-1.amazonaws.com/prod/xAPI/statements",
     "protocol": "HTTP/1.1",
     "representation": "REST",
     "request": {
@@ -19,6 +74,7 @@
         "CloudFront-Is-SmartTV-Viewer": "false",
         "CloudFront-Is-Tablet-Viewer": "false",
         "CloudFront-Viewer-Country": "US",
+        "Content-Type": "application/json",
         "Host": "1234567890.execute-api.us-east-1.amazonaws.com",
         "Upgrade-Insecure-Requests": "1",
         "User-Agent": "Custom User Agent String",
@@ -26,9 +82,11 @@
         "X-Amz-Cf-Id": "cDehVQoZnx43VYQb9j2-nvCh-9z396Uhbp027Y2JvkCPNLmGJHqlaA==",
         "X-Forwarded-For": "127.0.0.1, 127.0.0.2",
         "X-Forwarded-Port": "443",
-        "X-Forwarded-Proto": "https"
+        "X-Forwarded-Proto": "https",
+        "X-Experience-Api-Version": "1.0.3"
       }
     },
-    "resourceId": "123456"
+    "resource": "statements",
+    "resourceId": "c70c2b85-c294-464f-baca-cebd4fb9b348"
   }
 }

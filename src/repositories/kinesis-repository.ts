@@ -3,7 +3,6 @@
  */
 
 import Kinesis from "aws-sdk/clients/kinesis";
-import get from "lodash/fp/get";
 import omitBy from "lodash/fp/omitBy";
 import {isBlank, readEnv} from "../app-helper";
 import logger from "../logger";

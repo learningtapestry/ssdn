@@ -46,7 +46,7 @@ Resources:
       Subscription:
         - Endpoint: !Ref NotificationEmail
           Protocol: email
-  ProcessEventApi:
+  ProcessXAPIStatementApi:
     Type: AWS::Serverless::Api
     Properties:
       StageName: !Ref Environment
@@ -57,11 +57,39 @@ Resources:
         info:
           title: !Ref AWS::StackName
           version: 1.0
+        x-amazon-apigateway-request-validators:
+          parameters-only:
+            validateRequestParameters: true
+            validateRequestBody: false
+        x-amazon-apigateway-request-validator: parameters-only
         paths:
-          /events:
+          /xAPI/statements:
+            parameters:
+              - in: header
+                name: X-Experience-API-Version
+                description: xAPI version
+                required: true
+                schema:
+                  type: string
             post:
               x-amazon-apigateway-integration:
-                uri: !Sub arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ProcessEventFunction.Arn}/invocations
+                uri: !Sub arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ProcessXAPIStatementFunction.Arn}/invocations
+                passthroughBehavior: when_no_match
+                httpMethod: POST
+                type: aws_proxy
+              security:
+                - api_key: []
+            put:
+              parameters:
+                - in: query
+                  name: statementId
+                  description: Id of Statement to record
+                  required: true
+                  schema:
+                    type: string
+                    format: uuid
+              x-amazon-apigateway-integration:
+                uri: !Sub arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ProcessXAPIStatementFunction.Arn}/invocations
                 passthroughBehavior: when_no_match
                 httpMethod: POST
                 type: aws_proxy
@@ -82,10 +110,10 @@ Resources:
   ApiUsagePlan:
     Type: AWS::ApiGateway::UsagePlan
     DependsOn:
-      - ProcessEventApiStage
+      - ProcessXAPIStatementApiStage
     Properties:
       ApiStages:
-        - ApiId: !Ref ProcessEventApi
+        - ApiId: !Ref ProcessXAPIStatementApi
           Stage: !Ref Environment
       UsagePlanName: !Sub Nucleus-${Environment}-UsagePlan
   ApiUsagePlanKey:
@@ -108,17 +136,23 @@ Resources:
           Properties:
             Path: /hello
             Method: get
-  ProcessEventFunction:
+  ProcessXAPIStatementFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: ./dist/process-event
+      CodeUri: ./dist/process-xapi-statement
       Events:
-        ProcessEventApi:
+        PostStatements:
           Type: Api
           Properties:
-            Path: /events
+            Path: /xAPI/statements
             Method: post
-            RestApiId: !Ref ProcessEventApi
+            RestApiId: !Ref ProcessXAPIStatementApi
+        PutStatement:
+          Type: Api
+          Properties:
+            Path: /xAPI/statements
+            Method: put
+            RestApiId: !Ref ProcessXAPIStatementApi
       Policies:
         - Version: 2012-10-17
           Statement:
@@ -143,15 +177,15 @@ Outputs:
   CollectionApiKeyId:
     Description: Generated identifier for the default collection endpoint API Key
     Value: !Ref CollectionApiKey
-  EventsApi:
-    Description: API Gateway endpoint URL for processing Nucleus events
-    Value: !Sub https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/${Environment}/events/
-  ProcessEventFunction:
-    Description: Process Event Lambda function ARN
-    Value: !GetAtt ProcessEventFunction.Arn
-  ProcessEventFunctionIamRole:
-    Description: Implicit IAM Role created for Process Event function
-    Value: !GetAtt ProcessEventFunctionRole.Arn
+  StatementsApi:
+    Description: API Gateway endpoint URL for collecting xAPI statements
+    Value: !Sub https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/${Environment}/xAPI/statements
+  ProcessXAPIStatementFunction:
+    Description: Process xAPI Statement Lambda function ARN
+    Value: !GetAtt ProcessXAPIStatementFunction.Arn
+  ProcessXAPIStatementFunctionIamRole:
+    Description: Implicit IAM Role created for Process xAPI Statement function
+    Value: !GetAtt ProcessXAPIStatementFunctionRole.Arn
   HelloNucleusApi:
     Description: API Gateway endpoint URL for Prod stage for Hello Nucleus function
     Value: !Sub https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/
