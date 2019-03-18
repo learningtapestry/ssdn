@@ -3,6 +3,7 @@
  */
 
 import get from "lodash/fp/get";
+import isArray from "lodash/fp/isArray";
 import isEmpty from "lodash/fp/isEmpty";
 import isNil from "lodash/fp/isNil";
 
@@ -27,4 +28,15 @@ export function readEnv(name: string, defaultValue?: any) {
     } else {
         return value;
     }
+}
+
+export function toArray(content: object | object[]) {
+    return isArray(content) ? content : [content];
+}
+
+export function wrap(object: object, root: string = "") {
+    const wrappedObject: any = {};
+    wrappedObject[root] = object;
+
+    return isBlank(root) ? object : wrappedObject;
 }

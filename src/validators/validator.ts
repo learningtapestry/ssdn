@@ -3,7 +3,7 @@
  */
 
 interface Validator {
-    validate(document: object): boolean;
+    validate(document: object, rootElement: string): boolean;
 
     errors(): string[];
 }

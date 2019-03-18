@@ -3,25 +3,38 @@
  */
 
 import Ajv from "ajv";
+import concat from "lodash/fp/concat";
+import isEmpty from "lodash/fp/isEmpty";
 import map from "lodash/fp/map";
+import {toArray, wrap} from "../app-helper";
 import logger from "../logger";
 import xAPIFormats from "../schemas/xapi-formats.json";
 import xAPISchema from "../schemas/xapi-schema.json";
 
 class XAPIValidator implements Validator {
     public ajv: Ajv.Ajv;
+    private validationErrors: string[] = [];
 
     public constructor() {
         this.ajv = new Ajv({allErrors: true, formats: xAPIFormats, schemaId: "auto"});
     }
 
-    public validate(document: object) {
+    public validate(document: object | object[], rootElement: string = "") {
         logger.debug("Validating xAPI document: %j against schema", document);
 
-        return !!this.ajv.validate(xAPISchema, document);
+        toArray(document).forEach((item) => {
+            this.ajv.validate(xAPISchema, wrap(item, rootElement));
+            this.validationErrors = concat(this.validationErrors)(this.ajvErrors());
+        });
+
+        return isEmpty(this.validationErrors);
     }
 
     public errors() {
+        return this.validationErrors;
+    }
+
+    private ajvErrors() {
         const printError = (error: any) => `${error.dataPath}: ${error.message}`;
 
         return map(printError)(this.ajv.errors);

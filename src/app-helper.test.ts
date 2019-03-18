@@ -1,4 +1,11 @@
-import {decode64, isBlank, readEnv, utcDate} from "./app-helper";
+import {
+    decode64,
+    isBlank,
+    readEnv,
+    toArray,
+    utcDate,
+    wrap,
+} from "./app-helper";
 
 describe("AppHelper", () => {
     describe("isBlank", () => {
@@ -52,6 +59,26 @@ describe("AppHelper", () => {
         it("returns the default value when set", () => {
             expect(readEnv("UNDEFINED_VAR", "value")).toEqual("value");
             expect(readEnv("UNDEFINED_VAR", "")).toEqual("");
+        });
+    });
+
+    describe("toArray", () => {
+        it("returns a new array when argument is an object", () => {
+            expect(toArray({a: 1})).toEqual([{a: 1}]);
+        });
+
+        it("returns the same when argument is an array", () => {
+            expect(toArray([{a: 1}, {b: 2}])).toEqual([{a: 1}, {b: 2}]);
+        });
+    });
+
+    describe("wrap", () => {
+        it("wraps the object inside a root element", () => {
+            expect(wrap({a: 1}, "topLevel")).toEqual({topLevel: {a: 1}});
+        });
+
+        it("ignores the wrapping when root is not set", () => {
+            expect(wrap({a: 1})).toEqual({a: 1});
         });
     });
 });

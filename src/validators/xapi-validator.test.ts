@@ -28,5 +28,20 @@ describe("XAPIValidator", () => {
                 ".statement_base: should have required property 'verb'",
             ]);
         });
+
+        it("validates an array of documents returning the combined errors", () => {
+            const validator = new XAPIValidator();
+            const documents = [omit(["statement_base.verb"])(xAPIJson),
+                omit("statement_base.actor")(xAPIJson)];
+
+            const result = validator.validate(documents);
+            const errors = validator.errors();
+
+            expect(result).toEqual(false);
+            expect(errors).toEqual([
+                ".statement_base: should have required property 'verb'",
+                ".statement_base: should have required property 'actor'",
+            ]);
+        });
     });
 });
