@@ -4,18 +4,22 @@
  */
 
 import get from "lodash/fp/get";
+import map from "lodash/fp/map";
+import {toArray} from "../../app-helper";
 import logger from "../../logger";
 
 export default class StatementService {
     public static async process(event: object, validator: Validator, repository: Repository) {
         try {
             logger.debug("Processing event: %j", event);
-            if (validator.validate({statement: get("content")(event)})) {
+
+            const content = toArray(get("content")(event));
+            if (validator.validate(content, "statement")) {
                 const record = await repository.store(event);
 
                 logger.info("Event has been processed, returning Kinesis record: %j", record);
 
-                return [get("content.id")(event)];
+                return map("id")(content);
             } else {
                 logger.debug("Failed event validation with errors: %j", validator.errors());
 

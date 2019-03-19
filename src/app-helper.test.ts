@@ -1,4 +1,5 @@
 import {
+    calculateIdentifier,
     decode64,
     isBlank,
     readEnv,
@@ -59,6 +60,21 @@ describe("AppHelper", () => {
         it("returns the default value when set", () => {
             expect(readEnv("UNDEFINED_VAR", "value")).toEqual("value");
             expect(readEnv("UNDEFINED_VAR", "")).toEqual("");
+        });
+    });
+
+    describe("calculateIdentifier", () => {
+        it("returns a new UUID if object has no id", () => {
+            const content = {foo: "bar"};
+            const uuidRegex = /^[0-9a-fA-F]{8}(?:-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}$/;
+
+            expect(calculateIdentifier(content)).toMatch(uuidRegex);
+        });
+
+        it("preserves the id when already set", () => {
+            const content = {id: "c731c327-fc08-49e9-8494-4e78a9b3b5f5", foo: "bar"};
+
+            expect(calculateIdentifier(content)).toEqual("c731c327-fc08-49e9-8494-4e78a9b3b5f5");
         });
     });
 

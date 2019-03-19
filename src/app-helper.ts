@@ -3,9 +3,11 @@
  */
 
 import get from "lodash/fp/get";
+import has from "lodash/fp/has";
 import isArray from "lodash/fp/isArray";
 import isEmpty from "lodash/fp/isEmpty";
 import isNil from "lodash/fp/isNil";
+import uuid from "uuid/v4";
 
 export function isBlank(text?: string | null) {
     return isNil(text) || isEmpty(text);
@@ -28,6 +30,10 @@ export function readEnv(name: string, defaultValue?: any) {
     } else {
         return value;
     }
+}
+
+export function calculateIdentifier(content: object) {
+    return has("id")(content) ? get("id")(content) : uuid();
 }
 
 export function toArray(content: object | object[]) {

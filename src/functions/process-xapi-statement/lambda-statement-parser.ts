@@ -4,9 +4,7 @@
  */
 
 import get from "lodash/fp/get";
-import has from "lodash/fp/has";
-import uuid from "uuid/v4";
-import {decode64, isBlank, utcDate} from "../../app-helper";
+import {calculateIdentifier, decode64, isBlank, toArray, utcDate} from "../../app-helper";
 import logger from "../../logger";
 
 export default class LambdaStatementParser {
@@ -45,7 +43,9 @@ export default class LambdaStatementParser {
         const content = get("isBase64Encoded")(this.lambdaEvent) ? decode64(this.body) : this.body;
         const parsedContent = isBlank(content) ? {} : JSON.parse(content);
 
-        parsedContent.id = has("id")(parsedContent) ? get("id")(parsedContent) : uuid();
+        toArray(parsedContent).forEach((statement: any) => {
+            statement.id = calculateIdentifier(statement);
+        });
 
         return parsedContent;
     }
