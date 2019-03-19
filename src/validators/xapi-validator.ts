@@ -20,9 +20,9 @@ class XAPIValidator implements Validator {
     }
 
     public validate(document: object | object[], rootElement: string = "") {
-        logger.debug("Validating xAPI document: %j against schema", document);
-
         toArray(document).forEach((item) => {
+            logger.debug("Validating xAPI document: %j against schema", wrap(item, rootElement));
+
             this.ajv.validate(xAPISchema, wrap(item, rootElement));
             this.validationErrors = concat(this.validationErrors)(this.ajvErrors());
         });
