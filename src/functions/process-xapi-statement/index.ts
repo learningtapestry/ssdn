@@ -1,5 +1,6 @@
 import get from "lodash/fp/get";
 import has from "lodash/fp/has";
+import trim from "lodash/fp/trim";
 import isEmpty from "lodash/fp/isEmpty";
 import KinesisRepository from "../../repositories/kinesis-repository";
 import XAPIValidator from "../../validators/xapi-validator";
@@ -27,7 +28,7 @@ export const handler = async (event: object) => {
 
 const validateRequest = (event: object) => {
     const errors = [];
-    const xAPIVersion = get("headers.X-Experience-Api-Version")(event);
+    const xAPIVersion = trim(get("headers.X-Experience-API-Version")(event));
     if (!/^1\.0(\.\d{1,2})?$/.test(xAPIVersion)) {
         errors.push(`Unsupported xAPI version (${xAPIVersion})`);
     }
