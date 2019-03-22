@@ -5,8 +5,8 @@
 import Pino from "pino";
 
 const logger = Pino({
-    level: process.env.NUCLEUS_LOG_LEVEL || "info",
-    prettyPrint: { colorize: true, translateTime: true },
+  level: process.env.NUCLEUS_LOG_LEVEL || "info",
+  prettyPrint: { colorize: true, translateTime: true },
 });
 
 export default logger;

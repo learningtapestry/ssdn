@@ -14,22 +14,20 @@ config();
 createKinesisStream(readEnv("NUCLEUS_EVENT_PROCESSOR_STREAM_NAME"));
 
 async function createKinesisStream(name: string) {
-    print(`Creating Kinesis Data Stream '${name}' `);
-    const kinesis = new Kinesis({
-        apiVersion: "2013-12-02",
-        endpoint: readEnv("NUCLEUS_EVENT_PROCESSOR_STREAM_ENDPOINT", ""),
-    });
-    try {
-        await kinesis.describeStream({ StreamName: name }).promise();
-        print("[ALREADY EXISTS]\n");
-    } catch (error) {
-        await kinesis
-            .createStream({ ShardCount: 1, StreamName: name })
-            .promise();
-        print("[DONE]\n");
-    }
+  print(`Creating Kinesis Data Stream '${name}' `);
+  const kinesis = new Kinesis({
+    apiVersion: "2013-12-02",
+    endpoint: readEnv("NUCLEUS_EVENT_PROCESSOR_STREAM_ENDPOINT", ""),
+  });
+  try {
+    await kinesis.describeStream({ StreamName: name }).promise();
+    print("[ALREADY EXISTS]\n");
+  } catch (error) {
+    await kinesis.createStream({ ShardCount: 1, StreamName: name }).promise();
+    print("[DONE]\n");
+  }
 }
 
 function print(text: string) {
-    process.stdout.write(text);
+  process.stdout.write(text);
 }

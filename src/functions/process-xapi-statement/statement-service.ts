@@ -9,43 +9,42 @@ import { toArray } from "../../app-helper";
 import logger from "../../logger";
 
 export default class StatementService {
-    public static async process(
-        event: object,
-        validator: Validator,
-        repository: Repository,
-    ) {
-        try {
-            logger.debug("Processing event: %j", event);
+  public static async process(
+    event: object,
+    validator: Validator,
+    repository: Repository,
+  ) {
+    try {
+      logger.debug("Processing event: %j", event);
 
-            const content = toArray(get("content")(event));
-            if (validator.validate(content, "statement")) {
-                const record = await repository.store(event);
+      const content = toArray(get("content")(event));
+      if (validator.validate(content, "statement")) {
+        const record = await repository.store(event);
 
-                logger.info(
-                    "Event has been processed, returning Kinesis record: %j",
-                    record,
-                );
+        logger.info(
+          "Event has been processed, returning Kinesis record: %j",
+          record,
+        );
 
-                return map("id")(content);
-            } else {
-                logger.debug(
-                    "Failed event validation with errors: %j",
-                    validator.errors(),
-                );
+        return map("id")(content);
+      } else {
+        logger.debug(
+          "Failed event validation with errors: %j",
+          validator.errors(),
+        );
 
-                return {
-                    errors: validator.errors(),
-                    message: "The provided document is not valid",
-                };
-            }
-        } catch (error) {
-            logger.error("Unexpected error while processing: %j", error.stack);
+        return {
+          errors: validator.errors(),
+          message: "The provided document is not valid",
+        };
+      }
+    } catch (error) {
+      logger.error("Unexpected error while processing: %j", error.stack);
 
-            return {
-                errors: [error.message],
-                message:
-                    "There was an unexpected error while processing the event",
-            };
-        }
+      return {
+        errors: [error.message],
+        message: "There was an unexpected error while processing the event",
+      };
     }
+  }
 }

@@ -43,22 +43,22 @@ import axios from "axios";
  */
 
 export const lambdaHandler = async (event: object, context: object) => {
-    const url = "http://checkip.amazonaws.com/";
-    let response;
+  const url = "http://checkip.amazonaws.com/";
+  let response;
 
-    try {
-        const ret = await axios(url);
-        response = {
-            body: JSON.stringify({
-                location: ret.data.trim(),
-                message: "Hello Nucleus!",
-            }),
-            statusCode: 200,
-        };
-    } catch (err) {
-        console.log(err);
-        return err;
-    }
+  try {
+    const ret = await axios(url);
+    response = {
+      body: JSON.stringify({
+        location: ret.data.trim(),
+        message: "Hello Nucleus!",
+      }),
+      statusCode: 200,
+    };
+  } catch (err) {
+    console.log(err);
+    return err;
+  }
 
-    return response;
+  return response;
 };

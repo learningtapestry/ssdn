@@ -3,5 +3,5 @@
  */
 
 interface Repository {
-    store(content: object, attributes?: object): void;
+  store(content: object, attributes?: object): void;
 }

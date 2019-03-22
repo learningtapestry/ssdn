@@ -10,39 +10,39 @@ import isNil from "lodash/fp/isNil";
 import uuid from "uuid/v4";
 
 export function isBlank(text?: string | null) {
-    return isNil(text) || isEmpty(text);
+  return isNil(text) || isEmpty(text);
 }
 
 export function decode64(content: string) {
-    return Buffer.from(content, "base64").toString();
+  return Buffer.from(content, "base64").toString();
 }
 
 export function utcDate(timestamp: number) {
-    return new Date(timestamp).toUTCString();
+  return new Date(timestamp).toUTCString();
 }
 
 export function readEnv(name: string, defaultValue?: any) {
-    const value = get(name)(process.env);
-    if (isBlank(value) && !isNil(defaultValue)) {
-        return defaultValue;
-    } else if (isBlank(value)) {
-        throw new Error(`Variable '${name}' has not been initialized`);
-    } else {
-        return value;
-    }
+  const value = get(name)(process.env);
+  if (isBlank(value) && !isNil(defaultValue)) {
+    return defaultValue;
+  } else if (isBlank(value)) {
+    throw new Error(`Variable '${name}' has not been initialized`);
+  } else {
+    return value;
+  }
 }
 
 export function calculateIdentifier(content: object) {
-    return has("id")(content) ? get("id")(content) : uuid();
+  return has("id")(content) ? get("id")(content) : uuid();
 }
 
 export function toArray(content: object | object[]) {
-    return isArray(content) ? content : [content];
+  return isArray(content) ? content : [content];
 }
 
 export function wrap(object: object, root: string = "") {
-    const wrappedObject: any = {};
-    wrappedObject[root] = object;
+  const wrappedObject: any = {};
+  wrappedObject[root] = object;
 
-    return isBlank(root) ? object : wrappedObject;
+  return isBlank(root) ? object : wrappedObject;
 }

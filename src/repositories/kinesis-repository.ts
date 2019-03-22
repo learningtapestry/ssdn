@@ -8,40 +8,40 @@ import { isBlank, readEnv } from "../app-helper";
 import logger from "../logger";
 
 export default class KinesisRepository implements Repository {
-    private static clientOptions() {
-        const options = {
-            apiVersion: "2013-12-02",
-            endpoint: readEnv("NUCLEUS_EVENT_PROCESSOR_STREAM_ENDPOINT", ""),
-        };
+  private static clientOptions() {
+    const options = {
+      apiVersion: "2013-12-02",
+      endpoint: readEnv("NUCLEUS_EVENT_PROCESSOR_STREAM_ENDPOINT", ""),
+    };
 
-        return omitBy(isBlank)(options);
-    }
+    return omitBy(isBlank)(options);
+  }
 
-    public client: Kinesis;
+  public client: Kinesis;
 
-    constructor() {
-        this.client = new Kinesis(KinesisRepository.clientOptions());
-        logger.debug(
-            "Kinesis client created using options: %j",
-            KinesisRepository.clientOptions(),
-        );
-    }
+  constructor() {
+    this.client = new Kinesis(KinesisRepository.clientOptions());
+    logger.debug(
+      "Kinesis client created using options: %j",
+      KinesisRepository.clientOptions(),
+    );
+  }
 
-    public async store(
-        content: object,
-        { partitionKey = "NUCLEUS-PARTITION-KEY" } = {},
-    ) {
-        logger.debug(
-            "Storing content: %j using partition key: %s",
-            content,
-            partitionKey,
-        );
-        const record = {
-            Data: JSON.stringify(content),
-            PartitionKey: partitionKey,
-            StreamName: readEnv("NUCLEUS_EVENT_PROCESSOR_STREAM_NAME"),
-        };
+  public async store(
+    content: object,
+    { partitionKey = "NUCLEUS-PARTITION-KEY" } = {},
+  ) {
+    logger.debug(
+      "Storing content: %j using partition key: %s",
+      content,
+      partitionKey,
+    );
+    const record = {
+      Data: JSON.stringify(content),
+      PartitionKey: partitionKey,
+      StreamName: readEnv("NUCLEUS_EVENT_PROCESSOR_STREAM_NAME"),
+    };
 
-        return await this.client.putRecord(record).promise();
-    }
+    return await this.client.putRecord(record).promise();
+  }
 }
