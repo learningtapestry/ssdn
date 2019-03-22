@@ -16,11 +16,7 @@ describe("StatementService", () => {
     });
 
     it("stores the content when validation passes", async () => {
-      const results = await StatementService.process(
-        nucleusEvent,
-        validator,
-        inMemoryRepository,
-      );
+      const results = await StatementService.process(nucleusEvent, validator, inMemoryRepository);
 
       expect(results).toEqual(["d1eec41f-1e93-4ed6-acbf-5c4bd0c24269"]);
       expect(results).not.toHaveProperty("errors");
@@ -30,27 +26,16 @@ describe("StatementService", () => {
       validator.validate.returns(false);
       validator.errors.returns(["1st error", "2nd error"]);
 
-      const results = await StatementService.process(
-        nucleusEvent,
-        validator,
-        inMemoryRepository,
-      );
+      const results = await StatementService.process(nucleusEvent, validator, inMemoryRepository);
 
-      expect(results).toHaveProperty(
-        "message",
-        "The provided document is not valid",
-      );
+      expect(results).toHaveProperty("message", "The provided document is not valid");
       expect(results).toHaveProperty("errors", ["1st error", "2nd error"]);
     });
 
     it("wraps any uncontrolled error", async () => {
       inMemoryRepository.store.throws(new Error("Unexpected error message"));
 
-      const results = await StatementService.process(
-        nucleusEvent,
-        validator,
-        inMemoryRepository,
-      );
+      const results = await StatementService.process(nucleusEvent, validator, inMemoryRepository);
 
       expect(results).toHaveProperty(
         "message",

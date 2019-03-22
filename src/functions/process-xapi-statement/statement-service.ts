@@ -9,11 +9,7 @@ import { toArray } from "../../app-helper";
 import logger from "../../logger";
 
 export default class StatementService {
-  public static async process(
-    event: object,
-    validator: Validator,
-    repository: Repository,
-  ) {
+  public static async process(event: object, validator: Validator, repository: Repository) {
     try {
       logger.debug("Processing event: %j", event);
 
@@ -21,17 +17,11 @@ export default class StatementService {
       if (validator.validate(content, "statement")) {
         const record = await repository.store(event);
 
-        logger.info(
-          "Event has been processed, returning Kinesis record: %j",
-          record,
-        );
+        logger.info("Event has been processed, returning Kinesis record: %j", record);
 
         return map("id")(content);
       } else {
-        logger.debug(
-          "Failed event validation with errors: %j",
-          validator.errors(),
-        );
+        logger.debug("Failed event validation with errors: %j", validator.errors());
 
         return {
           errors: validator.errors(),

@@ -77,9 +77,7 @@ describe("AppHelper", () => {
         id: "c731c327-fc08-49e9-8494-4e78a9b3b5f5",
       };
 
-      expect(calculateIdentifier(content)).toEqual(
-        "c731c327-fc08-49e9-8494-4e78a9b3b5f5",
-      );
+      expect(calculateIdentifier(content)).toEqual("c731c327-fc08-49e9-8494-4e78a9b3b5f5");
     });
   });
 

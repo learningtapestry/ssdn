@@ -4,13 +4,7 @@
  */
 
 import get from "lodash/fp/get";
-import {
-  calculateIdentifier,
-  decode64,
-  isBlank,
-  toArray,
-  utcDate,
-} from "../../app-helper";
+import { calculateIdentifier, decode64, isBlank, toArray, utcDate } from "../../app-helper";
 import logger from "../../logger";
 
 export default class LambdaStatementParser {
@@ -46,9 +40,7 @@ export default class LambdaStatementParser {
   }
 
   private interpretContent() {
-    const content = get("isBase64Encoded")(this.lambdaEvent)
-      ? decode64(this.body)
-      : this.body;
+    const content = get("isBase64Encoded")(this.lambdaEvent) ? decode64(this.body) : this.body;
     const parsedContent = isBlank(content) ? {} : JSON.parse(content);
 
     toArray(parsedContent).forEach((statement: any) => {

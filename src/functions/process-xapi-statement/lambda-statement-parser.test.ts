@@ -19,15 +19,10 @@ describe("LambdaStatementParser", () => {
       });
       unencodedEventInput.isBase64Encoded = false;
 
-      const nucleusEvent = new LambdaStatementParser(
-        unencodedEventInput,
-      ).parse();
+      const nucleusEvent = new LambdaStatementParser(unencodedEventInput).parse();
 
       expect(nucleusEvent.content).toHaveProperty("content", "My content");
-      expect(nucleusEvent.content).toHaveProperty(
-        "id",
-        "5030ba19-5d5b-43be-998f-cfcd530c1a09",
-      );
+      expect(nucleusEvent.content).toHaveProperty("id", "5030ba19-5d5b-43be-998f-cfcd530c1a09");
     });
 
     it("generates an UUID when none is provided", async () => {

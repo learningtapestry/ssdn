@@ -21,21 +21,11 @@ export default class KinesisRepository implements Repository {
 
   constructor() {
     this.client = new Kinesis(KinesisRepository.clientOptions());
-    logger.debug(
-      "Kinesis client created using options: %j",
-      KinesisRepository.clientOptions(),
-    );
+    logger.debug("Kinesis client created using options: %j", KinesisRepository.clientOptions());
   }
 
-  public async store(
-    content: object,
-    { partitionKey = "NUCLEUS-PARTITION-KEY" } = {},
-  ) {
-    logger.debug(
-      "Storing content: %j using partition key: %s",
-      content,
-      partitionKey,
-    );
+  public async store(content: object, { partitionKey = "NUCLEUS-PARTITION-KEY" } = {}) {
+    logger.debug("Storing content: %j using partition key: %s", content, partitionKey);
     const record = {
       Data: JSON.stringify(content),
       PartitionKey: partitionKey,

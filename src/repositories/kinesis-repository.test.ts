@@ -12,8 +12,7 @@ describe("KinesisRepository", () => {
     });
 
     it("builds kinesis client using provided endpoint", () => {
-      process.env.NUCLEUS_EVENT_PROCESSOR_STREAM_ENDPOINT =
-        "http://localhost:4568";
+      process.env.NUCLEUS_EVENT_PROCESSOR_STREAM_ENDPOINT = "http://localhost:4568";
       const client = new KinesisRepository().client;
 
       expect(typeof client).toEqual("object");
