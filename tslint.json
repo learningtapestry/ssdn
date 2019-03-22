@@ -1,6 +1,10 @@
 {
   "defaultSeverity": "error",
-  "extends": ["tslint:recommended", "tslint-config-prettier"],
+  "extends": [
+    "tslint:recommended",
+    "tslint-config-prettier",
+    "tslint-plugin-prettier"
+  ],
   "jsRules": true,
   "rules": {
     "no-console": false,
@@ -11,7 +15,8 @@
         "ignore-pattern": "https?://"
       }
     ],
-    "interface-name": [true, "never-prefix"]
+    "interface-name": [true, "never-prefix"],
+    "prettier": true
   },
   "rulesDirectory": [],
   "linterOptions": {
