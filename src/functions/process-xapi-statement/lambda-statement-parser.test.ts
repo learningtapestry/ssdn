@@ -6,7 +6,9 @@ import LambdaStatementParser from "./lambda-statement-parser";
 describe("LambdaStatementParser", () => {
     describe("parse", () => {
         it("generates a nucleus event structured object", async () => {
-            const nucleusEvent = new LambdaStatementParser(processEventInput).parse();
+            const nucleusEvent = new LambdaStatementParser(
+                processEventInput,
+            ).parse();
 
             expect(nucleusEvent).toEqual(nucleusEventSample);
         });
@@ -19,21 +21,35 @@ describe("LambdaStatementParser", () => {
             });
             unencodedEventInput.isBase64Encoded = false;
 
-            const nucleusEvent = new LambdaStatementParser(unencodedEventInput).parse();
+            const nucleusEvent = new LambdaStatementParser(
+                unencodedEventInput,
+            ).parse();
 
-            expect(nucleusEvent.content).toHaveProperty("content", "My content");
-            expect(nucleusEvent.content).toHaveProperty("id",
-                "5030ba19-5d5b-43be-998f-cfcd530c1a09");
+            expect(nucleusEvent.content).toHaveProperty(
+                "content",
+                "My content",
+            );
+            expect(nucleusEvent.content).toHaveProperty(
+                "id",
+                "5030ba19-5d5b-43be-998f-cfcd530c1a09",
+            );
         });
 
         it("generates an UUID when none is provided", async () => {
             const unencodedEventInput = processEventInput;
-            unencodedEventInput.body = JSON.stringify({content: "My content"});
+            unencodedEventInput.body = JSON.stringify({
+                content: "My content",
+            });
             unencodedEventInput.isBase64Encoded = false;
 
-            const nucleusEvent = new LambdaStatementParser(processEventInput).parse();
+            const nucleusEvent = new LambdaStatementParser(
+                processEventInput,
+            ).parse();
 
-            expect(nucleusEvent.content).toHaveProperty("content", "My content");
+            expect(nucleusEvent.content).toHaveProperty(
+                "content",
+                "My content",
+            );
             expect(nucleusEvent.content).toHaveProperty("id");
         });
     });

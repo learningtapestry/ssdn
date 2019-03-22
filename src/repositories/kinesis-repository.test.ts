@@ -8,11 +8,14 @@ describe("KinesisRepository", () => {
             const client = new KinesisRepository().client;
 
             expect(typeof client).toEqual("object");
-            expect(client.endpoint.host).toEqual("kinesis.us-east-1.amazonaws.com");
+            expect(client.endpoint.host).toEqual(
+                "kinesis.us-east-1.amazonaws.com",
+            );
         });
 
         it("builds kinesis client using provided endpoint", () => {
-            process.env.NUCLEUS_EVENT_PROCESSOR_STREAM_ENDPOINT = "http://localhost:4568";
+            process.env.NUCLEUS_EVENT_PROCESSOR_STREAM_ENDPOINT =
+                "http://localhost:4568";
             const client = new KinesisRepository().client;
 
             expect(typeof client).toEqual("object");
@@ -26,7 +29,10 @@ describe("KinesisRepository", () => {
 
             const recordAttrs = await repo.store(xAPIJson);
 
-            expect(recordAttrs).toHaveProperty("ShardId", "shardId-000000000000");
+            expect(recordAttrs).toHaveProperty(
+                "ShardId",
+                "shardId-000000000000",
+            );
             expect(recordAttrs).toHaveProperty("SequenceNumber");
         });
     });

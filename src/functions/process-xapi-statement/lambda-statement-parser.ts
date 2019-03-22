@@ -4,7 +4,13 @@
  */
 
 import get from "lodash/fp/get";
-import {calculateIdentifier, decode64, isBlank, toArray, utcDate} from "../../app-helper";
+import {
+    calculateIdentifier,
+    decode64,
+    isBlank,
+    toArray,
+    utcDate,
+} from "../../app-helper";
 import logger from "../../logger";
 
 export default class LambdaStatementParser {
@@ -21,7 +27,10 @@ export default class LambdaStatementParser {
     }
 
     public parse() {
-        logger.debug("Generating Nucleus event from Lambda: %j", this.lambdaEvent);
+        logger.debug(
+            "Generating Nucleus event from Lambda: %j",
+            this.lambdaEvent,
+        );
 
         return {
             content: this.interpretContent(),
@@ -29,10 +38,12 @@ export default class LambdaStatementParser {
                 date: utcDate(get("requestTimeEpoch")(this.request)),
                 format: "xAPI",
                 operation: get("httpMethod")(this.lambdaEvent),
-                origin: `${get("Host")(this.headers)}${get("path")(this.request)}`,
+                origin: `${get("Host")(this.headers)}${get("path")(
+                    this.request,
+                )}`,
                 protocol: get("protocol")(this.request),
                 representation: "REST",
-                request: {headers: this.headers},
+                request: { headers: this.headers },
                 resource: "statements",
                 resourceId: get("statementId")(this.queryParams),
             },
@@ -40,7 +51,9 @@ export default class LambdaStatementParser {
     }
 
     private interpretContent() {
-        const content = get("isBase64Encoded")(this.lambdaEvent) ? decode64(this.body) : this.body;
+        const content = get("isBase64Encoded")(this.lambdaEvent)
+            ? decode64(this.body)
+            : this.body;
         const parsedContent = isBlank(content) ? {} : JSON.parse(content);
 
         toArray(parsedContent).forEach((statement: any) => {

@@ -6,8 +6,8 @@
  */
 
 import Kinesis from "aws-sdk/clients/kinesis";
-import {config} from "dotenv";
-import {readEnv} from "./app-helper";
+import { config } from "dotenv";
+import { readEnv } from "./app-helper";
 
 config();
 
@@ -20,10 +20,12 @@ async function createKinesisStream(name: string) {
         endpoint: readEnv("NUCLEUS_EVENT_PROCESSOR_STREAM_ENDPOINT", ""),
     });
     try {
-        await kinesis.describeStream({StreamName: name}).promise();
+        await kinesis.describeStream({ StreamName: name }).promise();
         print("[ALREADY EXISTS]\n");
     } catch (error) {
-        await kinesis.createStream({ShardCount: 1, StreamName: name}).promise();
+        await kinesis
+            .createStream({ ShardCount: 1, StreamName: name })
+            .promise();
         print("[DONE]\n");
     }
 }

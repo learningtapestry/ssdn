@@ -49,7 +49,10 @@ export const lambdaHandler = async (event: object, context: object) => {
     try {
         const ret = await axios(url);
         response = {
-            body: JSON.stringify({location: ret.data.trim(), message: "Hello Nucleus!"}),
+            body: JSON.stringify({
+                location: ret.data.trim(),
+                message: "Hello Nucleus!",
+            }),
             statusCode: 200,
         };
     } catch (err) {

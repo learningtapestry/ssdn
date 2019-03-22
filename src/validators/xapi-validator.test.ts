@@ -24,15 +24,17 @@ describe("XAPIValidator", () => {
 
             expect(result).toEqual(false);
             expect(errors).toEqual([
-                ".about.version: should match format \"version\"",
+                '.about.version: should match format "version"',
                 ".statement_base: should have required property 'verb'",
             ]);
         });
 
         it("validates an array of documents returning the combined errors", () => {
             const validator = new XAPIValidator();
-            const documents = [omit(["statement_base.verb"])(xAPIJson),
-                omit("statement_base.actor")(xAPIJson)];
+            const documents = [
+                omit(["statement_base.verb"])(xAPIJson),
+                omit("statement_base.actor")(xAPIJson),
+            ];
 
             const result = validator.validate(documents);
             const errors = validator.errors();

@@ -32,7 +32,9 @@ describe("AppHelper", () => {
 
     describe("utcDate", () => {
         it("returns a string-based UTC date representation", () => {
-            expect(utcDate(1550861675319)).toEqual("Fri, 22 Feb 2019 18:54:35 GMT");
+            expect(utcDate(1550861675319)).toEqual(
+                "Fri, 22 Feb 2019 18:54:35 GMT",
+            );
         });
     });
 
@@ -65,36 +67,41 @@ describe("AppHelper", () => {
 
     describe("calculateIdentifier", () => {
         it("returns a new UUID if object has no id", () => {
-            const content = {foo: "bar"};
+            const content = { foo: "bar" };
             const uuidRegex = /^[0-9a-fA-F]{8}(?:-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}$/;
 
             expect(calculateIdentifier(content)).toMatch(uuidRegex);
         });
 
         it("preserves the id when already set", () => {
-            const content = {id: "c731c327-fc08-49e9-8494-4e78a9b3b5f5", foo: "bar"};
+            const content = {
+                foo: "bar",
+                id: "c731c327-fc08-49e9-8494-4e78a9b3b5f5",
+            };
 
-            expect(calculateIdentifier(content)).toEqual("c731c327-fc08-49e9-8494-4e78a9b3b5f5");
+            expect(calculateIdentifier(content)).toEqual(
+                "c731c327-fc08-49e9-8494-4e78a9b3b5f5",
+            );
         });
     });
 
     describe("toArray", () => {
         it("returns a new array when argument is an object", () => {
-            expect(toArray({a: 1})).toEqual([{a: 1}]);
+            expect(toArray({ a: 1 })).toEqual([{ a: 1 }]);
         });
 
         it("returns the same when argument is an array", () => {
-            expect(toArray([{a: 1}, {b: 2}])).toEqual([{a: 1}, {b: 2}]);
+            expect(toArray([{ a: 1 }, { b: 2 }])).toEqual([{ a: 1 }, { b: 2 }]);
         });
     });
 
     describe("wrap", () => {
         it("wraps the object inside a root element", () => {
-            expect(wrap({a: 1}, "topLevel")).toEqual({topLevel: {a: 1}});
+            expect(wrap({ a: 1 }, "topLevel")).toEqual({ topLevel: { a: 1 } });
         });
 
         it("ignores the wrapping when root is not set", () => {
-            expect(wrap({a: 1})).toEqual({a: 1});
+            expect(wrap({ a: 1 })).toEqual({ a: 1 });
         });
     });
 });

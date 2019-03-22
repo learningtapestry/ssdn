@@ -10,10 +10,13 @@ import StatementService from "./statement-service";
 export const handler = async (event: object) => {
     const requestErrors = validateRequest(event);
     if (!isEmpty(requestErrors)) {
-        return buildResponse({
-            errors: requestErrors,
-            message: "Some arguments in the request are invalid",
-        }, 400);
+        return buildResponse(
+            {
+                errors: requestErrors,
+                message: "Some arguments in the request are invalid",
+            },
+            400,
+        );
     }
 
     const results = await StatementService.process(
@@ -39,7 +42,7 @@ const validateRequest = (event: object) => {
 const buildResponse = (results: object, statusCode: number) => {
     return {
         body: JSON.stringify(results),
-        headers: {"X-Experience-API-Version": "1.0.3"},
+        headers: { "X-Experience-API-Version": "1.0.3" },
         statusCode,
     };
 };
