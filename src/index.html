@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+    <script src="indexConfiguration.ts"></script>
+    <script>
+      window.nucleus = window.nucleus || {
+        configure: function() {
+          (window.nucleus.args = window.nucleus.args || []).push(arguments);
+        },
+      };
+      nucleus.configure("server", window.configuration.BACKEND_ADDRESS);
+      nucleus.configure("apiKey", window.configuration.API_KEY);
+      nucleus.configure("collectors", [
+        [
+          "heartbeat",
+          {
+            heartbeatInterval: window.configuration.HEARTBEAT_INTERVAL,
+          },
+        ],
+        "video",
+      ]);
+      nucleus.configure("user", {
+        id: window.configuration.USER_ID,
+        extensions: { homePage: window.configuration.USER_HOME_PAGE },
+      });
+    </script>
+    <script src="agent.ts"></script>
+  </head>
+  <body>
+    <iframe
+      id="youtube"
+      width="560"
+      height="315"
+      src="https://www.youtube.com/embed/I6xQtFsODIQ?enablejsapi=1"
+      frameborder="0"
+      allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+      allowfullscreen
+    ></iframe>
+  </body>
+</html>
