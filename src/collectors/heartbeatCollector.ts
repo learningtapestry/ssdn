@@ -56,11 +56,7 @@ export class HeartbeatCollector implements Collector {
    * @param user     The Nucleus message user.
    * @param [config] Configuration for the heartbeat collector.
    */
-  constructor(
-    client: Client,
-    user: User,
-    config?: HeartbeatCollectorConfiguration,
-  ) {
+  constructor(client: Client, user: User, config?: HeartbeatCollectorConfiguration) {
     this.client = client;
     this.user = user;
     this.config = Object.assign(
@@ -112,10 +108,7 @@ export class HeartbeatCollector implements Collector {
       window.clearInterval(this.intervalId);
     }
 
-    this.intervalId = window.setInterval(
-      () => this.sendHeartbeat(),
-      this.config.heartbeatInterval,
-    );
+    this.intervalId = window.setInterval(() => this.sendHeartbeat(), this.config.heartbeatInterval);
 
     this.sendHeartbeat();
   }

@@ -10,11 +10,7 @@ import { Message, MessageEncoder } from "./messages";
  * @param [request]  An object representing the original request performed by the
  *                   client.
  */
-export type ClientSendMessageCallback = (
-  error?: any,
-  response?: any,
-  request?: any,
-) => void;
+export type ClientSendMessageCallback = (error?: any, response?: any, request?: any) => void;
 
 /**
  * A network client for sending messages to a Nucleus server instance.

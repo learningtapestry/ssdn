@@ -14,10 +14,7 @@ describe("agent", () => {
       window.nucleus.configure("collectors", ["heartbeat"]);
       window.nucleus.configure("apiKey", "test_api");
 
-      expect(window.nucleus.args).toEqual([
-        ["collectors", ["heartbeat"]],
-        ["apiKey", "test_api"],
-      ]);
+      expect(window.nucleus.args).toEqual([["collectors", ["heartbeat"]], ["apiKey", "test_api"]]);
     });
   });
 
@@ -32,9 +29,7 @@ describe("agent", () => {
 
       window.nucleus.bootstrap();
       expect(window.nucleus.current).toBeInstanceOf(Nucleus);
-      expect(window.nucleus.current!.client.baseUrl).toEqual(
-        "http://initialized.test",
-      );
+      expect(window.nucleus.current!.client.baseUrl).toEqual("http://initialized.test");
     });
   });
 });

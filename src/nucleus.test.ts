@@ -20,9 +20,7 @@ describe("Nucleus", () => {
       expect(nucleus.collectors).toHaveLength(2);
       expect(nucleus.collectors[0]).toBeInstanceOf(HeartbeatCollector);
       expect(nucleus.collectors[1]).toBeInstanceOf(VideoCollector);
-      expect(
-        (nucleus.collectors[0] as HeartbeatCollector).config.heartbeatInterval,
-      ).toEqual(5000);
+      expect((nucleus.collectors[0] as HeartbeatCollector).config.heartbeatInterval).toEqual(5000);
     });
   });
 });

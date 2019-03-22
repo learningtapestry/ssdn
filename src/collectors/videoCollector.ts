@@ -117,9 +117,7 @@ export class VideoCollector implements Collector {
           (e) => {
             const target = e.target as any;
 
-            const url = target.currentSrc.match(/^https?/)
-              ? target.currentSrc
-              : target.baseURI;
+            const url = target.currentSrc.match(/^https?/) ? target.currentSrc : target.baseURI;
 
             this.trackVideoEvent(eventType, url);
           },

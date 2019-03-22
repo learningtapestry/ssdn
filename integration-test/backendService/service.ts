@@ -15,25 +15,17 @@ export class BackendService {
 
   private staticFolder: string;
 
-  constructor(
-    config: BackendServiceConfig,
-    capabilities: WebDriver.DesiredCapabilities,
-  ) {
+  constructor(config: BackendServiceConfig, capabilities: WebDriver.DesiredCapabilities) {
     this.port = config.backendPort as number;
     this.staticFolder = config.backendStaticFolder as string;
   }
 
-  public onPrepare(
-    config: WebdriverIO.Config,
-    capabilities: WebDriver.DesiredCapabilities,
-  ) {
+  public onPrepare(config: WebdriverIO.Config, capabilities: WebDriver.DesiredCapabilities) {
     if (this.port && this.staticFolder) {
       this.backend = new Backend(this.port, this.staticFolder);
       this.backend.listen();
     } else {
-      throw new Error(
-        "Port and static folder must be specified for BackendService.",
-      );
+      throw new Error("Port and static folder must be specified for BackendService.");
     }
   }
 

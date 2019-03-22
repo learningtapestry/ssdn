@@ -1,11 +1,7 @@
 // Mock Image.onload and Image.onerror in the jsdom environment.
 const freeGlobal = global as any;
 
-export function temporaryGlobalVariable(
-  name: string,
-  value: any,
-  fn: () => void,
-) {
+export function temporaryGlobalVariable(name: string, value: any, fn: () => void) {
   const previousGlobal = freeGlobal[name];
   freeGlobal[name] = value;
   fn();
@@ -23,9 +19,7 @@ Object.defineProperty(freeGlobal.Image.prototype, "src", {
     this._src = src;
     const shouldLoad = freeGlobal.imagesShouldLoad;
     if (!shouldLoad) {
-      setTimeout(() =>
-        this.onerror(new Error("The image was configured not to load.")),
-      );
+      setTimeout(() => this.onerror(new Error("The image was configured not to load.")));
     } else {
       setTimeout(() => this.onload());
     }

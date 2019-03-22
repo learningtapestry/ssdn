@@ -20,11 +20,7 @@ const buildMessage = () =>
 describe("ImageBeaconClient", () => {
   describe("sendMessage", () => {
     it("constructs an URL that has all the necessary information", (done) => {
-      const client = new ImageBeaconClient(
-        "https://backend.test",
-        "test_key",
-        new XApiEncoder(),
-      );
+      const client = new ImageBeaconClient("https://backend.test", "test_key", new XApiEncoder());
 
       const message = buildMessage();
 
@@ -44,11 +40,7 @@ describe("ImageBeaconClient", () => {
     });
 
     it("invokes the callback with an error when the image fails to load", (done) => {
-      const client = new ImageBeaconClient(
-        "https://backend.test",
-        "test_key",
-        new XApiEncoder(),
-      );
+      const client = new ImageBeaconClient("https://backend.test", "test_key", new XApiEncoder());
 
       client.sendMessage(buildMessage(), (error) => {
         expect(error).toBeTruthy();
@@ -57,11 +49,7 @@ describe("ImageBeaconClient", () => {
     });
 
     it("invokes the callback with NO error when the image loads", (done) => {
-      const client = new ImageBeaconClient(
-        "https://backend.test",
-        "test_key",
-        new XApiEncoder(),
-      );
+      const client = new ImageBeaconClient("https://backend.test", "test_key", new XApiEncoder());
 
       temporaryGlobalVariable("imagesShouldLoad", true, () => {
         client.sendMessage(buildMessage(), (error) => {

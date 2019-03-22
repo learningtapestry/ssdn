@@ -47,8 +47,7 @@ export class XApiEncoder implements MessageEncoder {
 
     for (const key in message.data) {
       if (message.data.hasOwnProperty(key)) {
-        context.extensions[`${xApiRepo}/extensions/${message.type}/${key}`] =
-          message.data[key];
+        context.extensions[`${xApiRepo}/extensions/${message.type}/${key}`] = message.data[key];
       }
     }
 

@@ -98,9 +98,7 @@ const buildOptions = (args: unknown[][]) => {
 
   if (errors.length > 0) {
     throw new Error(
-      `Nucleus options are invalid. Please review the following problems: ${errors.join(
-        ",",
-      )}`,
+      `Nucleus options are invalid. Please review the following problems: ${errors.join(",")}`,
     );
   }
 

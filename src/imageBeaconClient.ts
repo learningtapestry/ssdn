@@ -65,9 +65,7 @@ export class ImageBeaconClient implements Client {
    *                   the network request.
    */
   public sendMessage(message: Message, callback?: ImageBeaconCallback) {
-    const encodedMessage = encodeURIComponent(
-      JSON.stringify(this.encoder.encode(message)),
-    );
+    const encodedMessage = encodeURIComponent(JSON.stringify(this.encoder.encode(message)));
     const image = document.createElement("img");
     image.onload = (_) => {
       if (callback) {

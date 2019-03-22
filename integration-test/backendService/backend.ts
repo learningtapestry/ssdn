@@ -17,12 +17,9 @@ export class Backend {
 
   public port: number;
 
-  private messageLog: WriteStream = createWriteStream(
-    "tmp/integration-test/messages.log",
-    {
-      flags: "a",
-    },
-  );
+  private messageLog: WriteStream = createWriteStream("tmp/integration-test/messages.log", {
+    flags: "a",
+  });
 
   constructor(port: number, staticFolder: string) {
     this.port = port;

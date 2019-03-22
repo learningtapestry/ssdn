@@ -38,11 +38,8 @@ describe("heartbeatCollector.imageBeacon.xApi", () => {
 
     // Object is set
     // tslint:disable-next-line: no-unused-expression
-    expect(
-      (firstMessage.event.object.id as string).startsWith(
-        "http://localhost:3000/",
-      ),
-    ).to.be.true;
+    expect((firstMessage.event.object.id as string).startsWith("http://localhost:3000/")).to.be
+      .true;
 
     // Verb is set
     expect(firstMessage.event.verb).to.deep.equal({
@@ -50,9 +47,7 @@ describe("heartbeatCollector.imageBeacon.xApi", () => {
     });
 
     // Extensions are set
-    expect(
-      firstMessage.event.context.extensions[extensions.pageTitle],
-    ).to.equal("Document");
+    expect(firstMessage.event.context.extensions[extensions.pageTitle]).to.equal("Document");
 
     // tslint:disable-next-line: no-unused-expression
     expect(
@@ -61,14 +56,11 @@ describe("heartbeatCollector.imageBeacon.xApi", () => {
       ),
     ).to.be.true;
 
-    const heartbeatId =
-      firstMessage.event.context.extensions[extensions.heartbeatId];
+    const heartbeatId = firstMessage.event.context.extensions[extensions.heartbeatId];
     // tslint:disable-next-line: no-unused-expression
     expect(uuid.isUUID(heartbeatId, "4")).to.be.true;
 
-    expect(
-      firstMessage.event.context.extensions[extensions.timeSpentOnPage],
-    ).to.be.greaterThan(-1);
+    expect(firstMessage.event.context.extensions[extensions.timeSpentOnPage]).to.be.greaterThan(-1);
 
     // There should be some messages with identical heartbeatId
     const sameHearts = messages.filter(
@@ -82,9 +74,7 @@ describe("heartbeatCollector.imageBeacon.xApi", () => {
     // It should have a longer "timeSpentOnPage" than the first
     const lastHeart = sameHearts.slice(-1)[0];
 
-    expect(
-      lastHeart.event.context.extensions[extensions.timeSpentOnPage],
-    ).to.be.greaterThan(
+    expect(lastHeart.event.context.extensions[extensions.timeSpentOnPage]).to.be.greaterThan(
       firstMessage.event.context.extensions[extensions.timeSpentOnPage],
     );
   });

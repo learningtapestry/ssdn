@@ -71,8 +71,7 @@ describe("XApiEncoder", () => {
         },
         context: {
           extensions: {
-            "https://xapi-learningtapestry.github.io/nucleus/extensions/played/state":
-              "playing",
+            "https://xapi-learningtapestry.github.io/nucleus/extensions/played/state": "playing",
             "https://xapi-learningtapestry.github.io/nucleus/extensions/played/videoUrl":
               "https://www.youtube.com/watch?v=I6xQtFsODIQ",
           },

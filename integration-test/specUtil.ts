@@ -6,10 +6,7 @@ import Axios from "axios";
  * @param [base] The base URL.
  * @returns  The full URL.
  */
-export function baseUrl(
-  testName: string,
-  base: string = "http://localhost:3000",
-) {
+export function baseUrl(testName: string, base: string = "http://localhost:3000") {
   return `${base}/test/${testName}`;
 }
 

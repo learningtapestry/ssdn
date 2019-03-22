@@ -61,28 +61,20 @@ export class Nucleus {
    * @param options Options for building a new Nucleus instance.
    */
   public static build(options: BuildNucleusOptions) {
-    const client = new ImageBeaconClient(
-      options.server,
-      options.apiKey,
-      new XApiEncoder(),
-    );
+    const client = new ImageBeaconClient(options.server, options.apiKey, new XApiEncoder());
 
     const collectors = [];
 
     for (const collector of options.collectors) {
       const collectorType: string =
-        Object.prototype.toString.call(collector) === "[object Array]"
-          ? collector[0]
-          : collector;
+        Object.prototype.toString.call(collector) === "[object Array]" ? collector[0] : collector;
 
       switch (collectorType) {
         case "video":
           collectors.push(new VideoCollector(client, options.user));
           break;
         case "heartbeat":
-          collectors.push(
-            new HeartbeatCollector(client, options.user, collector[1]),
-          );
+          collectors.push(new HeartbeatCollector(client, options.user, collector[1]));
           break;
         default:
           break;
