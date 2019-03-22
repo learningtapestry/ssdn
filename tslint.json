@@ -1,24 +1,19 @@
 {
   "defaultSeverity": "error",
   "extends": [
-    "tslint:recommended"
+    "tslint:recommended",
+    "tslint-config-prettier",
+    "tslint-plugin-prettier"
   ],
   "jsRules": true,
   "rules": {
     "no-console": false,
-    "max-line-length": [
-      true,
-      100
-    ],
-    "interface-name": [
-      true,
-      "never-prefix"
-    ]
+    "max-line-length": [true, 100],
+    "interface-name": [true, "never-prefix"],
+    "prettier": true
   },
   "rulesDirectory": [],
   "linterOptions": {
-    "exclude": [
-      "**/node_modules/**"
-    ]
+    "exclude": ["**/node_modules/**"]
   }
 }
