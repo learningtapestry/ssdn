@@ -9,7 +9,7 @@
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "resolveJsonModule": true,
-    "types": ["@wdio/sync", "@wdio/mocha-framework", "node"],
+    "types": ["@wdio/sync", "@wdio/jasmine-framework", "node"],
     "typeRoots": ["node_modules/@types", "types"],
     "baseUrl": "../",
     "paths": {

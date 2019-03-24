@@ -1,5 +1,3 @@
-import { expect } from "chai";
-
 import { baseUrl, getMessages, homePage } from "../specUtil";
 
 const xApiBase = "https://xapi-learningtapestry.github.io/nucleus";
@@ -62,15 +60,15 @@ describe("videoCollector.imageBeacon.xApi", () => {
       (m) => m.event.verb.id === "https://xapi-learningtapestry.github.io/nucleus/verbs/played",
     );
 
-    expect(videoMessages.length).to.equal(2);
+    expect(videoMessages.length).toEqual(2);
 
     const firstMessage = videoMessages[0];
 
     // API key is set
-    expect(firstMessage.apiKey).to.equal("API_KEY");
+    expect(firstMessage.apiKey).toEqual("API_KEY");
 
     // Actor is set
-    expect(firstMessage.event.actor).to.deep.equal({
+    expect(firstMessage.event.actor).toEqual({
       account: {
         homePage: "https://example.com",
         name: "test@example.com",
@@ -80,22 +78,23 @@ describe("videoCollector.imageBeacon.xApi", () => {
 
     // Object is set
     // tslint:disable-next-line: no-unused-expression
-    expect((firstMessage.event.object.id as string).startsWith("https://www.youtube.com")).to.be
-      .true;
+    expect(
+      (firstMessage.event.object.id as string).startsWith("https://www.youtube.com"),
+    ).toBeTruthy();
 
     // Verb is set
-    expect(firstMessage.event.verb).to.deep.equal({
+    expect(firstMessage.event.verb).toEqual({
       id: "https://xapi-learningtapestry.github.io/nucleus/verbs/played",
     });
 
     // Extensions are set
-    expect(firstMessage.event.context.extensions[extensions.videoUrl]).to.equal(
+    expect(firstMessage.event.context.extensions[extensions.videoUrl]).toEqual(
       "https://www.youtube.com/watch?v=I6xQtFsODIQ",
     );
 
-    expect(firstMessage.event.context.extensions[extensions.state]).to.equal("playing");
+    expect(firstMessage.event.context.extensions[extensions.state]).toEqual("playing");
 
     // A pause message should have arrived as well
-    expect(videoMessages[1].event.context.extensions[extensions.state]).to.equal("paused");
+    expect(videoMessages[1].event.context.extensions[extensions.state]).toEqual("paused");
   });
 });
