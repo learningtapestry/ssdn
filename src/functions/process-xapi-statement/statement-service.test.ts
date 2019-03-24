@@ -1,18 +1,17 @@
-import sinon from "sinon";
 import nucleusEvent from "../../../test-support/data-samples/nucleus-event.json";
 import StatementService from "./statement-service";
 
 describe("StatementService", () => {
   describe("process", () => {
     const validator = {
-      errors: sinon.stub().returns([]),
-      validate: sinon.stub(),
+      errors: jest.fn().mockReturnValue([]),
+      validate: jest.fn(),
     };
-    const inMemoryRepository = { store: sinon.stub() };
+    const inMemoryRepository = { store: jest.fn(), storeBatch: jest.fn() };
 
     beforeEach(() => {
-      validator.validate.returns(true);
-      inMemoryRepository.store.returnsArg(0);
+      validator.validate.mockReturnValue(true);
+      inMemoryRepository.store.mockImplementation((arg1: any) => arg1);
     });
 
     it("stores the content when validation passes", async () => {
@@ -23,8 +22,8 @@ describe("StatementService", () => {
     });
 
     it("returns validation errors when it fails", async () => {
-      validator.validate.returns(false);
-      validator.errors.returns(["1st error", "2nd error"]);
+      validator.validate.mockReturnValue(false);
+      validator.errors.mockReturnValue(["1st error", "2nd error"]);
 
       const results = await StatementService.process(nucleusEvent, validator, inMemoryRepository);
 
@@ -33,7 +32,9 @@ describe("StatementService", () => {
     });
 
     it("wraps any uncontrolled error", async () => {
-      inMemoryRepository.store.throws(new Error("Unexpected error message"));
+      inMemoryRepository.store.mockImplementation(() => {
+        throw new Error("Unexpected error message");
+      });
 
       const results = await StatementService.process(nucleusEvent, validator, inMemoryRepository);
 
