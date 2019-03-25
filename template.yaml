@@ -179,7 +179,7 @@ Outputs:
     Value: !Ref CollectionApiKey
   StatementsApi:
     Description: API Gateway endpoint URL for collecting xAPI statements
-    Value: !Sub https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/${Environment}/xAPI/statements
+    Value: !Sub https://${ProcessXAPIStatementApi}.execute-api.${AWS::Region}.amazonaws.com/${Environment}/xAPI/statements
   ProcessXAPIStatementFunction:
     Description: Process xAPI Statement Lambda function ARN
     Value: !GetAtt ProcessXAPIStatementFunction.Arn

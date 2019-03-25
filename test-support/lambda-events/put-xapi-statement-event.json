@@ -33,7 +33,7 @@
     "X-Forwarded-For": "127.0.0.1, 127.0.0.2",
     "X-Forwarded-Port": "443",
     "X-Forwarded-Proto": "https",
-    "X-Experience-Api-Version": "1.0.3"
+    "X-Experience-API-Version": "1.0.3"
   },
   "requestContext": {
     "accountId": "123456789012",
