@@ -41,7 +41,7 @@
     "lint": "tslint -p tsconfig.json",
     "test": "jest --testPathIgnorePatterns integration-test",
     "test:watch": "jest --testPathIgnorePatterns integration-test --watch",
-    "test:integration": "jest integration.test.ts"
+    "test:integration": "jest integration.test.ts --runInBand"
   },
   "devDependencies": {
     "@babel/core": "^7.3.3",
