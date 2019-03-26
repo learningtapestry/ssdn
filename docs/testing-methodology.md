@@ -86,12 +86,37 @@ dependencies (a DynamoDB table for example) or not is up to you. In both cases t
 run your tests properly. For example, you might invoke lambda functions or API Gateway endpoints 
 100% locally by executing `sam local invoke <FUNCTION>` and `sam local start-api` respectively, 
 
+A nice tool included in the project is [LocalStack](https://localstack.cloud/). It can start local
+instances of most of the available AWS services, allowing you to develop against them locally and 
+offline. This greatly simplifies accessing complex services like Kinesis or DynamoDB from your 
+tests. In fact we use it in some unit tests to mock some of these services. However, we don't 
+recommend using it for integration testing, as in most cases it does not cover all the methods in 
+the official APIs provided by Amazon, or the responses are too simple to represent what a real 
+integration should look like.
+
 ### Development
 If you prefer to run your integration tests in a more realistic environment, you can instead deploy 
 your changes to the development stack and point your tests to run on it. This way you're using a
 live environment to test your code, so no mocks are really needed, but they run from your local 
 environment, which is much more convenient than pushing changes to the repository and going through 
 the whole CI process.
+
+If you want to deploy your changes to a new stack (`Nucleus-Development` for example), you'll need 
+to run the following commands:
+
+```bash
+sam package --template-file template.yaml \
+            --output-template-file packaged.yaml \
+            --kms-key-id arn:aws:kms:us-east-1:264441468378:alias/aws/s3 \
+            --s3-bucket codepipeline-us-east-1-528618056037
+```
+_You might want to adapt the above command to include your own KMS Key ID and S3 bucket_
+
+```bash
+sam deploy --template-file packaged.yaml \
+           --stack-name Nucleus-Development \
+           --capabilities CAPABILITY_IAM
+```
 
 ### Testing
 This is an ephemeral environment whose only purpose is running the integration and end-to-end tests

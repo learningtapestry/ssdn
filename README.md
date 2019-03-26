@@ -39,21 +39,37 @@ development workflow.
 
 ```bash
 root
-├── src/                            <-- Main source folder
-│   └── hello-nucleus/              <-- Source code for a single lambda function
-│      ├── index.js                 <-- Lambda function code
-│      └── index.test.js            <-- Unit test for the lambda function
-├── integration-test/               <-- Integration and e2e tests folder
-│   └── hello.integration.test.js   <-- Integration test for the lambda function
-├── dist/                           <-- Output folder that contains the generated build
-├── docs/                           <-- Additional project documentation
-├── template.yaml                   <-- SAM template
-├── package.json                    <-- Node.js dependencies
-├── .babelrc                        <-- Configuration file for Babel
-├── tsconfig.json                   <-- Configuration file for the TypeScript compiler
-├── tslint.json                     <-- Configuration file for the TypeScript linter (tslint)
-├── jest.config.js                  <-- Configuration file for the test runner
-└── README.md                       <-- This file
+├── src/                                <-- Main source folder
+│   ├── functions/                      <-- Folder containing lambda functions
+│   │   └── hello-nucleus/              <-- Source code for a single lambda function
+│   │      ├── index.js                 <-- Lambda function code
+│   │      └── index.test.js            <-- Unit test for the lambda function
+│   ├── repositories/                   <-- Folder containing repository objects
+│   │      └── kinesis-repository.ts    <-- Source code for the Kinesis repository
+│   ├── schemas/                        <-- Folder containing JSON schemas
+│   │      └── xapi-schema.json         <-- JSON Schema file for the xAPI format
+│   ├── validators/                     <-- Folder containing validator objects
+│   │      └── xapi-validator.ts        <-- Source code for the xAPI validator
+├── integration-test/                   <-- Integration and e2e tests folder
+│   └── hello.integration.test.js       <-- Integration test for the lambda function
+│   └── hello.e2e.integration.test.js   <-- End-to-end test for the lambda function
+├── app-helper.ts                       <-- Main application helper
+├── logger.ts                           <-- Default global logger object
+├── setup.ts                            <-- Bootstrap script for development & testing environments
+├── dist/                               <-- Output folder that contains the generated build
+├── docs/                               <-- Additional project documentation
+├── test-support/                       <-- Support files and code useful for testing
+├── .babelrc                            <-- Configuration file for Babel
+├── .env                                <-- Declares environment variables for the project
+├── .env.test                           <-- Declares environment variables for testing
+├── .prettierrc                         <-- Configuration file for Prettier
+├── jest.config.js                      <-- Configuration file for the test runner
+├── package.json                        <-- Node.js dependencies
+├── README.md                           <-- This file
+├── template.yaml                       <-- SAM template
+├── tsconfig.json                       <-- Configuration file for the TypeScript compiler
+├── tslint.json                         <-- Configuration file for the TypeScript linter (tslint)
+└── yarn.lock                           <-- Auto-generated dependencies file
 ```
 
 ## Setup
@@ -63,8 +79,20 @@ Run the following command to install the project dependencies:
 yarn install
 ```
 
+Next, start `LocalStack` to bring up a local version of the AWS services:
+
+```bash
+localstack start
+```
+
+Finally, you'll want to run the setup script in order to create the necessary resources:
+
+```bash
+ts-node src/setup.ts
+```
+
 ## Usage
-After the above command completes successfully, you can start development by running:
+After the above commands complete successfully, you can start development by running:
 
 ```bash
 yarn start
@@ -80,7 +108,7 @@ project run:
 echo '{}' | sam local invoke HelloWorldFunction
 ```
 
-Or if you want to invoke the lambda function through a local API Gateway, use:
+Or if you want to invoke the lambda function(s) through a local API Gateway, use:
 
 ```bash
 sam local start-api
@@ -88,6 +116,9 @@ sam local start-api
 
 This will allow you to go to `http://localhost:3000/hello` and call the lambda code from an HTTP
 endpoint.
+
+If you want the above commands to access the environment variables defined in your `.env` file, 
+remember to export them to your current shell by running `set -a && source .env`.
 
 If you want to know about other commands, please refer to the official AWS SAM CLI documentation.
 
@@ -121,6 +152,19 @@ Integration environment. However, sometimes it might be useful to run specific t
 local or development environment. Please refer to the 
 [testing methodology guidelines](docs/testing-methodology.md) for more information.
 
+## Logging
+We use [Pino](https://github.com/pinojs/pino) as the default logging library. We export a customized
+instance of this logger in the `logger.ts` file, so you can import it right into your code and start 
+using it. 
+
+It's configured to send every log message to the console, so no actual log files exist in the 
+project. Keep in mind that everything that is outputted to the console inside a Lambda function will 
+be sent to CloudWatch Logs, which is precisely what we want.
+
+By default, the log level is set to `info`, but can be easily tweaked via the environment variable 
+`NUCLEUS_LOG_LEVEL`, which accepts all the levels that Pino does. In tests, the log level is set to 
+`fatal` in order to avoid getting any messages that probably just add noise to the tests output.
+
 ## Deployment
 Whenever you're ready to to deploy your changes to a live environment, you should run:
 
@@ -150,14 +194,41 @@ the CI server is started.
 4. The new CloudFormation specification is generated from our `template.yaml` file, containing the 
 changes in our infrastructure.
 5. A new testing stack is created following the CloudFormation file generated previously.
-6. Resources pointing to the testing stack are exported as environment variables (endpoint or databases URLs, lambda ARNs, etc.) 
-so that the integration tests know where they need to point. 
+6. Resources in the testing stack are read from the `Outputs` generated by CloudFormation 
+(endpoint or databases URLs, lambda ARNs, etc.) so that the integration tests know where they need 
+to point. 
 7. Integration tests are run against this new testing environment.
 8. The testing stack is no longer needed and is deleted.
 9. Changes are deployed to the production stack.
 
 Obviously these steps are sequential, so if one of them fails the deployment is rolled-back and no
 changes will be applied to the production environment.
+
+## Coding conventions
+
+In general, we try to stick to the common conventions followed by the Javascript community. 
+
+Coding style and formatting rules are checked by [TSLint](https://palantir.github.io/tslint/) and 
+[Prettier](https://prettier.io/). We perform some minor configuration tweaks in these tools, but 
+overall we try to stick with their provided defaults.
+
+When it comes to code architecture, we suggest following some well-established patterns like the 
+[Hexagonal architecture](https://dzone.com/articles/hexagonal-architecture-it-works) by Alistair 
+Cockburn, or [Clean architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html) 
+by Robert C. Martin. They're different approaches but sharing very similar goals and practices.
+Without entering into too much detail, we could point out the following recommendations:
+- Try not to couple your classes needlessly. This eventually leads to code that is harder to 
+maintain and test. 
+- Follow the [Single Responsibility Principle](https://en.wikipedia.org/wiki/Single_responsibility_principle) 
+in your classes and keep the concerns clearly separated.
+- Business logic should be completely independent of other components using it. That's the same as 
+saying that your high-level components should not depend on the low-level implementation details. 
+You can use interfaces to accomplish this.
+- Where possible, try to inject your dependencies instead of initializing them inside your classes. 
+This usually leads to an overall better design and makes testing much more flexible and pleasant.
+- As usual, favor composition over inheritance. Class hierarchies tend to become rigid and 
+inflexible over time. It's usually simpler to rely on basic objects and functions that can be 
+delegated or used by other classes.
 
 ## Additional Yarn scripts
 You can use the following Yarn scripts to perform various useful tasks:
@@ -167,3 +238,4 @@ Uses the `tsc` compiler to check for errors in the TypeScript code.
 
 ### `yarn lint`
 Performs code analysis in search for functional errors and potential improvements using `tslint`.
+
