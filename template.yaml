@@ -6,10 +6,6 @@ Parameters:
     Type: String
     Description: The current environment where they deployment is taking place.
     Default: Development
-    AllowedValues:
-      - Development
-      - Test
-      - Production
   NotificationEmail:
     Type: String
     Description: The default e-mail address for notification purposes.
@@ -21,6 +17,8 @@ Globals:
     Environment:
       Variables:
         NUCLEUS_EVENT_PROCESSOR_STREAM_NAME: !Sub Nucleus-${Environment}-EventProcessor
+        NUCLEUS_EVENT_STORAGE_STREAM_NAME: !Sub Nucleus-${Environment}-EventStorage
+        NUCLEUS_EVENT_DELIVERY_STREAM_NAME: !Sub Nucleus-${Environment}-EventDelivery
         NUCLEUS_LOG_LEVEL: info
 Resources:
   EventProcessorStream:
@@ -29,6 +27,58 @@ Resources:
       Name: !Sub Nucleus-${Environment}-EventProcessor
       RetentionPeriodHours: 48
       ShardCount: 1
+  EventStorageStream:
+    Type: AWS::Kinesis::Stream
+    Properties:
+      Name: !Sub Nucleus-${Environment}-EventStorage
+      RetentionPeriodHours: 48
+      ShardCount: 1
+  EventDeliveryStream:
+    Type: AWS::KinesisFirehose::DeliveryStream
+    Properties:
+      DeliveryStreamType: KinesisStreamAsSource
+      KinesisStreamSourceConfiguration:
+        KinesisStreamARN: !GetAtt EventStorageStream.Arn
+        RoleARN: !GetAtt EventDeliveryStreamRole.Arn
+      ExtendedS3DestinationConfiguration:
+        BucketARN: !GetAtt DeliveryS3Bucket.Arn
+        RoleARN: !GetAtt EventDeliveryStreamRole.Arn
+        BufferingHints:
+          IntervalInSeconds: 300
+          SizeInMBs: 5
+        CompressionFormat: UNCOMPRESSED
+        Prefix: "YYYY/MM/DD/HH"
+  EventDeliveryStreamRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              Service:
+                - "firehose.amazonaws.com"
+            Action: "sts:AssumeRole"
+      Policies:
+        - PolicyName: !Sub Nucleus-${Environment}-EventDeliveryStreamRole
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: "Allow"
+                Action:
+                  - "s3:*"
+                Resource:
+                  - !Sub arn:aws:s3:::${DeliveryS3Bucket}
+                  - !Sub arn:aws:s3:::${DeliveryS3Bucket}/*
+              - Effect: "Allow"
+                Action:
+                  - "kinesis:DescribeStream"
+                  - "kinesis:GetShardIterator"
+                  - "kinesis:GetRecords"
+                Resource:
+                  - !GetAtt EventStorageStream.Arn
+  DeliveryS3Bucket:
+    Type: AWS::S3::Bucket
   CognitoUserPool:
     Type: AWS::Cognito::UserPool
     Properties:
@@ -164,10 +214,54 @@ Resources:
       DeadLetterQueue:
         Type: SNS
         TargetArn: !Ref LambdaDeadLetterQueueTopic
+  StoreEventFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./dist/store-event
+      Events:
+        StoreEvent:
+          Type: Kinesis
+          Properties:
+            Stream: !GetAtt EventProcessorStream.Arn
+            StartingPosition: TRIM_HORIZON
+            Enabled: true
+      Policies:
+        - Version: 2012-10-17
+          Statement:
+            - Effect: Allow
+              Action:
+                - kinesis:DescribeStream
+                - kinesis:DescribeStreamSummary
+                - kinesis:GetRecords
+                - kinesis:GetShardIterator
+                - kinesis:ListShards
+                - kinesis:ListStreams
+                - kinesis:SubscribeToShard
+              Resource: !GetAtt EventProcessorStream.Arn
+            - Effect: Allow
+              Action:
+                - kinesis:PutRecord
+                - kinesis:PutRecords
+              Resource: !GetAtt EventStorageStream.Arn
+      DeadLetterQueue:
+        Type: SNS
+        TargetArn: !Ref LambdaDeadLetterQueueTopic
 Outputs:
   EventProcessorStreamName:
     Description: Name of the Event Processor Kinesis Data Stream
     Value: !Ref EventProcessorStream
+  EventStorageStreamName:
+    Description: Name of the Event Storage Kinesis Data Stream
+    Value:
+      Ref: EventStorageStream
+  EventDeliveryStreamName:
+    Description: Name of the Event Delivery Firehose Data Stream
+    Value:
+      Ref: EventDeliveryStream
+  DeliveryS3BucketName:
+    Description: Name of the S3 Bucket used by the Event Delivery Stream
+    Value:
+      Ref: DeliveryS3Bucket
   CognitoUserPoolId:
     Description: Generated identifier for the Cognito User Pool
     Value: !Ref CognitoUserPool
@@ -195,4 +289,15 @@ Outputs:
   HelloNucleusFunctionIamRole:
     Description: Implicit IAM Role created for Hello Nucleus function
     Value: !GetAtt HelloNucleusFunctionRole.Arn
-    
+  StoreEventFunction:
+    Description: Store Event Lambda function ARN
+    Value:
+      Fn::GetAtt:
+        - StoreEventFunction
+        - Arn
+  StoreEventFunctionIamRole:
+    Description: Implicit IAM Role created for Store Event function
+    Value:
+      Fn::GetAtt:
+        - StoreEventFunctionRole
+        - Arn

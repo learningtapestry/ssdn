@@ -2,6 +2,8 @@ import get from "lodash/fp/get";
 import has from "lodash/fp/has";
 import isEmpty from "lodash/fp/isEmpty";
 import trim from "lodash/fp/trim";
+
+import { readEnv } from "../../app-helper";
 import KinesisRepository from "../../repositories/kinesis-repository";
 import XAPIValidator from "../../validators/xapi-validator";
 import LambdaStatementParser from "./lambda-statement-parser";
@@ -22,7 +24,7 @@ export const handler = async (event: object) => {
   const results = await StatementService.process(
     new LambdaStatementParser(event).parse(),
     new XAPIValidator(),
-    new KinesisRepository(),
+    new KinesisRepository(readEnv("NUCLEUS_EVENT_PROCESSOR_STREAM_NAME")),
   );
   const hasErrors = has("errors")(results);
 
