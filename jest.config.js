@@ -5,4 +5,5 @@ module.exports = {
   preset: "ts-jest",
   testEnvironment: "node",
   coverageDirectory: "coverage",
+  globalSetup: "<rootDir>/src/setup.ts",
 };

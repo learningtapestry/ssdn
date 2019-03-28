@@ -1187,6 +1187,11 @@
     "@parcel/utils" "^1.11.0"
     physical-cpu-count "^2.0.0"
 
+"@types/aws-lambda@^8.10.23":
+  version "8.10.23"
+  resolved "https://registry.yarnpkg.com/@types/aws-lambda/-/aws-lambda-8.10.23.tgz#ab90be8ee3d8796b35df0acef5d17d71c8928d97"
+  integrity sha512-erfexxfuc1+T7b4OswooKwpIjpdgEOVz6ZrDDWSR+3v7Kjhs4EVowfUkF9KuLKhpcjz+VVHQ/pWIl7zSVbKbFQ==
+
 "@types/babel__core@^7.1.0":
   version "7.1.0"
   resolved "https://registry.yarnpkg.com/@types/babel__core/-/babel__core-7.1.0.tgz#710f2487dda4dcfd010ca6abb2b4dc7394365c51"
