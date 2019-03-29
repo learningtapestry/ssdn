@@ -26,7 +26,7 @@ export class Backend {
     this.app = express();
 
     this.app.use(express.static(staticFolder));
-    this.app.get("/test/:testName/track", this.imageBeaconEndpoint.bind(this));
+    this.app.get("/test/:testName/beacon", this.imageBeaconEndpoint.bind(this));
     this.app.get("/test/:testName/messages", this.messagesEndpoint.bind(this));
   }
 

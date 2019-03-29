@@ -81,6 +81,6 @@ export class ImageBeaconClient implements Client {
   }
 
   private buildUrl(message: string) {
-    return `${this.baseUrl}/track?apiKey=${this.apiKey}&event=${message}`;
+    return `${this.baseUrl}/beacon?apiKey=${this.apiKey}&event=${message}`;
   }
 }
