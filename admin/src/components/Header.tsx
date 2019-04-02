@@ -1,13 +1,14 @@
 import React from "react";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
+import { LinkContainer } from "react-router-bootstrap";
 import logo from "../logo.svg";
 import "./Header.css";
 
 const Header = () => (
   <header className="App-header">
     <Navbar bg="primary" variant="dark">
-      <Navbar.Brand href="#home">
+      <Navbar.Brand href="https://github.com/learningtapestry/nucleus">
         <img
           alt="Nucleus logo"
           src={logo}
@@ -18,11 +19,21 @@ const Header = () => (
         {"Nucleus"}
       </Navbar.Brand>
       <Nav className="mr-auto">
-        <Nav.Link href="#home">Home</Nav.Link>
-        <Nav.Link href="#connections">Connections</Nav.Link>
-        <Nav.Link href="#logs">Logs</Nav.Link>
-        <Nav.Link href="#users">Users</Nav.Link>
-        <Nav.Link href="#settings">Settings</Nav.Link>
+        <LinkContainer to="/" exact={true}>
+          <Nav.Link>Home</Nav.Link>
+        </LinkContainer>
+        <LinkContainer to="/connections">
+          <Nav.Link>Connections</Nav.Link>
+        </LinkContainer>
+        <LinkContainer to="/logs">
+          <Nav.Link>Logs</Nav.Link>
+        </LinkContainer>
+        <LinkContainer to="/users">
+          <Nav.Link>Users</Nav.Link>
+        </LinkContainer>
+        <LinkContainer to="/settings">
+          <Nav.Link>Settings</Nav.Link>
+        </LinkContainer>
       </Nav>
     </Navbar>
   </header>
