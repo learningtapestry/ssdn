@@ -1,14 +1,14 @@
 # See https://help.github.com/ignore-files/ for more about ignoring files.
 
 # dependencies
-/node_modules
+/**/node_modules
 
 # testing
-/coverage
+/**/coverage
 
 # production
-/dist
-/build
+/**/dist
+/**/build
 
 # caches
 .cache
@@ -19,6 +19,7 @@
 .env.development.local
 .env.test.local
 .env.production.local
+.tool-versions
 
 npm-debug.log*
 yarn-debug.log*

@@ -2,13 +2,13 @@
   "name": "nucleus",
   "version": "1.0.0",
   "description": "Amazon Nucleus",
-  "main": "src/index.js",
+  "main": "core/src/index.js",
   "author": {
     "name": "Learning Tapestry",
     "email": "social@learningtapestry.com",
     "url": "http://learningtapestry.com/"
   },
-  "homepage": "https://github.com/learningtapestry/nucleus",
+  "homepage": "https://github.com/learningtapestry/nucleus/core",
   "contributors": [
     "Steve Midgley <steve@learningtapestry.com>",
     "Abraham Sánchez <abraham@learningtapestry.com>",
@@ -39,7 +39,7 @@
     "start": "parcel watch ./src/**/index.ts --target node --bundle-node-modules",
     "build": "yarn lint && yarn check-types && parcel build ./src/**/index.ts --target node --bundle-node-modules",
     "check-types": "tsc",
-    "lint": "tslint -p tsconfig.json",
+    "lint": "tslint -p tsconfig.json -c ../tslint.json",
     "test": "jest --testPathIgnorePatterns integration-test",
     "test:watch": "jest --testPathIgnorePatterns integration-test --watch",
     "test:integration": "jest integration.test.ts --runInBand"
