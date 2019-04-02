@@ -1,7 +1,20 @@
 {
-  "name": "admin",
-  "version": "0.1.0",
+  "name": "nucleus-admin",
+  "version": "1.0",
+  "description": "Amazon Nucleus - Administration Panel",
   "private": true,
+  "author": {
+    "name": "Learning Tapestry",
+    "email": "social@learningtapestry.com",
+    "url": "http://learningtapestry.com/"
+  },
+  "homepage": "https://github.com/learningtapestry/nucleus/admin",
+  "contributors": [
+    "Steve Midgley <steve@learningtapestry.com>",
+    "Abraham Sánchez <abraham@learningtapestry.com>",
+    "Rômulo Saksida <rm@learningtapestry.com>"
+  ],
+  "license": "Apache-2.0",
   "dependencies": {
     "@types/jest": "24.0.11",
     "@types/node": "11.13.0",
