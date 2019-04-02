@@ -1,0 +1,13 @@
+.Header-logo {
+    animation: Header-logo-spin infinite 10s linear;
+    pointer-events: none;
+}
+
+@keyframes Header-logo-spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
