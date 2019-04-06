@@ -4,5 +4,11 @@
 			"service": "S3AndCloudFront",
 			"providerPlugin": "awscloudformation"
 		}
+	},
+	"auth": {
+		"cognito4745444d": {
+			"service": "Cognito",
+			"providerPlugin": "awscloudformation"
+		}
 	}
 }

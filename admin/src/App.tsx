@@ -1,3 +1,15 @@
+import Auth from "@aws-amplify/auth";
+import {
+  ConfirmSignIn,
+  ForgotPassword,
+  Greetings,
+  Loading,
+  RequireNewPassword,
+  SignIn,
+  TOTPSetup,
+  VerifyContact,
+  withAuthenticator,
+} from "aws-amplify-react";
 import React, { Component } from "react";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
@@ -6,7 +18,10 @@ import Jumbotron from "react-bootstrap/Jumbotron";
 import Row from "react-bootstrap/Row";
 import { BrowserRouter as Router, Route } from "react-router-dom";
 import "./App.css";
+import awsmobile from "./aws-exports";
 import Header from "./components/Header";
+
+Auth.configure(awsmobile);
 
 class App extends Component {
   public render() {
@@ -81,4 +96,13 @@ function Settings() {
   );
 }
 
-export default App;
+export default withAuthenticator(App, true, [
+  <Greetings key="greetings" />,
+  <SignIn key="signIn" />,
+  <ConfirmSignIn key="confirmSignIn" />,
+  <VerifyContact key="verifyContact" />,
+  <ForgotPassword key="ForgotPassword" />,
+  <TOTPSetup key="TOTPSetup" />,
+  <RequireNewPassword key="RequireNewPassword" />,
+  <Loading key="loading" />,
+]);
