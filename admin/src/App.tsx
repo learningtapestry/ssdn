@@ -18,6 +18,7 @@ import Row from "react-bootstrap/Row";
 import { BrowserRouter as Router, Route } from "react-router-dom";
 import "./App.css";
 import Header from "./components/Header";
+import Home from "./components/Home";
 
 class App extends Component {
   public render() {
@@ -28,14 +29,12 @@ class App extends Component {
           <Container fluid={true} className="mt-3">
             <Row>
               <Col>
-                <Jumbotron>
-                  <h1>Welcome to Nucleus!</h1>
-                  <Route exact={true} path="/" component={Home} />
-                  <Route exact={true} path="/connections" component={Connections} />
-                  <Route exact={true} path="/logs" component={Logs} />
-                  <Route exact={true} path="/users" component={Users} />
-                  <Route exact={true} path="/settings" component={Settings} />
-                </Jumbotron>
+                <Route exact={true} path="/" component={Home} />
+                <Route exact={true} path="/connections" component={Connections} />
+                <Route exact={true} path="/logs" component={Logs} />
+                <Route exact={true} path="/users" component={Users} />
+                <Route exact={true} path="/users/create" component={CreateUser} />
+                <Route exact={true} path="/settings" component={Settings} />
               </Col>
             </Row>
           </Container>
@@ -43,21 +42,6 @@ class App extends Component {
       </Router>
     );
   }
-}
-
-function Home() {
-  return (
-    <div>
-      <p>
-        This is the <strong>main page</strong> of the administration panel.
-      </p>
-      <p>
-        <Button href="https://github.com/learningtapestry/nucleus" variant="primary">
-          Learn more
-        </Button>
-      </p>
-    </div>
-  );
 }
 
 function Connections() {
