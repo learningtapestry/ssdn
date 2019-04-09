@@ -16,7 +16,8 @@
   },
   "include": [
     "src/**/*",
-    "integration-test"
+    "integration-test",
+    "test-support"
   ],
   "exclude": [
     ".git",
