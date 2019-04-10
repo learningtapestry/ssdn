@@ -1,3 +1,7 @@
+/**
+ * test-helper.ts: Support functions to be used in tests
+ */
+
 import { createMemoryHistory } from "history";
 import React from "react";
 import { Router } from "react-router-dom";
