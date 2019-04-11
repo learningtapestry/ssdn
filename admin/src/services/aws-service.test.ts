@@ -1,4 +1,4 @@
-import { CloudFormation } from "aws-sdk";
+import { CloudFormation, CognitoIdentityServiceProvider } from "aws-sdk";
 import AWS from "aws-sdk-mock";
 import * as factories from "../../test-support/factories";
 import * as responses from "../../test-support/service-responses";
@@ -18,6 +18,18 @@ describe(AWSService, () => {
       });
 
       expect(availableStacks).toEqual(factories.instances());
+    });
+  });
+
+  describe("retrieveUsers", () => {
+    it("retrieves the current users in the pool", async () => {
+      AWS.mock("CognitoIdentityServiceProvider", "listUsers", responses.cognitoUsers());
+
+      const users = await AWSService.retrieveUsers({
+        cognitoIdentityServiceProvider: new CognitoIdentityServiceProvider(),
+      });
+
+      expect(users).toEqual(factories.users());
     });
   });
 });

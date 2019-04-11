@@ -87,3 +87,76 @@ export function cloudFormationStacks() {
     ],
   };
 }
+
+export function cognitoUsers() {
+  return {
+    Users: [
+      {
+        Attributes: [
+          {
+            Name: "sub",
+            Value: "6fa6a456-7f89-45df-81f0-cc20a78a7d30",
+          },
+          {
+            Name: "email_verified",
+            Value: "true",
+          },
+          {
+            Name: "phone_number_verified",
+            Value: "false",
+          },
+          {
+            Name: "phone_number",
+            Value: "+1555555555",
+          },
+          {
+            Name: "name",
+            Value: "Test User 1",
+          },
+          {
+            Name: "email",
+            Value: "test-user-1@example.org",
+          },
+        ],
+        Enabled: true,
+        UserCreateDate: "2019-04-05T18:50:49.916Z",
+        UserLastModifiedDate: "2019-04-05T18:56:48.527Z",
+        UserStatus: "CONFIRMED",
+        Username: "test-user-1",
+      },
+      {
+        Attributes: [
+          {
+            Name: "sub",
+            Value: "79065bb3-d5d3-4ba8-97d3-e4a2d0c6a872",
+          },
+          {
+            Name: "email_verified",
+            Value: "true",
+          },
+          {
+            Name: "phone_number_verified",
+            Value: "false",
+          },
+          {
+            Name: "phone_number",
+            Value: "+1666666666",
+          },
+          {
+            Name: "name",
+            Value: "Test User 2",
+          },
+          {
+            Name: "email",
+            Value: "test-user-2@example.org",
+          },
+        ],
+        Enabled: true,
+        UserCreateDate: "2019-04-08T17:26:53.321Z",
+        UserLastModifiedDate: "2019-04-08T17:26:53.321Z",
+        UserStatus: "FORCE_CHANGE_PASSWORD",
+        Username: "test-user-2",
+      },
+    ],
+  };
+}

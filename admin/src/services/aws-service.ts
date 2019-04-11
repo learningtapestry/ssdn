@@ -3,10 +3,10 @@
  */
 
 import Auth from "@aws-amplify/auth";
-import AWS from "aws-sdk";
-import CloudFormation from "aws-sdk/clients/cloudformation";
+import AWS, { CloudFormation, CognitoIdentityServiceProvider } from "aws-sdk";
 import { filter } from "lodash/fp";
 import awsmobile from "../aws-exports";
+import UserForm from "../interfaces/user-form";
 import AWSAdapter from "./aws-adapter";
 
 export default class AWSService {
@@ -18,6 +18,7 @@ export default class AWSService {
     });
     AWS.config.apiVersions = {
       cloudformation: "2010-05-15",
+      cognitoidentityserviceprovider: "2016-04-18",
     };
   }
 
@@ -30,5 +31,48 @@ export default class AWSService {
 
       return AWSAdapter.convertStacks(filter(isNucleusStack)(stackData.Stacks));
     }
+  }
+
+  public static async retrieveUsers({
+    cognitoIdentityServiceProvider = new CognitoIdentityServiceProvider(),
+  } = {}) {
+    const userData = await cognitoIdentityServiceProvider
+      .listUsers({ UserPoolId: awsmobile.aws_user_pools_id })
+      .promise();
+
+    return userData.Users ? AWSAdapter.convertUsers(userData.Users) : [];
+  }
+
+  public static async createUser(
+    userParams: UserForm,
+    { cognitoIdentityServiceProvider = new AWS.CognitoIdentityServiceProvider() } = {},
+  ) {
+    return await cognitoIdentityServiceProvider
+      .adminCreateUser({
+        DesiredDeliveryMediums: ["EMAIL"],
+        TemporaryPassword: userParams.password,
+        UserAttributes: [
+          { Name: "email", Value: userParams.email },
+          { Name: "name", Value: userParams.name },
+          { Name: "phone_number", Value: userParams.phoneNumber },
+          { Name: "email_verified", Value: "true" },
+          { Name: "phone_number_verified", Value: "false" },
+        ],
+        UserPoolId: awsmobile.aws_user_pools_id,
+        Username: userParams.username,
+      })
+      .promise();
+  }
+
+  public static async deleteUser(
+    username: string,
+    { cognitoIdentityServiceProvider = new CognitoIdentityServiceProvider() } = {},
+  ) {
+    return await cognitoIdentityServiceProvider
+      .adminDeleteUser({
+        UserPoolId: awsmobile.aws_user_pools_id,
+        Username: username,
+      })
+      .promise();
   }
 }

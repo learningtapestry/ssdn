@@ -38,3 +38,24 @@ export function instances() {
     },
   ];
 }
+
+export function users() {
+  return [
+    {
+      creationDate: new Date("2019-04-05T18:50:49.916Z"),
+      email: "test-user-1@example.org",
+      fullName: "Test User 1",
+      phoneNumber: "+1555555555",
+      status: "CONFIRMED",
+      username: "test-user-1",
+    },
+    {
+      creationDate: new Date("2019-04-08T17:26:53.321Z"),
+      email: "test-user-2@example.org",
+      fullName: "Test User 2",
+      phoneNumber: "+1666666666",
+      status: "FORCE_CHANGE_PASSWORD",
+      username: "test-user-2",
+    },
+  ];
+}
