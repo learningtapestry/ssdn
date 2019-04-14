@@ -1,0 +1,64 @@
+{
+  "resource": "/{proxy+}",
+  "path": "/xAPI/beacon",
+  "httpMethod": "GET",
+  "isBase64Encoded": true,
+  "queryStringParameters": {
+    "aid": "1234567890",
+    "event": "%7B%22version%22%3A%221.0.0%22%2C%22id%22%3A%22d1eec41f-1e93-4ed6-acbf-5c4bd0c24269%22%2C%22actor%22%3A%7B%22objectType%22%3A%22Agent%22%2C%22name%22%3A%22Joe%20Schmoe%22%2C%22mbox%22%3A%22mailto%3Ajoe%40example.com%22%7D%2C%22verb%22%3A%7B%22id%22%3A%22http%3A%2F%2Fadlnet.gov%2Fexpapi%2Fverbs%2Fcompleted%22%2C%22display%22%3A%7B%22en-US%22%3A%22completed%22%7D%7D%2C%22object%22%3A%7B%22objectType%22%3A%22Activity%22%2C%22id%22%3A%22http%3A%2F%2Fwww.example.com%2Factivities%2F001%22%2C%22definition%22%3A%7B%22name%22%3A%7B%22en-US%22%3A%22Example%20Activity%22%7D%2C%22type%22%3A%22http%3A%2F%2Fadlnet.gov%2Fexpapi%2Factivities%2Fcourse%22%7D%7D%2C%22result%22%3A%7B%22completion%22%3Atrue%7D%2C%22context%22%3A%7B%22instructor%22%3A%7B%22objectType%22%3A%22Agent%22%2C%22mbox%22%3A%22mailto%3Ajoesdad%40example.com%22%7D%2C%22contextActivities%22%3A%7B%22parent%22%3A%5B%7B%22objectType%22%3A%22Activity%22%2C%22id%22%3A%22tag%3Aadlnet.gov%2C2013%3Aexpapi%3A0.9%3Aactivities%3Anon-absolute-activity-id%22%2C%22definition%22%3A%7B%22name%22%3A%7B%22en-US%22%3A%22Another%20Activity%22%7D%7D%7D%5D%7D%7D%2C%22timestamp%22%3A%222012-06-01T19%3A09%3A13.245Z%22%2C%22stored%22%3A%222012-06-29T15%3A41%3A39.165Z%22%2C%22authority%22%3A%7B%22objectType%22%3A%22Agent%22%2C%22account%22%3A%7B%22homePage%22%3A%22http%3A%2F%2Fwww.example.com%22%2C%22name%22%3A%22unknown%22%7D%7D%7D"
+  },
+  "pathParameters": {
+    "proxy": "/xAPI/beacon"
+  },
+  "stageVariables": {
+    "baz": "qux"
+  },
+  "headers": {
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+    "Accept-Encoding": "gzip, deflate, sdch",
+    "Accept-Language": "en-US,en;q=0.8",
+    "Cache-Control": "max-age=0",
+    "CloudFront-Forwarded-Proto": "https",
+    "CloudFront-Is-Desktop-Viewer": "true",
+    "CloudFront-Is-Mobile-Viewer": "false",
+    "CloudFront-Is-SmartTV-Viewer": "false",
+    "CloudFront-Is-Tablet-Viewer": "false",
+    "CloudFront-Viewer-Country": "US",
+    "Content-Type": "application/json",
+    "Host": "1234567890.execute-api.us-east-1.amazonaws.com",
+    "Upgrade-Insecure-Requests": "1",
+    "User-Agent": "Custom User Agent String",
+    "Via": "1.1 08f323deadbeefa7af34d5feb414ce27.cloudfront.net (CloudFront)",
+    "X-Amz-Cf-Id": "cDehVQoZnx43VYQb9j2-nvCh-9z396Uhbp027Y2JvkCPNLmGJHqlaA==",
+    "X-Forwarded-For": "127.0.0.1, 127.0.0.2",
+    "X-Forwarded-Port": "443",
+    "X-Forwarded-Proto": "https",
+    "X-Experience-API-Version": "1.0.3"
+  },
+  "requestContext": {
+    "accountId": "123456789012",
+    "resourceId": "123456",
+    "stage": "prod",
+    "requestId": "c6af9ac6-7b61-11e6-9a41-93e8deadbeef",
+    "requestTime": "09/Apr/2015:12:34:56 +0000",
+    "requestTimeEpoch": 1428582896000,
+    "identity": {
+      "cognitoIdentityPoolId": null,
+      "accountId": null,
+      "cognitoIdentityId": null,
+      "caller": null,
+      "accessKey": null,
+      "sourceIp": "127.0.0.1",
+      "cognitoAuthenticationType": null,
+      "cognitoAuthenticationProvider": null,
+      "userArn": null,
+      "userAgent": "Custom User Agent String",
+      "user": null
+    },
+    "path": "/prod/xAPI/beacon",
+    "resourcePath": "/{proxy+}",
+    "httpMethod": "POST",
+    "apiId": "1234567890",
+    "protocol": "HTTP/1.1"
+  }
+}

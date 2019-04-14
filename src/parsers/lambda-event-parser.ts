@@ -2,18 +2,21 @@
  * lambda-statement-parser.ts: Parses an API Gateway event as obtained from the lambda function and
  * returns an internal Nucleus event representation
  */
-
+import { APIGatewayProxyEvent } from "aws-lambda";
 import get from "lodash/fp/get";
-import { calculateIdentifier, decode64, isBlank, toArray, utcDate } from "../../app-helper";
-import logger from "../../logger";
 
-export default class LambdaStatementParser {
+import { utcDate } from "../app-helper";
+import logger from "../logger";
+
+export default abstract class LambdaEventParser {
+  public event: APIGatewayProxyEvent;
   public request: object;
-  public queryParams: object;
+  public queryParams: { [k: string]: string };
   public headers: object;
   public body: any;
 
-  constructor(public lambdaEvent: object) {
+  constructor(public lambdaEvent: APIGatewayProxyEvent) {
+    this.event = lambdaEvent;
     this.request = get("requestContext")(lambdaEvent);
     this.queryParams = get("queryStringParameters")(lambdaEvent);
     this.headers = get("headers")(lambdaEvent);
@@ -27,26 +30,25 @@ export default class LambdaStatementParser {
       content: this.interpretContent(),
       event: {
         date: utcDate(get("requestTimeEpoch")(this.request)),
-        format: "xAPI",
+        format: this.format(),
         operation: get("httpMethod")(this.lambdaEvent),
         origin: `${get("Host")(this.headers)}${get("path")(this.request)}`,
         protocol: get("protocol")(this.request),
-        representation: "REST",
-        request: { headers: this.headers },
-        resource: "statements",
-        resourceId: get("statementId")(this.queryParams),
+        representation: this.representation(),
+        request: { headers: this.headers, queryStringParameters: this.queryParams },
+        resource: this.resource(),
+        resourceId: this.resourceId(),
       },
     };
   }
 
-  private interpretContent() {
-    const content = get("isBase64Encoded")(this.lambdaEvent) ? decode64(this.body) : this.body;
-    const parsedContent = isBlank(content) ? {} : JSON.parse(content);
+  protected abstract format(): string;
 
-    toArray(parsedContent).forEach((statement: any) => {
-      statement.id = calculateIdentifier(statement);
-    });
+  protected abstract interpretContent(): any;
 
-    return parsedContent;
-  }
+  protected abstract representation(): string;
+
+  protected abstract resource(): string;
+
+  protected abstract resourceId(): string | number | undefined;
 }
