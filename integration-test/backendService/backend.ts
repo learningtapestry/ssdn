@@ -46,7 +46,7 @@ export class Backend {
     const rawQuery = parseUrl(req.url).query;
     const qs = parseQs(rawQuery as string);
     const message = {
-      apiKey: qs.apiKey,
+      aid: qs.aid,
       event: JSON.parse(qs.event as string),
     };
     const testName = req.params.testName;

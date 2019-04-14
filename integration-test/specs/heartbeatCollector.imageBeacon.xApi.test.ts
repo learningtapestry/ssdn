@@ -24,7 +24,7 @@ describe("heartbeatCollector.imageBeacon.xApi", () => {
     const firstMessage = messages[0];
 
     // API key is set
-    expect(firstMessage.apiKey).toEqual("API_KEY");
+    expect(firstMessage.aid).toEqual("API_KEY");
 
     // Actor is set
     expect(firstMessage.event.actor).toEqual({

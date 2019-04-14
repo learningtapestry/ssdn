@@ -29,7 +29,7 @@ describe("ImageBeaconClient", () => {
         const qs = parseQueryString(url.query as string);
 
         expect(url.host).toEqual("backend.test");
-        expect(qs.apiKey).toEqual("test_key");
+        expect(qs.aid).toEqual("test_key");
 
         const encodedMessage = new XApiEncoder().encode(message);
         const decodedEvent = JSON.parse(qs.event as string);
