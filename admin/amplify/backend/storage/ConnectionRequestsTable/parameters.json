@@ -1,0 +1,5 @@
+{
+    "tableName": "ConnectionRequestsTable",
+    "partitionKeyName": "id",
+    "partitionKeyType": "S"
+}
