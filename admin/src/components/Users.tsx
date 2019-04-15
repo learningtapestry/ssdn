@@ -89,11 +89,13 @@ export default function Settings() {
         <tbody>{renderUsers()}</tbody>
       </Table>
       <ConfirmationModal
-        title={`Are you sure you want to delete user '${selectedUser.username}'?`}
+        title="Confirm delete"
         show={showDeleteModal}
         onConfirm={handleDelete}
         onClose={handleCloseDeleteModal}
-      />
+      >
+        <p>Are you sure you want to delete user '{selectedUser.username}'?</p>
+      </ConfirmationModal>
     </section>
   );
 }

@@ -5,6 +5,7 @@ import ConfirmationModal from "./ConfirmationModal";
 
 describe("<ConfirmationModal />", () => {
   const props = {
+    children: <p>Children element</p>,
     onClose: jest.fn(),
     onConfirm: jest.fn(),
     show: true,
@@ -12,12 +13,13 @@ describe("<ConfirmationModal />", () => {
   };
 
   it("renders the dialog components", () => {
-    const { getByRole } = render(<ConfirmationModal {...props} />);
+    const { getByRole, getByText } = render(<ConfirmationModal {...props} />);
 
     expect(getByRole("dialog")).toBeVisible();
+    expect(getByText("Children element")).toBeVisible();
   });
 
-  it("renders a the title", () => {
+  it("renders the title", () => {
     const { getByText } = render(<ConfirmationModal {...props} />);
 
     getByText("My title");
