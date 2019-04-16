@@ -2,16 +2,17 @@
  * aws-service.ts: Main service that interacts with the AWS APIs and SDKs
  */
 
-import Auth from "@aws-amplify/auth";
-import AWS, { CloudFormation, CognitoIdentityServiceProvider } from "aws-sdk";
+import Amplify, { Auth } from "aws-amplify";
+import AWS, { CloudFormation, CognitoIdentityServiceProvider, DynamoDB } from "aws-sdk";
 import { filter } from "lodash/fp";
 import awsmobile from "../aws-exports";
+import ConnectionRequest from "../interfaces/connection-request";
 import UserForm from "../interfaces/user-form";
 import AWSAdapter from "./aws-adapter";
 
 export default class AWSService {
   public static async configure() {
-    Auth.configure(awsmobile);
+    Amplify.configure(awsmobile);
     AWS.config.update({
       credentials: await Auth.currentCredentials(),
       region: awsmobile.aws_project_region,
@@ -19,7 +20,34 @@ export default class AWSService {
     AWS.config.apiVersions = {
       cloudformation: "2010-05-15",
       cognitoidentityserviceprovider: "2016-04-18",
+      dynamodb: "2012-08-10",
     };
+  }
+
+  public static async retrieveConnectionRequests({
+    documentClient = new DynamoDB.DocumentClient(),
+    type = "consumer",
+  } = {}) {
+    const params = {
+      ExpressionAttributeNames: { "#type": "type" },
+      ExpressionAttributeValues: { ":type": type },
+      FilterExpression: "#type = :type",
+      TableName: awsmobile.aws_dynamodb_table_schemas[0].tableName,
+    };
+    const connectionRequests = await documentClient.scan(params).promise();
+
+    return connectionRequests.Items as ConnectionRequest[];
+  }
+
+  public static async saveConnectionRequest(
+    connectionRequest: ConnectionRequest,
+    { documentClient = new DynamoDB.DocumentClient() } = {},
+  ) {
+    const params = {
+      Item: connectionRequest,
+      TableName: awsmobile.aws_dynamodb_table_schemas[0].tableName,
+    };
+    return await documentClient.put(params).promise();
   }
 
   public static async availableStacks({ cloudFormation = new CloudFormation() } = {}) {

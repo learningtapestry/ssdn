@@ -2,6 +2,8 @@
  * factories.ts: Utility functions that create domain objects, useful for testing.
  */
 
+import * as responses from "./service-responses";
+
 export function instances() {
   return [
     {
@@ -58,4 +60,8 @@ export function users() {
       username: "test-user-2",
     },
   ];
+}
+
+export function connectionRequests() {
+  return responses.connectionRequestItems().Items;
 }

@@ -8,7 +8,8 @@ describe("<Header />", () => {
     const { getByText } = renderWithRouter(<Header />);
 
     expect(getByText(/home/i)).toHaveAttribute("href", "/");
-    expect(getByText(/connections/i)).toHaveAttribute("href", "/connections");
+    expect(getByText(/providers/i)).toHaveAttribute("href", "/providers");
+    expect(getByText(/consumers/i)).toHaveAttribute("href", "/consumers");
     expect(getByText(/logs/i)).toHaveAttribute("href", "/logs");
     expect(getByText(/users/i)).toHaveAttribute("href", "/users");
     expect(getByText(/settings/i)).toHaveAttribute("href", "/settings");

@@ -15,9 +15,12 @@ import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import { BrowserRouter as Router, Route } from "react-router-dom";
 import "./App.css";
+import Consumers from "./components/Consumers";
+import CreateConnectionRequest from "./components/CreateConnectionRequest";
 import CreateUser from "./components/CreateUser";
 import Header from "./components/Header";
 import Home from "./components/Home";
+import Providers from "./components/Providers";
 import Settings from "./components/Settings";
 import Users from "./components/Users";
 
@@ -31,7 +34,9 @@ class App extends Component {
             <Row>
               <Col>
                 <Route exact={true} path="/" component={Home} />
-                <Route exact={true} path="/connections" component={Connections} />
+                <Route exact={true} path="/providers" component={Providers} />
+                <Route exact={true} path="/providers/create" component={CreateConnectionRequest} />
+                <Route exact={true} path="/consumers" component={Consumers} />
                 <Route exact={true} path="/logs" component={Logs} />
                 <Route exact={true} path="/users" component={Users} />
                 <Route exact={true} path="/users/create" component={CreateUser} />
@@ -43,14 +48,6 @@ class App extends Component {
       </Router>
     );
   }
-}
-
-function Connections() {
-  return (
-    <p>
-      This is the <strong>Connections</strong> page.
-    </p>
-  );
 }
 
 function Logs() {

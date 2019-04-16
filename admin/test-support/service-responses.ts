@@ -160,3 +160,38 @@ export function cognitoUsers() {
     ],
   };
 }
+
+export function connectionRequestItems() {
+  return {
+    Items: [
+      {
+        creationDate: "2019-02-13T12:21:36.120Z",
+        email: "test-user-1@example.org",
+        endpoint: "https://www.example.org/organization-1/register",
+        firstName: "Adam",
+        id: "fb20c8c8-6922-493f-8082-9b9962054a2a",
+        lastName: "Mitchell",
+        organization: "Stoltenberg-Harvey",
+        phoneNumber: "+1555555555",
+        status: "accepted",
+        title: "Developer",
+        type: "consumer",
+        verificationCode: "825150",
+      },
+      {
+        creationDate: "2019-04-14T11:31:55.120Z",
+        email: "test-user-2@example.org",
+        endpoint: "https://www.example.org/organization-2/register",
+        firstName: "Mickey",
+        id: "32b42b0e-80f7-4551-a0ea-b7e629b885f1",
+        lastName: " Smith",
+        organization: "Heaney, Hackett and Jacobson",
+        phoneNumber: "+1666666666",
+        status: "rejected",
+        title: "CEO",
+        type: "provider",
+        verificationCode: "825150",
+      },
+    ],
+  };
+}
