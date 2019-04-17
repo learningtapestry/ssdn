@@ -4,10 +4,10 @@ import { ButtonToolbar } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 import Table from "react-bootstrap/Table";
 import { LinkContainer } from "react-router-bootstrap";
-import { nullUser } from "../app-helper";
-import User from "../interfaces/user";
-import AWSService from "../services/aws-service";
-import ConfirmationModal from "./ConfirmationModal";
+import { nullUser } from "../../app-helper";
+import User from "../../interfaces/user";
+import AWSService from "../../services/aws-service";
+import ConfirmationModal from "../ui/ConfirmationModal";
 
 export default function Settings() {
   const [users, setUsers] = useState<User[]>([]);

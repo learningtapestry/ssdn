@@ -1,6 +1,6 @@
 import React from "react";
 import Table from "react-bootstrap/Table";
-import Setting from "../interfaces/setting";
+import Setting from "../../interfaces/setting";
 
 interface SettingsTableProps {
   settings: Setting[];

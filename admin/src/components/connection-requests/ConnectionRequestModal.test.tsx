@@ -2,7 +2,7 @@ import "jest-dom/extend-expect";
 import { omit } from "lodash/fp";
 import React from "react";
 import { fireEvent, render } from "react-testing-library";
-import * as factories from "../../test-support/factories";
+import * as factories from "../../../test-support/factories";
 import ConnectionRequestModal from "./ConnectionRequestModal";
 
 describe("<ConnectionRequestModal />", () => {

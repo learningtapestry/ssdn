@@ -2,9 +2,9 @@ import "jest-dom/extend-expect";
 import React from "react";
 import { fireEvent, wait } from "react-testing-library";
 import { mocked } from "ts-jest";
-import * as factories from "../../test-support/factories";
-import { renderWithRouter } from "../../test-support/test-helper";
-import AWSService from "../services/aws-service";
+import * as factories from "../../../test-support/factories";
+import { renderWithRouter } from "../../../test-support/test-helper";
+import AWSService from "../../services/aws-service";
 import Users from "./Users";
 
 /* FIXME: The nasty warning about test not wrapped in act(...) should go away when this is resolved:

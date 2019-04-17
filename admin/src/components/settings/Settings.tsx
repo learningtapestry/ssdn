@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
-import Instance from "../interfaces/instance";
-import AWSService from "../services/aws-service";
+import Instance from "../../interfaces/instance";
+import AWSService from "../../services/aws-service";
 import SettingsTable from "./SettingsTable";
 
 export default function Settings() {

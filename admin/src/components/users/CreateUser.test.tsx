@@ -2,7 +2,7 @@ import "jest-dom/extend-expect";
 import React from "react";
 import { fireEvent, render, wait, waitForElement } from "react-testing-library";
 import { mocked } from "ts-jest/utils";
-import AWSService from "../services/aws-service";
+import AWSService from "../../services/aws-service";
 import CreateUser from "./CreateUser";
 
 describe("<CreateUser/>", () => {

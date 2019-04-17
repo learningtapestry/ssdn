@@ -1,6 +1,6 @@
 import "jest-dom/extend-expect";
 import React from "react";
-import { renderWithRouter } from "../../test-support/test-helper";
+import { renderWithRouter } from "../../../test-support/test-helper";
 import Header from "./Header";
 
 describe("<Header />", () => {

@@ -2,7 +2,7 @@ import { capitalize } from "lodash/fp";
 import { ReactNode } from "react";
 import * as React from "react";
 import { Button, Col, Container, Modal, Row } from "react-bootstrap";
-import ConnectionRequest from "../interfaces/connection-request";
+import ConnectionRequest from "../../interfaces/connection-request";
 
 interface ConnectionRequestModalProps {
   connectionRequest: ConnectionRequest;

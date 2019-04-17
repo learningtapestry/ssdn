@@ -2,8 +2,8 @@ import { FormikActions, FormikProps, withFormik } from "formik";
 import React from "react";
 import { Alert, Button, Col, Form, InputGroup, Row } from "react-bootstrap";
 import { object, string } from "yup";
-import UserForm from "../interfaces/user-form";
-import AWSService from "../services/aws-service";
+import UserForm from "../../interfaces/user-form";
+import AWSService from "../../services/aws-service";
 
 const schema = object({
   email: string()

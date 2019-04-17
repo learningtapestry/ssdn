@@ -15,15 +15,15 @@ import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import { BrowserRouter as Router, Route } from "react-router-dom";
 import "./App.css";
-import Consumers from "./components/Consumers";
-import CreateConnectionRequest from "./components/CreateConnectionRequest";
-import CreateUser from "./components/CreateUser";
-import Header from "./components/Header";
-import Home from "./components/Home";
-import Logs from "./components/Logs";
-import Providers from "./components/Providers";
-import Settings from "./components/Settings";
-import Users from "./components/Users";
+import Consumers from "./components/connection-requests/Consumers";
+import CreateConnectionRequest from "./components/connection-requests/CreateConnectionRequest";
+import Providers from "./components/connection-requests/Providers";
+import Home from "./components/home/Home";
+import Logs from "./components/logs/Logs";
+import Settings from "./components/settings/Settings";
+import Header from "./components/ui/Header";
+import CreateUser from "./components/users/CreateUser";
+import Users from "./components/users/Users";
 
 class App extends Component {
   public render() {

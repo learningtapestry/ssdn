@@ -5,9 +5,9 @@ import Button from "react-bootstrap/Button";
 import ButtonToolbar from "react-bootstrap/ButtonToolbar";
 import Table from "react-bootstrap/Table";
 import { LinkContainer } from "react-router-bootstrap";
-import { nullConnectionRequest } from "../app-helper";
-import ConnectionRequest from "../interfaces/connection-request";
-import AWSService from "../services/aws-service";
+import { nullConnectionRequest } from "../../app-helper";
+import ConnectionRequest from "../../interfaces/connection-request";
+import AWSService from "../../services/aws-service";
 import ConnectionRequestModal from "./ConnectionRequestModal";
 
 interface ConnectionRequestsProps {

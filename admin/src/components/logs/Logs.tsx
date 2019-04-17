@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Dropdown, DropdownButton, Table } from "react-bootstrap";
-import LogEvent from "../interfaces/log-event";
-import AWSService from "../services/aws-service";
+import LogEvent from "../../interfaces/log-event";
+import AWSService from "../../services/aws-service";
 
 export default function Logs() {
   const [logGroups, setLogGroups] = useState<string[]>([]);

@@ -2,9 +2,9 @@ import "jest-dom/extend-expect";
 import React from "react";
 import { fireEvent, render, wait, waitForElement } from "react-testing-library";
 import { mocked } from "ts-jest/utils";
-import * as factories from "../../test-support/factories";
-import AWSService from "../services/aws-service";
-import ConsumerRequestService from "../services/consumer-request-service";
+import * as factories from "../../../test-support/factories";
+import AWSService from "../../services/aws-service";
+import ConsumerRequestService from "../../services/consumer-request-service";
 import CreateConnectionRequest from "./CreateConnectionRequest";
 
 describe("<CreateConnectionRequest/>", () => {

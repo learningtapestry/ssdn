@@ -6,10 +6,10 @@ import React, { useCallback, useState } from "react";
 import { Alert, Button, Col, Form, InputGroup, Row } from "react-bootstrap";
 import uuid from "uuid/v4";
 import { object, string } from "yup";
-import ConnectionRequest from "../interfaces/connection-request";
-import AWSService from "../services/aws-service";
-import ConsumerRequestService from "../services/consumer-request-service";
-import ConfirmationModal from "./ConfirmationModal";
+import ConnectionRequest from "../../interfaces/connection-request";
+import AWSService from "../../services/aws-service";
+import ConsumerRequestService from "../../services/consumer-request-service";
+import ConfirmationModal from "../ui/ConfirmationModal";
 
 const schema = object({
   email: string()
