@@ -3,8 +3,13 @@
  */
 
 import Amplify, { Auth } from "aws-amplify";
-import AWS, { CloudFormation, CognitoIdentityServiceProvider, DynamoDB } from "aws-sdk";
-import { filter } from "lodash/fp";
+import AWS, {
+  CloudFormation,
+  CloudWatchLogs,
+  CognitoIdentityServiceProvider,
+  DynamoDB,
+} from "aws-sdk";
+import { filter, map } from "lodash/fp";
 import awsmobile from "../aws-exports";
 import ConnectionRequest from "../interfaces/connection-request";
 import UserForm from "../interfaces/user-form";
@@ -19,6 +24,7 @@ export default class AWSService {
     });
     AWS.config.apiVersions = {
       cloudformation: "2010-05-15",
+      cloudwatchlogs: "2014-03-28",
       cognitoidentityserviceprovider: "2016-04-18",
       dynamodb: "2012-08-10",
     };
@@ -59,6 +65,32 @@ export default class AWSService {
 
       return AWSAdapter.convertStacks(filter(isNucleusStack)(stackData.Stacks));
     }
+  }
+
+  public static async retrieveLogGroups({ cloudWatchLogs = new CloudWatchLogs() } = {}) {
+    const logGroupsData = await cloudWatchLogs
+      .describeLogGroups({ logGroupNamePrefix: "/aws/lambda/Nucleus" })
+      .promise();
+
+    return map("logGroupName")(logGroupsData.logGroups);
+  }
+
+  public static async retrieveLogEvents(
+    logGroup: string,
+    { cloudWatchLogs = new CloudWatchLogs() } = {},
+  ) {
+    const streamsData = await cloudWatchLogs
+      .describeLogStreams({ logGroupName: logGroup, orderBy: "LastEventTime", descending: true })
+      .promise();
+    const eventsData = await cloudWatchLogs
+      .getLogEvents({
+        logGroupName: logGroup,
+        logStreamName: streamsData.logStreams![0].logStreamName!,
+        startFromHead: true,
+      })
+      .promise();
+
+    return eventsData.events ? AWSAdapter.convertLogEvents(eventsData.events) : [];
   }
 
   public static async retrieveUsers({

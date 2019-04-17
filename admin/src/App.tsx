@@ -20,6 +20,7 @@ import CreateConnectionRequest from "./components/CreateConnectionRequest";
 import CreateUser from "./components/CreateUser";
 import Header from "./components/Header";
 import Home from "./components/Home";
+import Logs from "./components/Logs";
 import Providers from "./components/Providers";
 import Settings from "./components/Settings";
 import Users from "./components/Users";
@@ -48,14 +49,6 @@ class App extends Component {
       </Router>
     );
   }
-}
-
-function Logs() {
-  return (
-    <p>
-      This is the <strong>Logs</strong> page.
-    </p>
-  );
 }
 
 export default withAuthenticator(App, true, [

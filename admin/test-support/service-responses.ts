@@ -195,3 +195,73 @@ export function connectionRequestItems() {
     ],
   };
 }
+
+export function logGroups() {
+  return {
+    logGroups: [
+      {
+        arn: `arn:aws:logs:us-east-1:111111111111:log-group:/aws/lambda/Nucleus-
+                AuthorizeBeaconFunction-1P2GO4YF9VZA7:*`,
+        creationTime: 1555202318486,
+        logGroupName: "/aws/lambda/Nucleus-AuthorizeBeaconFunction-1P2GO4YF9VZA7",
+        metricFilterCount: 0,
+        storedBytes: 0,
+      },
+      {
+        arn: `arn:aws:logs:us-east-1:111111111111:log-group:/aws/lambda/Nucleus-
+                ProcessXAPIStatementFunction-HCJE3P62QE5P:*`,
+        creationTime: 1553517132468,
+        logGroupName: "/aws/lambda/Nucleus-ProcessXAPIStatementFunction-HCJE3P62QE5P",
+        metricFilterCount: 0,
+        storedBytes: 0,
+      },
+    ],
+  };
+}
+
+export function logStreams() {
+  return {
+    logStreams: [
+      {
+        arn: `arn:aws:logs:us-east-1:264441468378:log-group:/aws/lambda/Nucleus-Dev-
+              AuthorizeBeaconFunction-1P2GO4YF9VZA7:log-stream:2019/04/14/[$LATEST]
+              b9dbeb8808d54f398aed8a654c9ddf5c`,
+        creationTime: 1555255087383,
+        firstEventTimestamp: 1555255315091,
+        lastEventTimestamp: 1555255316099,
+        lastIngestionTime: 1555255316129,
+        logStreamName: "2019/04/14/[$LATEST]b9dbeb8808d54f398aed8a654c9ddf5c",
+        storedBytes: 0,
+        uploadSequenceToken: "49590950333862645815504765286593577355146551043222039426",
+      },
+      {
+        arn: `arn:aws:logs:us-east-1:264441468378:log-group:/aws/lambda/Nucleus-Dev-
+              AuthorizeBeaconFunction-1P2GO4YF9VZA7:log-stream:2019/04/14/[$LATEST]
+              10b6496f1bfc4428b05f51dfca0e40d4`,
+        creationTime: 1555254475694,
+        firstEventTimestamp: 1555254475840,
+        lastEventTimestamp: 1555255015115,
+        lastIngestionTime: 1555255015130,
+        logStreamName: "2019/04/14/[$LATEST]10b6496f1bfc4428b05f51dfca0e40d4",
+        storedBytes: 0,
+        uploadSequenceToken: "49593604370324850860525249697821557314164072887760345074",
+      },
+    ],
+  };
+}
+export function logEvents() {
+  return {
+    events: [
+      {
+        ingestionTime: 1555255315279,
+        message: "START RequestId: df528d1a-6049-4430-8835-38e7ef58b800 Version: $LATEST\n",
+        timestamp: 1555255315091,
+      },
+      {
+        ingestionTime: 1555255316129,
+        message: "END RequestId: df528d1a-6049-4430-8835-38e7ef58b800\n",
+        timestamp: 1555255316099,
+      },
+    ],
+  };
+}

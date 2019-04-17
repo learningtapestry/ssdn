@@ -1,4 +1,4 @@
-import { CloudFormation, CognitoIdentityServiceProvider, DynamoDB } from "aws-sdk";
+import { CloudFormation, CloudWatchLogs, CognitoIdentityServiceProvider, DynamoDB } from "aws-sdk";
 import AWS from "aws-sdk-mock";
 import * as factories from "../../test-support/factories";
 import * as responses from "../../test-support/service-responses";
@@ -31,6 +31,32 @@ describe(AWSService, () => {
       });
 
       expect(availableStacks).toEqual(factories.instances());
+    });
+  });
+
+  describe("retrieveLogGroups", () => {
+    it("retrieves the log groups from CloudWatch", async () => {
+      AWS.mock("CloudWatchLogs", "describeLogGroups", responses.logGroups());
+
+      const logGroups = await AWSService.retrieveLogGroups({
+        cloudWatchLogs: new CloudWatchLogs(),
+      });
+
+      expect(logGroups).toEqual(factories.logGroups());
+    });
+  });
+
+  describe("retrieveLogEvents", () => {
+    it("retrieves the log events from CloudWatch", async () => {
+      AWS.mock("CloudWatchLogs", "describeLogStreams", responses.logStreams());
+      AWS.mock("CloudWatchLogs", "getLogEvents", responses.logEvents());
+
+      const logEvents = await AWSService.retrieveLogEvents(
+        "/aws/lambda/Nucleus-AuthorizeBeaconFunction-1P2GO4YF9VZA7",
+        { cloudWatchLogs: new CloudWatchLogs() },
+      );
+
+      expect(logEvents).toEqual(factories.logEvents());
     });
   });
 

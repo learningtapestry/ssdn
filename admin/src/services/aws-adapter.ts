@@ -2,9 +2,10 @@
  * aws-adapter.ts: Converts AWS types to internal ones
  */
 
-import { CloudFormation, CognitoIdentityServiceProvider } from "aws-sdk";
+import { CloudFormation, CloudWatchLogs, CognitoIdentityServiceProvider } from "aws-sdk";
 import { find } from "lodash/fp";
 import Instance from "../interfaces/instance";
+import LogEvent from "../interfaces/log-event";
 import Setting from "../interfaces/setting";
 import User from "../interfaces/user";
 
@@ -44,5 +45,12 @@ export default class AWSAdapter {
     ) as CognitoIdentityServiceProvider.AttributeType;
 
     return attribute && attribute.Value ? attribute.Value : "N/A";
+  }
+
+  public static convertLogEvents(logEvents: CloudWatchLogs.OutputLogEvent[]): LogEvent[] {
+    return logEvents.map((event) => ({
+      creationDate: new Date(event.timestamp!),
+      message: event.message!,
+    }));
   }
 }

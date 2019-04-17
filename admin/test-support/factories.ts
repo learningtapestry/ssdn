@@ -65,3 +65,23 @@ export function users() {
 export function connectionRequests() {
   return responses.connectionRequestItems().Items;
 }
+
+export function logGroups() {
+  return [
+    "/aws/lambda/Nucleus-AuthorizeBeaconFunction-1P2GO4YF9VZA7",
+    "/aws/lambda/Nucleus-ProcessXAPIStatementFunction-HCJE3P62QE5P",
+  ];
+}
+
+export function logEvents() {
+  return [
+    {
+      creationDate: new Date(1555255315091),
+      message: "START RequestId: df528d1a-6049-4430-8835-38e7ef58b800 Version: $LATEST\n",
+    },
+    {
+      creationDate: new Date(1555255316099),
+      message: "END RequestId: df528d1a-6049-4430-8835-38e7ef58b800\n",
+    },
+  ];
+}
