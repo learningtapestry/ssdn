@@ -58,8 +58,8 @@
   "event": {
     "date": "Thu, 09 Apr 2015 12:34:56 GMT",
     "format": "xAPI",
-    "operation": "PUT",
-    "origin": "1234567890.execute-api.us-east-1.amazonaws.com/prod/xAPI/statements",
+    "operation": "GET",
+    "origin": "1234567890.execute-api.us-east-1.amazonaws.com/prod/xAPI/beacon",
     "protocol": "HTTP/1.1",
     "representation": "REST",
     "request": {
@@ -86,10 +86,11 @@
         "X-Experience-API-Version": "1.0.3"
       },
       "queryStringParameters": {
-        "statementId": "c70c2b85-c294-464f-baca-cebd4fb9b348"
+        "aid": "1234567890",
+        "event": "%7B%22version%22%3A%221.0.0%22%2C%22id%22%3A%22d1eec41f-1e93-4ed6-acbf-5c4bd0c24269%22%2C%22actor%22%3A%7B%22objectType%22%3A%22Agent%22%2C%22name%22%3A%22Joe%20Schmoe%22%2C%22mbox%22%3A%22mailto%3Ajoe%40example.com%22%7D%2C%22verb%22%3A%7B%22id%22%3A%22http%3A%2F%2Fadlnet.gov%2Fexpapi%2Fverbs%2Fcompleted%22%2C%22display%22%3A%7B%22en-US%22%3A%22completed%22%7D%7D%2C%22object%22%3A%7B%22objectType%22%3A%22Activity%22%2C%22id%22%3A%22http%3A%2F%2Fwww.example.com%2Factivities%2F001%22%2C%22definition%22%3A%7B%22name%22%3A%7B%22en-US%22%3A%22Example%20Activity%22%7D%2C%22type%22%3A%22http%3A%2F%2Fadlnet.gov%2Fexpapi%2Factivities%2Fcourse%22%7D%7D%2C%22result%22%3A%7B%22completion%22%3Atrue%7D%2C%22context%22%3A%7B%22instructor%22%3A%7B%22objectType%22%3A%22Agent%22%2C%22mbox%22%3A%22mailto%3Ajoesdad%40example.com%22%7D%2C%22contextActivities%22%3A%7B%22parent%22%3A%5B%7B%22objectType%22%3A%22Activity%22%2C%22id%22%3A%22tag%3Aadlnet.gov%2C2013%3Aexpapi%3A0.9%3Aactivities%3Anon-absolute-activity-id%22%2C%22definition%22%3A%7B%22name%22%3A%7B%22en-US%22%3A%22Another%20Activity%22%7D%7D%7D%5D%7D%7D%2C%22timestamp%22%3A%222012-06-01T19%3A09%3A13.245Z%22%2C%22stored%22%3A%222012-06-29T15%3A41%3A39.165Z%22%2C%22authority%22%3A%7B%22objectType%22%3A%22Agent%22%2C%22account%22%3A%7B%22homePage%22%3A%22http%3A%2F%2Fwww.example.com%22%2C%22name%22%3A%22unknown%22%7D%7D%7D"
       }
     },
     "resource": "statements",
-    "resourceId": "c70c2b85-c294-464f-baca-cebd4fb9b348"
+    "resourceId": "d1eec41f-1e93-4ed6-acbf-5c4bd0c24269"
   }
 }

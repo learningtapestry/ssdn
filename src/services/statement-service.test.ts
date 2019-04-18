@@ -1,4 +1,4 @@
-import nucleusEvent from "../../../test-support/data-samples/nucleus-event.json";
+import nucleusEvent from "../../test-support/data-samples/nucleus-event.json";
 import StatementService from "./statement-service";
 
 describe("StatementService", () => {

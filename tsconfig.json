@@ -9,17 +9,8 @@
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "resolveJsonModule": true,
-    "types": [
-      "jest",
-      "node"
-    ]
+    "types": ["jest", "node"]
   },
-  "include": [
-    "src/**/*",
-    "integration-test"
-  ],
-  "exclude": [
-    ".git",
-    "node_modules"
-  ]
+  "include": ["src/**/*", "integration-test"],
+  "exclude": [".git", "node_modules"]
 }

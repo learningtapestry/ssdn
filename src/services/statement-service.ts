@@ -5,8 +5,8 @@
 
 import get from "lodash/fp/get";
 import map from "lodash/fp/map";
-import { toArray } from "../../app-helper";
-import logger from "../../logger";
+import { toArray } from "../app-helper";
+import logger from "../logger";
 
 export default class StatementService {
   public static async process(event: object, validator: Validator, repository: Repository) {

@@ -151,6 +151,53 @@ Resources:
               type: apiKey
               name: x-api-key
               in: header
+  ProcessXAPIBeaconApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: !Ref Environment
+      # The next section is needed because SAM does not implement API Usage Plans yet.
+      # See https://github.com/awslabs/serverless-application-model/issues/248
+      DefinitionBody:
+        openapi: 3.0.1
+        info:
+          title: !Sub ${AWS::StackName}-Beacon
+          version: 1.0
+        x-amazon-apigateway-request-validators:
+          parameters-only:
+            validateRequestParameters: true
+            validateRequestBody: false
+        x-amazon-apigateway-request-validator: parameters-only
+        x-amazon-apigateway-api-key-source: AUTHORIZER
+        paths:
+          /xAPI/beacon:
+            parameters:
+              - in: query
+                name: event
+                description: The event payload for this request
+                required: true
+                schema:
+                  type: string
+            get:
+              x-amazon-apigateway-integration:
+                uri: !Sub arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ProcessXAPIBeaconFunction.Arn}/invocations
+                passthroughBehavior: when_no_match
+                httpMethod: POST
+                type: aws_proxy
+              security:
+                - beacon_authorizer: []
+        components:
+          securitySchemes:
+            beacon_authorizer:
+              type: apiKey
+              name: aid
+              in: query
+              x-amazon-apigateway-authtype: custom
+              x-amazon-apigateway-authorizer:
+                type: request
+                authorizerUri: !Sub arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${AuthorizeBeaconFunction.Arn}/invocations
+                authorizerCredentials: !GetAtt AuthorizeBeaconFunctionAssumeRole.Arn
+                authorizerResultTtlInSeconds: 60
+                identitySource: method.request.querystring.aid
   CollectionApiKey:
     Type: AWS::ApiGateway::ApiKey
     Properties:
@@ -161,9 +208,12 @@ Resources:
     Type: AWS::ApiGateway::UsagePlan
     DependsOn:
       - ProcessXAPIStatementApiStage
+      - ProcessXAPIBeaconApiStage
     Properties:
       ApiStages:
         - ApiId: !Ref ProcessXAPIStatementApi
+          Stage: !Ref Environment
+        - ApiId: !Ref ProcessXAPIBeaconApi
           Stage: !Ref Environment
       UsagePlanName: !Sub Nucleus-${Environment}-UsagePlan
   ApiUsagePlanKey:
@@ -186,6 +236,61 @@ Resources:
           Properties:
             Path: /hello
             Method: get
+  AuthorizeBeaconFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./dist/authorize-beacon
+      Policies:
+        - Version: 2012-10-17
+          Statement:
+            - Effect: Allow
+              Action:
+                - apigateway:GET
+              Resource: !Sub arn:aws:apigateway:${AWS::Region}::/*
+  AuthorizeBeaconFunctionAssumeRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              Service:
+                - "apigateway.amazonaws.com"
+            Action:
+              - sts:AssumeRole
+      Policies:
+        - PolicyName: "InvokeAuthorizerFunction"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: "Allow"
+                Action:
+                  - lambda:InvokeAsync
+                  - lambda:InvokeFunction
+                Resource: !GetAtt AuthorizeBeaconFunction.Arn
+  ProcessXAPIBeaconFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./dist/process-xapi-beacon
+      Events:
+        ProcessXAPIBeacon:
+          Type: Api
+          Properties:
+            Path: /xAPI/beacon
+            Method: get
+            RestApiId: !Ref ProcessXAPIBeaconApi
+      Policies:
+        - Version: 2012-10-17
+          Statement:
+            - Effect: Allow
+              Action:
+                - kinesis:PutRecord
+                - kinesis:PutRecords
+              Resource: !GetAtt EventProcessorStream.Arn
+      DeadLetterQueue:
+        Type: SNS
+        TargetArn: !Ref LambdaDeadLetterQueueTopic
   ProcessXAPIStatementFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -271,6 +376,9 @@ Outputs:
   CollectionApiKeyId:
     Description: Generated identifier for the default collection endpoint API Key
     Value: !Ref CollectionApiKey
+  BeaconApi:
+    Description: API Gateway endpoint URL for collecting xAPI statements via a beacon
+    Value: !Sub https://${ProcessXAPIBeaconApi}.execute-api.${AWS::Region}.amazonaws.com/${Environment}/xAPI/beacon
   StatementsApi:
     Description: API Gateway endpoint URL for collecting xAPI statements
     Value: !Sub https://${ProcessXAPIStatementApi}.execute-api.${AWS::Region}.amazonaws.com/${Environment}/xAPI/statements
@@ -280,6 +388,18 @@ Outputs:
   ProcessXAPIStatementFunctionIamRole:
     Description: Implicit IAM Role created for Process xAPI Statement function
     Value: !GetAtt ProcessXAPIStatementFunctionRole.Arn
+  AuthorizeBeaconFunction:
+    Description: Authorize Beacon Lambda function ARN
+    Value: !GetAtt AuthorizeBeaconFunction.Arn
+  AuthorizeBeaconFunctionIamRole:
+    Description: Implicit IAM Role created for Authorize Beacon function
+    Value: !GetAtt AuthorizeBeaconFunctionRole.Arn
+  ProcessXAPIBeaconFunction:
+    Description: Process xAPI Beacon Lambda function ARN
+    Value: !GetAtt ProcessXAPIBeaconFunction.Arn
+  ProcessXAPIBeaconFunctionIamRole:
+    Description: Implicit IAM Role created for Process xAPI Beacon function
+    Value: !GetAtt ProcessXAPIBeaconFunctionRole.Arn
   HelloNucleusApi:
     Description: API Gateway endpoint URL for Prod stage for Hello Nucleus function
     Value: !Sub https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/
