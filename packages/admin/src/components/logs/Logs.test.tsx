@@ -1,7 +1,6 @@
 import "jest-dom/extend-expect";
 import React from "react";
 import { fireEvent, render, wait } from "react-testing-library";
-import { mocked } from "ts-jest";
 import * as factories from "../../../test-support/factories";
 import AWSService from "../../services/aws-service";
 import Logs from "./Logs";
@@ -43,6 +42,6 @@ describe("<Logs/>", () => {
       fireEvent.click(getByText("/aws/lambda/Nucleus-ProcessXAPIStatementFunction-HCJE3P62QE5P"));
     });
 
-    expect(mocked(AWSService.retrieveLogEvents).mock.calls.length).toEqual(4);
+    expect(AWSService.retrieveLogEvents).toHaveBeenCalled();
   });
 });

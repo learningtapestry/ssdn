@@ -1,7 +1,6 @@
 import "jest-dom/extend-expect";
 import React from "react";
 import { fireEvent, render, wait, waitForElement } from "react-testing-library";
-import { mocked } from "ts-jest/utils";
 import AWSService from "../../services/aws-service";
 import CreateUser from "./CreateUser";
 
@@ -45,6 +44,6 @@ describe("<CreateUser/>", () => {
     fireEvent.click(getByText("Create"));
 
     await waitForElement(() => getByText("User created successfully!"));
-    expect(mocked(AWSService.createUser).mock.calls.length).toEqual(1);
+    expect(AWSService.createUser).toHaveBeenCalled();
   });
 });

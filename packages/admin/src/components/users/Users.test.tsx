@@ -1,7 +1,6 @@
 import "jest-dom/extend-expect";
 import React from "react";
 import { fireEvent, wait } from "react-testing-library";
-import { mocked } from "ts-jest";
 import * as factories from "../../../test-support/factories";
 import { renderWithRouter } from "../../../test-support/test-helper";
 import AWSService from "../../services/aws-service";
@@ -44,7 +43,7 @@ describe("<Users/>", () => {
       getByText("Are you sure you want to delete user 'test-user-1'?");
     });
     fireEvent.click(getByText("Confirm"));
-    expect(mocked(AWSService.deleteUser).mock.calls.length).toEqual(1);
+    expect(AWSService.deleteUser).toHaveBeenCalled();
   });
 
   it("renders button to create user", async () => {

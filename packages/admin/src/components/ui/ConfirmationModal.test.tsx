@@ -31,7 +31,7 @@ describe("<ConfirmationModal />", () => {
     fireEvent.click(getByText("Close"));
     fireEvent.click(getByText("Confirm"));
 
-    expect(props.onClose.mock.calls.length).toEqual(1);
-    expect(props.onConfirm.mock.calls.length).toEqual(1);
+    expect(props.onClose).toHaveBeenCalled();
+    expect(props.onConfirm).toHaveBeenCalled();
   });
 });

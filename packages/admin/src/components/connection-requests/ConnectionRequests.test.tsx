@@ -1,7 +1,6 @@
 import "jest-dom/extend-expect";
 import React from "react";
 import { fireEvent, render, wait } from "react-testing-library";
-import { mocked } from "ts-jest";
 import * as factories from "../../../test-support/factories";
 import { renderWithRouter } from "../../../test-support/test-helper";
 import AWSService from "../../services/aws-service";
@@ -80,6 +79,6 @@ describe("<ConnectionRequests />", () => {
       fireEvent.click(getByText("Reject"));
     });
 
-    expect(mocked(AWSService.saveConnectionRequest).mock.calls.length).toEqual(2);
+    expect(AWSService.saveConnectionRequest).toHaveBeenCalledTimes(2);
   });
 });

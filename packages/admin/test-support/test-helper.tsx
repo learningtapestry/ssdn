@@ -16,3 +16,9 @@ export function renderWithRouter(
     history,
   };
 }
+
+export function mockWithPromise(returnValue: any) {
+  return jest.fn().mockImplementation(() => {
+    return { promise: () => returnValue };
+  });
+}

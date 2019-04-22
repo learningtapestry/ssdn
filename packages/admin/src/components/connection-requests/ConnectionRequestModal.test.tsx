@@ -52,6 +52,6 @@ describe("<ConnectionRequestModal />", () => {
 
     fireEvent.click(getByText("Close"));
 
-    expect(props.onClose.mock.calls.length).toEqual(1);
+    expect(props.onClose).toHaveBeenCalled();
   });
 });

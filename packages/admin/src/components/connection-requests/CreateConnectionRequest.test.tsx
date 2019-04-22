@@ -1,7 +1,6 @@
 import "jest-dom/extend-expect";
 import React from "react";
 import { fireEvent, render, wait, waitForElement } from "react-testing-library";
-import { mocked } from "ts-jest/utils";
 import * as factories from "../../../test-support/factories";
 import AWSService from "../../services/aws-service";
 import ConsumerRequestService from "../../services/consumer-request-service";
@@ -57,7 +56,7 @@ describe("<CreateConnectionRequest/>", () => {
     fireEvent.click(getByText("Send"));
 
     await waitForElement(() => getByRole("dialog"));
-    expect(mocked(ConsumerRequestService.register).mock.calls.length).toEqual(1);
-    expect(mocked(AWSService.saveConnectionRequest).mock.calls.length).toEqual(1);
+    expect(ConsumerRequestService.register).toHaveBeenCalled();
+    expect(AWSService.saveConnectionRequest).toHaveBeenCalled();
   });
 });
