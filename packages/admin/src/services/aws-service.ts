@@ -136,21 +136,27 @@ export default class AWSService {
   }
 
   public static async deleteUser(username: string) {
-    const cognitoIdentityServiceProvider = new CognitoIdentityServiceProvider();
-    return await cognitoIdentityServiceProvider
-      .adminDeleteUser({
-        UserPoolId: awsmobile.aws_user_pools_id,
-        Username: username,
-      })
-      .promise();
+    return AWSService.withCredentials(async () => {
+      const cognitoIdentityServiceProvider = new CognitoIdentityServiceProvider();
+      return await cognitoIdentityServiceProvider
+        .adminDeleteUser({
+          UserPoolId: awsmobile.aws_user_pools_id,
+          Username: username,
+        })
+        .promise();
+    });
   }
 
   private static async withCredentials(request: () => Promise<any>) {
     try {
       return await request();
     } catch (error) {
-      await AWSService.updateCredentials();
-      return await request();
+      if (error.code === "CredentialsError") {
+        await AWSService.updateCredentials();
+        return await request();
+      } else {
+        throw new Error(error);
+      }
     }
   }
 }
