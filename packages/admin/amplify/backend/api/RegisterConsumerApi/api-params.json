@@ -18,8 +18,8 @@
     "privacy": {
         "auth": 0,
         "unauth": 0,
-        "authRoleName": "admin-20190402144715-authRole",
-        "unAuthRoleName": "admin-20190402144715-unauthRole"
+        "authRoleName": "nucleus-admin-20190402144715-authRole",
+        "unAuthRoleName": "nucleus-admin-20190402144715-unauthRole"
     },
     "dependsOn": [
         {
