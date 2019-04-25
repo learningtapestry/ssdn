@@ -9,11 +9,12 @@ import {
   VerifyContact,
   withAuthenticator,
 } from "aws-amplify-react";
+import { createBrowserHistory } from "history";
 import React, { Component } from "react";
 import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
-import { BrowserRouter as Router, Route } from "react-router-dom";
+import { Route, Router } from "react-router-dom";
 import "./App.css";
 import Consumers from "./components/connection-requests/Consumers";
 import CreateConnectionRequest from "./components/connection-requests/CreateConnectionRequest";
@@ -25,10 +26,15 @@ import Header from "./components/ui/Header";
 import CreateUser from "./components/users/CreateUser";
 import Users from "./components/users/Users";
 
+const sharedHistory = createBrowserHistory();
+if ((window as any).Cypress) {
+  (window as any).sharedHistory = sharedHistory;
+}
+
 class App extends Component {
   public render() {
     return (
-      <Router>
+      <Router history={sharedHistory}>
         <div className="App">
           <Header />
           <Container fluid={true} className="mt-3">
