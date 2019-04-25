@@ -42,3 +42,77 @@ You don’t have to ever use `eject`. The curated feature set is suitable for sm
 You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
 To learn React, check out the [React documentation](https://reactjs.org/).
+
+## End-to-end tests
+
+We use [Cypress](https://www.cypress.io/) to execute the tests that check the behaviour of the
+admin panel from the point of view of an external user. In order to run them properly, we make some
+assumptions that require following these configuration steps:
+
+- First of all, the actual resources must be deployed to AWS. Any environment will do, but we
+  recommend creating a new fresh environment in Amplify that is specific to testing:
+
+```bash
+amplify env add     # Use 'test', 'cypress' or 'e2e' as the environment name when it asks
+amplify serve       # Provisions the resources in the cloud and starts the application locally
+```
+
+- The actual IAM role that Amplify creates by default only has a limited set of permissions, so
+  we'll need to add additional ones to make sure that all the resources needed by the admin panel
+  are accessible. You can perform this step by taking a look at the default policy inside
+  `docs/admin-user-policy.json` and adding it from the AWS console, or executing these CLI commands
+  (remember to use your own AWS account identifier):
+
+```bash
+aws iam create-policy \
+    --policy-name NucleusAdminPanel \
+    --policy-document file://docs/admin-user-policy.json \
+    --description "Minimum set of permissions required to run the sections in the administration panel"
+```
+
+```bash
+aws iam attach-role-policy \
+    --policy-arn arn:aws:iam::264441468378:policy/NucleusAdminPanel \
+    --role-name nucleus-admin-20190425145802-authRole
+```
+
+- Now, you'll need to create a default administrator user that will be used to sign in. Again, you can
+  either go to the Cognito section in the AWS Console and create the user there, or run the
+  following command:
+
+```bash
+aws cognito-idp admin-create-user \
+    --user-pool-id us-east-1_jV9AzgY8g \
+    --username test-user \
+    --temporary-password @Mb94TQT5nqE \
+    --user-attributes Name=email,Value=test-user@example.org \
+                      Name=email_verified,Value=true \
+                      Name=name,Value="Test User" \
+                      Name=phone_number,Value=+1555555555 \
+                      Name=phone_number_verified,Value=true
+```
+
+- Next step is passing Cypress some configuration values that are needed for the actual tests. We
+  use environment variables for that. Please check the
+  [official documentation](https://docs.cypress.io/guides/guides/environment-variables.html#Setting)
+  on the various ways to set environment variables in Cypress. You can choose whatever works best
+  for you, but in this example we'll just export them to the system:
+
+```bash
+export CYPRESS_DEFAULT_USERNAME=test-user
+export CYPRESS_DEFAULT_PASSWORD = @Mb94TQT5nqE
+export CYPRESS_REGISTER_ENDPOINT=https://z0krjz1z0l.execute-api.us-east-1.amazonaws.com/test/register
+```
+
+As you can see, all variables must start with `CYPRESS_` in order to be properly recognized.
+Besides that, we're declaring the username and password we defined in the previous step, as well as
+the register endpoint for consumer requests. If you don't know where this value comes from, you can
+use your instance's own endpoint. Check API Gateway, or the CloudFormation stack, in your AWS
+account to get the endpoint's URL.
+
+- Lastly, you can launch the end-to-end tests with these two commands:
+
+```bash
+yarn cypress:open       # Opens up an interactive GUI and runs in a graphical browser
+yarn cypress:run        # Runs in a headless browser (Electron) without user intervention
+```
