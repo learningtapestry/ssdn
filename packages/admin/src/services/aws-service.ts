@@ -65,14 +65,14 @@ export default class AWSService {
     });
   }
 
-  public static async availableStacks() {
+  public static async retrieveStacks() {
     return AWSService.withCredentials(async () => {
       const cloudFormation = new CloudFormation();
       const stackData = await cloudFormation.describeStacks().promise();
 
       if (stackData.Stacks) {
         const isNucleusStack = (stack: CloudFormation.Stack) =>
-          stack.StackName.toLowerCase().startsWith("nucleus");
+          stack.StackName.startsWith("Nucleus");
 
         return AWSAdapter.convertStacks(filter(isNucleusStack)(stackData.Stacks));
       }

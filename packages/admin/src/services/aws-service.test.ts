@@ -21,7 +21,7 @@ describe(AWSService, () => {
     it("retrieves the available stacks and return instances", async () => {
       CloudFormation.prototype.describeStacks = mockWithPromise(responses.cloudFormationStacks());
 
-      const availableStacks = await AWSService.availableStacks();
+      const availableStacks = await AWSService.retrieveStacks();
 
       expect(availableStacks).toEqual(factories.instances());
     });

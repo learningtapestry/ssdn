@@ -10,7 +10,7 @@ import Settings from "./Settings";
  */
 describe("<Settings/>", () => {
   beforeEach(() => {
-    AWSService.availableStacks = jest.fn().mockReturnValue(factories.instances());
+    AWSService.retrieveStacks = jest.fn().mockReturnValue(factories.instances());
   });
 
   it("renders the title and instance tabs", async () => {

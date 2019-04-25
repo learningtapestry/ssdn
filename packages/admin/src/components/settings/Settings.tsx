@@ -10,7 +10,7 @@ export default function Settings() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const receivedStacks = await AWSService.availableStacks();
+      const receivedStacks = await AWSService.retrieveStacks();
       if (receivedStacks) {
         setInstances(receivedStacks);
       }
