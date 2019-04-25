@@ -2,6 +2,7 @@
  * factories.ts: Utility functions that create domain objects, useful for testing.
  */
 
+import UserForm from "../src/interfaces/user-form";
 import * as responses from "./service-responses";
 
 export function instances() {
@@ -60,6 +61,17 @@ export function users() {
       username: "test-user-2",
     },
   ];
+}
+
+export function userForm(userParams: UserForm) {
+  return {
+    email: "cypress-user@example.org",
+    name: "Cypress User",
+    password: "@Mb94TQT5nqE",
+    phoneNumber: "+1555555555",
+    username: "cypress-user",
+    ...userParams,
+  };
 }
 
 export function connectionRequests() {

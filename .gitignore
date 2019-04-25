@@ -37,3 +37,7 @@ yarn-error.log*
 /**/amplify/backend/awscloudformation
 aws-exports.js
 awsconfiguration.json
+
+# Cypress
+/**/cypress/videos
+/**/cypress/screenshots
