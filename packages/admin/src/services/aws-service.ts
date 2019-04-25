@@ -3,12 +3,8 @@
  */
 
 import Amplify, { Auth } from "aws-amplify";
-import AWS, {
-  CloudFormation,
-  CloudWatchLogs,
-  CognitoIdentityServiceProvider,
-  DynamoDB,
-} from "aws-sdk";
+import * as AWS from "aws-sdk";
+import { CloudFormation, CloudWatchLogs, CognitoIdentityServiceProvider, DynamoDB } from "aws-sdk";
 import { filter, map } from "lodash/fp";
 import awsmobile from "../aws-exports";
 import ConnectionRequest from "../interfaces/connection-request";
@@ -57,6 +53,15 @@ export default class AWSService {
         TableName: awsmobile.aws_dynamodb_table_schemas[0].tableName,
       };
       return await documentClient.put(params).promise();
+    });
+  }
+
+  public static async deleteConnectionRequest(id: string) {
+    return AWSService.withCredentials(async () => {
+      const documentClient = new DynamoDB.DocumentClient();
+      const params = { Key: { id }, TableName: awsmobile.aws_dynamodb_table_schemas[0].tableName };
+
+      return await documentClient.delete(params).promise();
     });
   }
 

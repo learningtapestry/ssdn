@@ -184,7 +184,7 @@ export function connectionRequestItems() {
         endpoint: "https://www.example.org/organization-2/register",
         firstName: "Mickey",
         id: "32b42b0e-80f7-4551-a0ea-b7e629b885f1",
-        lastName: " Smith",
+        lastName: "Smith",
         organization: "Heaney, Hackett and Jacobson",
         phoneNumber: "+1666666666",
         status: "rejected",
