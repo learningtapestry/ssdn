@@ -1,0 +1,57 @@
+{
+  "name": "nucleus-core",
+  "version": "1.0.0",
+  "description": "Amazon Nucleus",
+  "main": "core/src/index.js",
+  "author": {
+    "name": "Learning Tapestry",
+    "email": "social@learningtapestry.com",
+    "url": "http://learningtapestry.com/"
+  },
+  "homepage": "https://github.com/learningtapestry/nucleus/core",
+  "contributors": [
+    "Steve Midgley <steve@learningtapestry.com>",
+    "Abraham Sánchez <abraham@learningtapestry.com>",
+    "Rômulo Saksida <rm@learningtapestry.com>"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/learningtapestry/nucleus"
+  },
+  "license": "Apache-2.0",
+  "private": true,
+  "engines": {
+    "node": ">= 8.10.0",
+    "npm": ">= 6.0.0"
+  },
+  "dependencies": {
+    "ajv": "^6.10.0",
+    "aws-lambda": "^0.1.2",
+    "axios": "^0.18.0",
+    "pino": "^5.11.3"
+  },
+  "scripts": {
+    "start": "parcel watch ./src/**/index.ts --target node --bundle-node-modules",
+    "build": "yarn lint && yarn check-types && parcel build ./src/**/index.ts --target node --bundle-node-modules",
+    "check-types": "tsc",
+    "lint": "tslint -p tsconfig.json -c ../../tslint.json",
+    "test": "jest --testPathIgnorePatterns integration-test --verbose",
+    "test:watch": "jest --testPathIgnorePatterns integration-test --watch",
+    "test:integration": "jest integration.test.ts --runInBand"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.4.0",
+    "@babel/plugin-proposal-class-properties": "^7.4.0",
+    "@babel/plugin-proposal-object-rest-spread": "^7.4.0",
+    "@babel/preset-env": "^7.4.2",
+    "@babel/preset-typescript": "^7.3.3",
+    "@types/aws-lambda": "^8.10.23",
+    "@types/pino": "^5.8.6",
+    "babel-core": "^7.0.0-bridge.0",
+    "babel-jest": "^24.7.1",
+    "jest": "^24.7.1",
+    "parcel-bundler": "^1.12.3",
+    "pino-pretty": "^2.6.1",
+    "ts-jest": "^24.0.2"
+  }
+}

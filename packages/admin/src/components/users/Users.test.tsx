@@ -1,0 +1,54 @@
+import "jest-dom/extend-expect";
+import React from "react";
+import { fireEvent, wait } from "react-testing-library";
+import * as factories from "../../../test-support/factories";
+import { renderWithRouter } from "../../../test-support/test-helper";
+import AWSService from "../../services/aws-service";
+import Users from "./Users";
+
+/* FIXME: The nasty warning about test not wrapped in act(...) should go away when this is resolved:
+ *        https://github.com/facebook/react/issues/14769
+ */
+describe("<Users/>", () => {
+  beforeAll(() => {
+    AWSService.retrieveUsers = jest.fn().mockReturnValue(factories.users());
+    AWSService.deleteUser = jest.fn();
+  });
+
+  it("renders title and users in the list", async () => {
+    const { getByText } = renderWithRouter(<Users />, { route: "/users" });
+
+    getByText("Users");
+    await wait(() => {
+      getByText("test-user-1");
+      getByText("4/5/2019");
+      getByText("test-user-1@example.org");
+      getByText("Test User 1");
+      getByText("+1555555555");
+      getByText("CONFIRMED");
+      getByText("test-user-2");
+      getByText("4/8/2019");
+      getByText("test-user-2@example.org");
+      getByText("Test User 2");
+      getByText("+1666666666");
+      getByText("FORCE_CHANGE_PASSWORD");
+    });
+  });
+
+  it("handles the delete modal dialog", async () => {
+    const { getByText } = renderWithRouter(<Users />, { route: "/users" });
+
+    await wait(() => {
+      fireEvent.click(getByText("Delete"));
+      getByText("Are you sure you want to delete user 'test-user-1'?");
+    });
+    fireEvent.click(getByText("Confirm"));
+    expect(AWSService.deleteUser).toHaveBeenCalled();
+  });
+
+  it("renders button to create user", async () => {
+    const { getByText } = renderWithRouter(<Users />, { route: "/users" });
+
+    expect(getByText("Create New User")).toBeInTheDocument();
+  });
+});

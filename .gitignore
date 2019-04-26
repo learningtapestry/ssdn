@@ -1,14 +1,16 @@
 # See https://help.github.com/ignore-files/ for more about ignoring files.
 
 # dependencies
-/node_modules
+/**/node_modules
+/**/.pnp
+.pnp.js
 
 # testing
-/coverage
+/**/coverage
 
 # production
-/dist
-/build
+/**/dist
+/**/build
 
 # caches
 .cache
@@ -19,6 +21,7 @@
 .env.development.local
 .env.test.local
 .env.production.local
+.tool-versions
 
 npm-debug.log*
 yarn-debug.log*
@@ -26,3 +29,15 @@ yarn-error.log*
 
 # IDEs
 .idea
+
+# Amplify
+/**/amplify/\#current-cloud-backend
+/**/amplify/.config/local-*
+/**/amplify/backend/amplify-meta.json
+/**/amplify/backend/awscloudformation
+aws-exports.js
+awsconfiguration.json
+
+# Cypress
+/**/cypress/videos
+/**/cypress/screenshots

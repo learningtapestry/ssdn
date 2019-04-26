@@ -1,0 +1,9 @@
+{
+  "extends": ["../../tslint.json", "tslint-react"],
+  "rules": {
+    "variable-name": [true, "ban-keywords", "check-format", "allow-pascal-case"]
+  },
+  "linterOptions": {
+    "exclude": ["src/aws-exports.js"]
+  }
+}
