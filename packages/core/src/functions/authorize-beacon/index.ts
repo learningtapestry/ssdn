@@ -1,6 +1,6 @@
 import { CustomAuthorizerHandler } from "aws-lambda";
 
-import { getApiKey } from "../../aws-helper";
+import { getApiKey } from "../../helpers/aws-helper";
 
 export const handler: CustomAuthorizerHandler = async (event, _context, _callback) => {
   const aid = event.queryStringParameters!.aid;

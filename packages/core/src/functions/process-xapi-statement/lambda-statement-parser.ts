@@ -4,7 +4,7 @@
  */
 
 import get from "lodash/fp/get";
-import { calculateIdentifier, decode64, isBlank, toArray, utcDate } from "../../app-helper";
+import { calculateIdentifier, decode64, isBlank, toArray, utcDate } from "../../helpers/app-helper";
 import logger from "../../logger";
 
 export default class LambdaStatementParser {

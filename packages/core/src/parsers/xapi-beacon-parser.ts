@@ -1,6 +1,6 @@
 import { APIGatewayProxyEvent } from "aws-lambda";
 
-import { calculateIdentifier } from "../app-helper";
+import { calculateIdentifier } from "../helpers/app-helper";
 import LambdaEventParser from "./lambda-event-parser";
 
 export default class XAPIBeaconParser extends LambdaEventParser {

@@ -8,7 +8,7 @@ import Kinesis from "aws-sdk/clients/kinesis";
 import Lambda from "aws-sdk/clients/lambda";
 import find from "lodash/fp/find";
 import get from "lodash/fp/get";
-import { readEnv } from "../src/app-helper";
+import { readEnv } from "../src/helpers/app-helper";
 
 export function currentStack(): string {
   return readEnv("NUCLEUS_TESTING_STACK_NAME", "Nucleus-Test");

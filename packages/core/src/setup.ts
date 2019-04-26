@@ -9,7 +9,7 @@ import Kinesis from "aws-sdk/clients/kinesis";
 import S3 from "aws-sdk/clients/s3";
 import { config as dotenvConfig } from "dotenv";
 
-import { readEnv } from "./app-helper";
+import { readEnv } from "./helpers/app-helper";
 
 // If invoked as a script, immediately run setup().
 if (require.main === module) {

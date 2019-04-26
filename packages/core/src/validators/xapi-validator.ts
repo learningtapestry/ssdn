@@ -6,7 +6,7 @@ import Ajv from "ajv";
 import concat from "lodash/fp/concat";
 import isEmpty from "lodash/fp/isEmpty";
 import map from "lodash/fp/map";
-import { toArray, wrap } from "../app-helper";
+import { toArray, wrap } from "../helpers/app-helper";
 import logger from "../logger";
 import xAPIFormats from "../schemas/xapi-formats.json";
 import xAPISchema from "../schemas/xapi-schema.json";

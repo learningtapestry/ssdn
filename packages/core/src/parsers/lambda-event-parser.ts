@@ -5,7 +5,7 @@
 import { APIGatewayProxyEvent } from "aws-lambda";
 import get from "lodash/fp/get";
 
-import { utcDate } from "../app-helper";
+import { utcDate } from "../helpers/app-helper";
 import logger from "../logger";
 
 export default abstract class LambdaEventParser {

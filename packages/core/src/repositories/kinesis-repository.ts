@@ -5,7 +5,7 @@
 import Kinesis, { PutRecordsInput, PutRecordsResultEntry } from "aws-sdk/clients/kinesis";
 import chunk from "lodash/fp/chunk";
 import omitBy from "lodash/fp/omitBy";
-import { isBlank, readEnv } from "../app-helper";
+import { isBlank, readEnv } from "../helpers/app-helper";
 import logger from "../logger";
 
 export default class KinesisRepository implements Repository {

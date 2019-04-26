@@ -1,4 +1,4 @@
-import { createApiKey } from "../test-support/aws";
+import { createApiKey } from "../../test-support/aws";
 import { getApiKey } from "./aws-helper";
 
 describe("AwsHelper", () => {

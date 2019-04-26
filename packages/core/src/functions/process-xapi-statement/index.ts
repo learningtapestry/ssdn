@@ -4,7 +4,7 @@ import has from "lodash/fp/has";
 import isEmpty from "lodash/fp/isEmpty";
 import trim from "lodash/fp/trim";
 
-import { readEnv } from "../../app-helper";
+import { readEnv } from "../../helpers/app-helper";
 import XAPIStatementParser from "../../parsers/xapi-statement-parser";
 import KinesisRepository from "../../repositories/kinesis-repository";
 import StatementService from "../../services/statement-service";

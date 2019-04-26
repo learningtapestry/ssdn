@@ -5,7 +5,7 @@
 
 import get from "lodash/fp/get";
 import map from "lodash/fp/map";
-import { toArray } from "../../app-helper";
+import { toArray } from "../../helpers/app-helper";
 import logger from "../../logger";
 
 export default class StatementService {

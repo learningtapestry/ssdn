@@ -1,6 +1,6 @@
 import { KinesisStreamHandler } from "aws-lambda";
 
-import { readEnv } from "../../app-helper";
+import { readEnv } from "../../helpers/app-helper";
 import KinesisRepository from "../../repositories/kinesis-repository";
 
 import logger from "../../logger";

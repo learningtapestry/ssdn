@@ -1,5 +1,5 @@
 import get from "lodash/fp/get";
-import { calculateIdentifier, decode64, isBlank, toArray } from "../app-helper";
+import { calculateIdentifier, decode64, isBlank, toArray } from "../helpers/app-helper";
 import LambdaEventParser from "./lambda-event-parser";
 
 export default class XAPIStatementParser extends LambdaEventParser {

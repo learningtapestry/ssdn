@@ -1,5 +1,5 @@
 import xAPIJson from "../../test-support/data-samples/xapi.json";
-import { readEnv } from "../app-helper";
+import { readEnv } from "../helpers/app-helper";
 import KinesisRepository from "./kinesis-repository";
 
 const streamName = readEnv("NUCLEUS_EVENT_PROCESSOR_STREAM_NAME");

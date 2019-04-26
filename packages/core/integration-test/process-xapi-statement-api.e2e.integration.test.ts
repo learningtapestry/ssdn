@@ -1,6 +1,6 @@
 import axios from "axios";
 
-import { getApiKey } from "../src/aws-helper";
+import { getApiKey } from "../src/helpers/aws-helper";
 import { currentStack, getOutputValue } from "../test-support/aws";
 import xAPIStatement from "../test-support/data-samples/xapi-statement.json";
 
