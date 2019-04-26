@@ -32,7 +32,7 @@ export default class LambdaStatementParser {
         origin: `${get("Host")(this.headers)}${get("path")(this.request)}`,
         protocol: get("protocol")(this.request),
         representation: "REST",
-        request: { headers: this.headers },
+        request: { headers: this.headers, queryStringParameters: this.queryParams },
         resource: "statements",
         resourceId: get("statementId")(this.queryParams),
       },
