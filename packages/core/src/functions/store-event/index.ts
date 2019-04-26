@@ -14,5 +14,7 @@ export const handler: KinesisStreamHandler = async (event, _context, callback) =
       "Some events could not be fanned out.",
     );
     callback(new Error("Some events could not be fanned out to the delivery stream."));
+    return;
   }
+  callback(null);
 };

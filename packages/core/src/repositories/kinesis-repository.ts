@@ -2,11 +2,7 @@
  * kinesis-repository.ts: Repository class to manage Kinesis Data Streams access
  */
 
-import Kinesis, {
-  PutRecordsInput,
-  PutRecordsOutput,
-  PutRecordsResultEntry,
-} from "aws-sdk/clients/kinesis";
+import Kinesis, { PutRecordsInput, PutRecordsResultEntry } from "aws-sdk/clients/kinesis";
 import chunk from "lodash/fp/chunk";
 import omitBy from "lodash/fp/omitBy";
 import { isBlank, readEnv } from "../app-helper";

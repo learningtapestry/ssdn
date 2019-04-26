@@ -1,5 +1,7 @@
 import axios from "axios";
-import { currentStack, getApiKey, getOutputValue } from "../test-support/aws";
+
+import { getApiKey } from "../src/aws-helper";
+import { currentStack, getOutputValue } from "../test-support/aws";
 import xAPIStatement from "../test-support/data-samples/xapi-statement.json";
 
 describe("Process xAPI Statement API", () => {
@@ -10,7 +12,8 @@ describe("Process xAPI Statement API", () => {
     jest.setTimeout(15000);
     const apiKeyId = await getOutputValue("CollectionApiKeyId", currentStack());
     statementsEndpoint = await getOutputValue("StatementsApi", currentStack());
-    apiKey = await getApiKey(apiKeyId);
+    const gatewayKey = await getApiKey(apiKeyId);
+    apiKey = gatewayKey.value;
   });
 
   beforeEach(async () => {
