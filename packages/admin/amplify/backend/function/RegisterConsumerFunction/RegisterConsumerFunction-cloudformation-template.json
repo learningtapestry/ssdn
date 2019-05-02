@@ -68,7 +68,7 @@
 				"Timeout": "25",
 				"Code": {
 					"S3Bucket": "nucleus-admin-20190425203422-deployment",
-					"S3Key": "amplify-builds/RegisterConsumerFunction-1556218846-latest-build.zip"
+					"S3Key": "amplify-builds/RegisterConsumerFunction-1556812197-latest-build.zip"
 				}
 			}
 		},
