@@ -2,10 +2,15 @@
  * aws-service.ts: Main service that interacts with the AWS APIs and SDKs
  */
 
-import Amplify, { Auth } from "aws-amplify";
-import * as AWS from "aws-sdk";
-import { CloudFormation, CloudWatchLogs, CognitoIdentityServiceProvider, DynamoDB } from "aws-sdk";
-import { filter, map } from "lodash/fp";
+import Auth from "@aws-amplify/auth";
+import Amplify from "@aws-amplify/core";
+import CloudFormation from "aws-sdk/clients/cloudformation";
+import CloudWatchLogs from "aws-sdk/clients/cloudwatchlogs";
+import CognitoIdentityServiceProvider from "aws-sdk/clients/cognitoidentityserviceprovider";
+import DynamoDB from "aws-sdk/clients/dynamodb";
+import { config } from "aws-sdk/global";
+import filter from "lodash/fp/filter";
+import map from "lodash/fp/map";
 import awsmobile from "../aws-exports";
 import ConnectionRequest from "../interfaces/connection-request";
 import UserForm from "../interfaces/user-form";
@@ -15,7 +20,7 @@ export default class AWSService {
   public static async configure() {
     Amplify.configure(awsmobile);
     await AWSService.updateCredentials();
-    AWS.config.apiVersions = {
+    config.apiVersions = {
       cloudformation: "2010-05-15",
       cloudwatchlogs: "2014-03-28",
       cognitoidentityserviceprovider: "2016-04-18",
@@ -24,7 +29,7 @@ export default class AWSService {
   }
 
   public static async updateCredentials() {
-    AWS.config.update({
+    config.update({
       credentials: await Auth.currentCredentials(),
       region: awsmobile.aws_project_region,
     });
@@ -121,7 +126,7 @@ export default class AWSService {
 
   public static async createUser(userParams: UserForm) {
     return AWSService.withCredentials(async () => {
-      const cognitoIdentityServiceProvider = new AWS.CognitoIdentityServiceProvider();
+      const cognitoIdentityServiceProvider = new CognitoIdentityServiceProvider();
       return await cognitoIdentityServiceProvider
         .adminCreateUser({
           DesiredDeliveryMediums: ["EMAIL"],

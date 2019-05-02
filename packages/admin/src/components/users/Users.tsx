@@ -1,4 +1,4 @@
-import { find } from "lodash/fp";
+import find from "lodash/fp/find";
 import React, { useCallback, useEffect, useState } from "react";
 import { ButtonToolbar } from "react-bootstrap";
 import Button from "react-bootstrap/Button";

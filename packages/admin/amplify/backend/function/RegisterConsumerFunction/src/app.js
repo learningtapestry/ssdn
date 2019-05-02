@@ -7,14 +7,15 @@ or in the "license" file accompanying this file. This file is distributed on an 
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and limitations under the License.
 */
-const AWS = require("aws-sdk");
+const AWS = require("aws-sdk/global");
+const DynamoDB = require("aws-sdk/clients/dynamodb");
 const awsServerlessExpressMiddleware = require("aws-serverless-express/middleware");
 const bodyParser = require("body-parser");
 const express = require("express");
 
 AWS.config.update({ region: process.env.TABLE_REGION });
 
-const dynamodb = new AWS.DynamoDB.DocumentClient();
+const dynamodb = new DynamoDB.DocumentClient();
 
 let tableName = "ConnectionRequestsTable";
 if (process.env.ENV && process.env.ENV !== "NONE") {

@@ -2,9 +2,9 @@
   "name": "nucleus",
   "private": true,
   "dependencies": {
+    "aws-sdk": "2.329.0",
     "lodash": "^4.17.11",
-    "uuid": "^3.3.2",
-    "aws-sdk": "^2.441.0"
+    "uuid": "^3.3.2"
   },
   "devDependencies": {
     "@types/dotenv": "^6.1.0",

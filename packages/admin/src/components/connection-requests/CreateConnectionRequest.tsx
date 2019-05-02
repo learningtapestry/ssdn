@@ -1,6 +1,7 @@
-import Auth from "@aws-amplify/auth";
 import { FormikActions, FormikProps, withFormik } from "formik";
-import { isEmpty, isString, omitBy } from "lodash/fp";
+import isEmpty from "lodash/fp/isEmpty";
+import isString from "lodash/fp/isString";
+import omitBy from "lodash/fp/omitBy";
 import generate from "nanoid/generate";
 import React, { useCallback, useState } from "react";
 import { Alert, Button, Col, Form, InputGroup, Row } from "react-bootstrap";

@@ -1,4 +1,6 @@
-import { capitalize, find, get } from "lodash/fp";
+import capitalize from "lodash/fp/capitalize";
+import find from "lodash/fp/find";
+import get from "lodash/fp/get";
 import React, { useCallback, useEffect, useState } from "react";
 import { Badge, ButtonGroup } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
