@@ -28,7 +28,8 @@
     "build": "lerna run build --stream",
     "start": "lerna run start --parallel",
     "check-types": "lerna run check-types --stream",
-    "lint": "lerna run lint --stream"
+    "lint": "lerna run lint --stream",
+    "release": "yarn build && bin/release.sh"
   },
   "workspaces": {
     "packages": [
