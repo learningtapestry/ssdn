@@ -8,7 +8,7 @@ import {
   TOTPSetup,
   VerifyContact,
   withAuthenticator,
-} from "aws-amplify-react";
+} from "aws-amplify-react/dist/Auth";
 import { createBrowserHistory } from "history";
 import React, { Component } from "react";
 import Col from "react-bootstrap/Col";

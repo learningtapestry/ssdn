@@ -2,8 +2,10 @@
  * aws-adapter.ts: Converts AWS types to internal ones
  */
 
-import { CloudFormation, CloudWatchLogs, CognitoIdentityServiceProvider } from "aws-sdk";
-import { find } from "lodash/fp";
+import CloudFormation from "aws-sdk/clients/cloudformation";
+import CloudWatchLogs from "aws-sdk/clients/cloudwatchlogs";
+import CognitoIdentityServiceProvider from "aws-sdk/clients/cognitoidentityserviceprovider";
+import find from "lodash/fp/find";
 import Instance from "../interfaces/instance";
 import LogEvent from "../interfaces/log-event";
 import Setting from "../interfaces/setting";

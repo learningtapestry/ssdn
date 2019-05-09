@@ -67,8 +67,8 @@
 				"Runtime": "nodejs8.10",
 				"Timeout": "25",
 				"Code": {
-					"S3Bucket": "nucleus-admin-20190425203422-deployment",
-					"S3Key": "amplify-builds/RegisterConsumerFunction-1556812197-latest-build.zip"
+					"S3Bucket": "nucleus-admin-20190425203147-deployment",
+					"S3Key": "amplify-builds/RegisterConsumerFunction-1557342707-latest-build.zip"
 				}
 			}
 		},

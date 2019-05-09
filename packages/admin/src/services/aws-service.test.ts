@@ -1,4 +1,7 @@
-import { CloudFormation, CloudWatchLogs, CognitoIdentityServiceProvider, DynamoDB } from "aws-sdk";
+import CloudFormation from "aws-sdk/clients/cloudformation";
+import CloudWatchLogs from "aws-sdk/clients/cloudwatchlogs";
+import CognitoIdentityServiceProvider from "aws-sdk/clients/cognitoidentityserviceprovider";
+import DynamoDB from "aws-sdk/clients/dynamodb";
 import * as factories from "../../test-support/factories";
 import * as responses from "../../test-support/service-responses";
 import { mockWithPromise } from "../../test-support/test-helper";

@@ -1,5 +1,5 @@
 import "jest-dom/extend-expect";
-import { omit } from "lodash/fp";
+import omit from "lodash/fp/omit";
 import React from "react";
 import { fireEvent, render } from "react-testing-library";
 import * as factories from "../../../test-support/factories";

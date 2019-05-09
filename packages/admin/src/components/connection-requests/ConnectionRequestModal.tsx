@@ -1,4 +1,4 @@
-import { capitalize } from "lodash/fp";
+import capitalize from "lodash/fp/capitalize";
 import { ReactNode } from "react";
 import * as React from "react";
 import { Button, Col, Container, Modal, Row } from "react-bootstrap";

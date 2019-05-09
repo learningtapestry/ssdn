@@ -41,3 +41,8 @@ awsconfiguration.json
 # Cypress
 /**/cypress/videos
 /**/cypress/screenshots
+
+# Releases
+releases
+.nucleus-config.json
+packaged.yaml
