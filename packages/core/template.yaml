@@ -351,6 +351,32 @@ Resources:
       DeadLetterQueue:
         Type: SNS
         TargetArn: !Ref LambdaDeadLetterQueueTopic
+  AdminPanelPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Description: "Minimum set of permissions required to run the sections in the Nucleus admin panel"
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Action:
+              - "cloudformation:DescribeStacks"
+              - "cognito-idp:ListUsers"
+              - "cognito-idp:AdminCreateUser"
+              - "cognito-idp:AdminDeleteUser"
+              - "logs:DescribeLogGroups"
+              - "logs:DescribeLogStreams"
+              - "logs:GetLogEvents"
+            Resource: "*"
+          - Effect: "Allow"
+            Action:
+              - "dynamodb:GetItem"
+              - "dynamodb:Query"
+              - "dynamodb:Scan"
+              - "dynamodb:PutItem"
+              - "dynamodb:UpdateItem"
+              - "dynamodb:DeleteItem"
+            Resource: !Sub arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/ConnectionRequestsTable*
 Outputs:
   EventProcessorStreamName:
     Description: Name of the Event Processor Kinesis Data Stream
