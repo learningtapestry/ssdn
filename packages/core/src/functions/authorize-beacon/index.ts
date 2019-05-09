@@ -13,7 +13,7 @@ export const handler: CustomAuthorizerHandler = async (event, _context, _callbac
 
   try {
     apiGatewayKey = await getApiKey(aid);
-  } catch {
+  } catch (error) {
     return deny("", event.methodArn);
   }
 
