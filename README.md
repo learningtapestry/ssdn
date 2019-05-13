@@ -5,6 +5,7 @@ more:
 
 - [Nucleus Core](packages/core#readme)
 - [Nucleus Administration Panel](packages/admin#readme)
+- [Nucleus CLI (installer)](packages/cli#readme)
 
 ## Setup
 
