@@ -7,7 +7,7 @@ Overall, our main focus for the MVP version of the application is guaranteeing t
 operation. Anything that we might consider useful or convenient but not vital can be treated as a 
 project extension or an enhancement for future versions.
 * **Secure by default:** when dealing with sensitive data, we want the users of the Nucleus platform 
-to be confident that the system will always default to a configuration that has the less chance of 
+to be confident that the system will always default to a configuration that has the least chance of 
 exposing unintended information or provoking side effects. This means, for example, using whitelists 
 to grant access, denying connections over insecure channels, encrypting data whenever possible, etc.
 * **Distributed:** even though we’re designing the whole system to work as a monolithic application,
@@ -56,7 +56,7 @@ although it only implements a small subset of its features. More specifically, w
 receives collection events from one or more agents, and an internal event processing mechanism that 
 handles them to the routing component.
 * It must be fast enough to process a large number of simultaneous requests or unexpected peak loads 
-so it does not miss any collected event.
+so it does not miss any collection event.
 * Its design should be simple and able to scale easily.
 
 #### Committed solution
@@ -127,7 +127,7 @@ in the form of REST/GraphQL APIs.
 #### Committed solution
 * Its purpose is reading the data from one of the data store destinations (S3 for example) and 
 exporting it to another system, like DynamoDB.
-* We'll design a generic interface that all plugins must abide to in order to perform the reading & 
+* We'll design a generic interface that all plugins must adhere to in order to perform the reading & 
 extraction.
 * The plugin can be invoked on-demand, so it makes sense to model it as a Lambda function.
 
@@ -184,7 +184,7 @@ their administration panel.
 * User-facing back-office where users can perform various administrative tasks. 
 * Allows reviewing and managing the requests made by other instances.
 * Allows managing the administrator users that can access the panel.
-* Allows browsing through all the generated logs to detect problems or mis-configurations.
+* Allows browsing through all the generated logs to detect problems or misconfigurations.
 * Allows tweaking the configuration of the running Nucleus instance.
 
 #### Committed solution
