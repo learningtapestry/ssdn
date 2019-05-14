@@ -5,7 +5,9 @@
 import { APIGatewayProxyEvent } from "aws-lambda";
 import get from "lodash/fp/get";
 
-import { utcDate } from "../helpers/app-helper";
+import { readEnv, utcDate } from "../helpers/app-helper";
+import { Channel } from "../interfaces/channel";
+import Event from "../interfaces/event";
 import logger from "../logger";
 
 export default abstract class LambdaEventParser {
@@ -23,14 +25,16 @@ export default abstract class LambdaEventParser {
     this.body = get("body")(lambdaEvent);
   }
 
-  public parse() {
+  public parse(): Event {
     logger.debug("Generating Nucleus event from Lambda: %j", this.lambdaEvent);
 
     return {
       content: this.interpretContent(),
       event: {
+        channel: this.channel(),
         date: utcDate(get("requestTimeEpoch")(this.request)),
         format: this.format(),
+        namespace: this.namespace(),
         operation: get("httpMethod")(this.lambdaEvent),
         origin: `${get("Host")(this.headers)}${get("path")(this.request)}`,
         protocol: get("protocol")(this.request),
@@ -42,13 +46,23 @@ export default abstract class LambdaEventParser {
     };
   }
 
+  protected abstract channel(): Channel;
+
   protected abstract format(): string;
 
   protected abstract interpretContent(): any;
+
+  protected namespace() {
+    const eventNamespace = get("X-Nucleus-Namespace")(this.headers);
+    if (eventNamespace) {
+      return eventNamespace;
+    }
+    return readEnv("NUCLEUS_NAMESPACE");
+  }
 
   protected abstract representation(): string;
 
   protected abstract resource(): string;
 
-  protected abstract resourceId(): string | number | undefined;
+  protected abstract resourceId(): string | undefined;
 }

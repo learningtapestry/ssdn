@@ -13,7 +13,7 @@ describe("<ConnectionRequests />", () => {
   const props = {
     description: "This is the requests section",
     title: "Connection Requests",
-    type: "consumer",
+    type: "incoming",
   };
 
   beforeAll(() => {
@@ -44,11 +44,11 @@ describe("<ConnectionRequests />", () => {
     });
   });
 
-  it("renders the buttons for providers", async () => {
+  it("renders the buttons for submitted", async () => {
     const { getByText, queryByText } = renderWithRouter(
-      <ConnectionRequests {...props} type="provider" />,
+      <ConnectionRequests {...props} type="submitted" />,
       {
-        route: "/providers",
+        route: "/submitted",
       },
     );
 
@@ -60,7 +60,7 @@ describe("<ConnectionRequests />", () => {
     });
   });
 
-  it("renders the buttons for consumers", async () => {
+  it("renders the buttons for incoming", async () => {
     const { getByText, queryByText } = render(<ConnectionRequests {...props} />);
 
     await wait(() => {

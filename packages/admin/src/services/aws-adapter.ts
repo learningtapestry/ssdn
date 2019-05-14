@@ -20,11 +20,13 @@ export default class AWSAdapter {
   }
 
   public static convertOutputs(outputs: CloudFormation.Output[]): Setting[] {
-    return outputs.map((output) => ({
-      description: output.Description!,
-      key: output.OutputKey!,
-      value: output.OutputValue!,
-    }));
+    return outputs
+      .map((output) => ({
+        description: output.Description!,
+        key: output.OutputKey!,
+        value: output.OutputValue!,
+      }))
+      .sort((a, b) => a.key.localeCompare(b.key));
   }
 
   public static convertUsers(users: CognitoIdentityServiceProvider.UserType[]): User[] {

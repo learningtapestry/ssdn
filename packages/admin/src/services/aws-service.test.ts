@@ -13,7 +13,7 @@ describe(AWSService, () => {
       DynamoDB.DocumentClient.prototype.scan = mockWithPromise(responses.connectionRequestItems());
 
       const requests = await AWSService.retrieveConnectionRequests({
-        type: "provider",
+        type: "submitted",
       });
 
       expect(requests).toEqual(factories.connectionRequests());

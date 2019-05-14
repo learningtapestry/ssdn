@@ -39,7 +39,7 @@ describe("<ConnectionRequestModal />", () => {
   });
 
   it("shows the verification code when seeing a provider request", () => {
-    const providerRequest = { ...props.connectionRequest, type: "provider" };
+    const providerRequest = { ...props.connectionRequest, type: "submitted" };
 
     const { queryByText } = render(
       <ConnectionRequestModal {...props} connectionRequest={providerRequest} />,

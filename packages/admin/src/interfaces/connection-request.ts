@@ -1,10 +1,23 @@
-/**
- * connection-request.ts: Interface that models a connection request sent to a provider
- */
+import { Channel } from "./channel";
 
-export default interface ConnectionRequest {
+export enum ConnectionRequestStatus {
+  Created = "created",
+  Pending = "pending",
+  Accepted = "accepted",
+  Rejected = "rejected",
+  Canceled = "canceled",
+}
+
+export enum IncomingConnectionRequestStatus {
+  AcceptedPending = "accepted_pending",
+  RejectedPending = "rejected_pending",
+}
+
+export interface ConnectionRequest {
   id: string;
-  endpoint: string;
+  consumerEndpoint: string;
+  providerEndpoint: string;
+  namespace: string;
   firstName: string;
   lastName: string;
   organization: string;
@@ -14,6 +27,24 @@ export default interface ConnectionRequest {
   extension?: string;
   type: string;
   verificationCode: string;
-  status: string;
+  acceptanceToken: string;
   creationDate: Date | string;
+  channels: Channel[];
+  status: ConnectionRequestStatus | IncomingConnectionRequestStatus;
+  connection: {
+    awsAccountId: string;
+    externalId: string;
+    nucleusId: string;
+  };
+}
+
+export interface NewConnectionRequest {
+  providerEndpoint: string;
+  firstName: string;
+  lastName: string;
+  organization: string;
+  title: string;
+  email: string;
+  phoneNumber: string;
+  extension?: string;
 }

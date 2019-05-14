@@ -16,7 +16,7 @@ function ConfirmationModal(props: ConfirmationModalProps) {
     if (props.onClose) {
       return (
         <Button variant="secondary" onClick={props.onClose}>
-          Close
+          Cancel
         </Button>
       );
     }

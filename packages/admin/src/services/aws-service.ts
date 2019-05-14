@@ -1,24 +1,31 @@
 /**
  * aws-service.ts: Main service that interacts with the AWS APIs and SDKs
  */
-
-import Auth from "@aws-amplify/auth";
-import Amplify from "@aws-amplify/core";
 import CloudFormation from "aws-sdk/clients/cloudformation";
 import CloudWatchLogs from "aws-sdk/clients/cloudwatchlogs";
 import CognitoIdentityServiceProvider from "aws-sdk/clients/cognitoidentityserviceprovider";
 import DynamoDB from "aws-sdk/clients/dynamodb";
 import { config } from "aws-sdk/global";
-import filter from "lodash/fp/filter";
-import map from "lodash/fp/map";
+import { filter, map } from "lodash/fp";
+
+import API from "@aws-amplify/api";
+import Auth from "@aws-amplify/auth";
+import Amplify from "@aws-amplify/core";
+
+import awsconfiguration from "../aws-configuration";
 import awsmobile from "../aws-exports";
-import ConnectionRequest from "../interfaces/connection-request";
+import { Connection } from "../interfaces/connection";
+import { ConnectionRequest, NewConnectionRequest } from "../interfaces/connection-request";
 import UserForm from "../interfaces/user-form";
 import AWSAdapter from "./aws-adapter";
 
 export default class AWSService {
   public static async configure() {
-    Amplify.configure(awsmobile);
+    Amplify.configure({
+      ...awsmobile,
+      API: awsconfiguration.Api,
+      Auth: awsconfiguration.Auth,
+    });
     await AWSService.updateCredentials();
     config.apiVersions = {
       cloudformation: "2010-05-15",
@@ -35,38 +42,116 @@ export default class AWSService {
     });
   }
 
-  public static async retrieveConnectionRequests({ type = "consumer" } = {}) {
+  public static async retrieveStreams(type: "input" | "output") {
     return AWSService.withCredentials(async () => {
       const documentClient = new DynamoDB.DocumentClient();
-      const params = {
-        ExpressionAttributeNames: { "#type": "type" },
-        ExpressionAttributeValues: { ":type": type },
-        FilterExpression: "#type = :type",
-        TableName: awsmobile.aws_dynamodb_table_schemas[0].tableName,
-      };
-      const connectionRequests = await documentClient.scan(params).promise();
+      const filterAttr = type === "input" ? "inputStreams" : "outputStreams";
+      const items = await documentClient
+        .scan({
+          FilterExpression: `attribute_exists(${filterAttr}[0])`,
+          TableName: awsconfiguration.Storage.nucleusConnections,
+        })
+        .promise();
 
-      return connectionRequests.Items as ConnectionRequest[];
+      if (!items.Items) {
+        return [];
+      }
+
+      return (items.Items as Connection[])
+        .flatMap((e) =>
+          e[filterAttr]!.map((ex) => ({
+            channel: ex.channel,
+            endpoint: e.endpoint,
+            namespace: ex.namespace,
+            status: ex.status,
+          })),
+        )
+        .sort((a, b) =>
+          `${a.endpoint}.${a.namespace}.${a.channel}`.localeCompare(
+            `${a.endpoint}.${b.namespace}.${b.channel}`,
+          ),
+        );
     });
   }
 
-  public static async saveConnectionRequest(connectionRequest: ConnectionRequest) {
+  public static async retrieveConnectionRequests(type: "incoming" | "submitted") {
+    const tableName =
+      type === "incoming"
+        ? awsconfiguration.Storage.nucleusIncomingConnectionRequests
+        : awsconfiguration.Storage.nucleusConnectionRequests;
+
     return AWSService.withCredentials(async () => {
       const documentClient = new DynamoDB.DocumentClient();
-      const params = {
-        Item: connectionRequest,
-        TableName: awsmobile.aws_dynamodb_table_schemas[0].tableName,
-      };
-      return await documentClient.put(params).promise();
+      const connectionRequests = await documentClient
+        .scan({
+          TableName: tableName,
+        })
+        .promise();
+
+      return (connectionRequests.Items as ConnectionRequest[]).sort(
+        (a, b) => new Date(b.creationDate).getTime() - new Date(a.creationDate).getTime(),
+      );
+    });
+  }
+
+  public static async updateStream(
+    endpoint: string,
+    channel: string,
+    namespace: string,
+    status: "active" | "paused",
+    type: "input" | "output",
+  ) {
+    return AWSService.withCredentials(async () => {
+      const response = await API.post("ExchangeApiSigv4", "/connections/streams/update", {
+        body: {
+          channel,
+          endpoint,
+          namespace,
+          notify: true,
+          status,
+          type,
+        },
+      });
+      return response as ConnectionRequest;
+    });
+  }
+
+  public static async saveConnectionRequest(
+    connectionRequest: NewConnectionRequest,
+  ): Promise<ConnectionRequest> {
+    return AWSService.withCredentials(async () => {
+      const response = await API.post("ExchangeApi", "/connections/requests", {
+        body: connectionRequest,
+      });
+      return response as ConnectionRequest;
+    });
+  }
+
+  public static async submitConnectionRequest(id: string) {
+    return AWSService.withCredentials(async () => {
+      return await API.post("ExchangeApi", `/connections/requests/${id}/send`, {});
     });
   }
 
   public static async deleteConnectionRequest(id: string) {
     return AWSService.withCredentials(async () => {
       const documentClient = new DynamoDB.DocumentClient();
-      const params = { Key: { id }, TableName: awsmobile.aws_dynamodb_table_schemas[0].tableName };
+      const params = { Key: { id }, TableName: awsconfiguration.Storage.nucleusConnectionRequests };
 
       return await documentClient.delete(params).promise();
+    });
+  }
+
+  public static async acceptConnectionRequest(endpoint: string, id: string, accepted: boolean) {
+    return AWSService.withCredentials(async () => {
+      const response = await API.post("ExchangeApi", "/connections/incoming-requests/accept", {
+        body: {
+          accepted,
+          endpoint,
+          id,
+        },
+      });
+      return response as ConnectionRequest;
     });
   }
 
@@ -77,7 +162,7 @@ export default class AWSService {
 
       if (stackData.Stacks) {
         const isNucleusStack = (stack: CloudFormation.Stack) =>
-          stack.StackName.startsWith("Nucleus");
+          stack.StackName.toLowerCase().startsWith(awsconfiguration.Auth.stackName.toLowerCase());
 
         return AWSAdapter.convertStacks(filter(isNucleusStack)(stackData.Stacks));
       }
@@ -88,7 +173,7 @@ export default class AWSService {
     return AWSService.withCredentials(async () => {
       const cloudWatchLogs = new CloudWatchLogs();
       const logGroupsData = await cloudWatchLogs
-        .describeLogGroups({ logGroupNamePrefix: "/aws/lambda/Nucleus" })
+        .describeLogGroups({ logGroupNamePrefix: `/aws/lambda/${awsconfiguration.Auth.stackName}` })
         .promise();
 
       return map("logGroupName")(logGroupsData.logGroups);
@@ -117,7 +202,7 @@ export default class AWSService {
     return AWSService.withCredentials(async () => {
       const cognitoIdentityServiceProvider = new CognitoIdentityServiceProvider();
       const userData = await cognitoIdentityServiceProvider
-        .listUsers({ UserPoolId: awsmobile.aws_user_pools_id })
+        .listUsers({ UserPoolId: awsconfiguration.Auth.userPoolId })
         .promise();
 
       return userData.Users ? AWSAdapter.convertUsers(userData.Users) : [];
@@ -138,7 +223,7 @@ export default class AWSService {
             { Name: "email_verified", Value: "true" },
             { Name: "phone_number_verified", Value: "false" },
           ],
-          UserPoolId: awsmobile.aws_user_pools_id,
+          UserPoolId: awsconfiguration.Auth.userPoolId,
           Username: userParams.username,
         })
         .promise();
@@ -150,7 +235,7 @@ export default class AWSService {
       const cognitoIdentityServiceProvider = new CognitoIdentityServiceProvider();
       return await cognitoIdentityServiceProvider
         .adminDeleteUser({
-          UserPoolId: awsmobile.aws_user_pools_id,
+          UserPoolId: awsconfiguration.Auth.userPoolId,
           Username: username,
         })
         .promise();
@@ -159,14 +244,21 @@ export default class AWSService {
 
   private static async withCredentials(request: () => Promise<any>) {
     try {
-      return await request();
-    } catch (error) {
-      if (error.code === "CredentialsError") {
-        await AWSService.updateCredentials();
+      try {
         return await request();
-      } else {
-        throw new Error(error);
+      } catch (error) {
+        if (error.code && error.code === "CredentialsError") {
+          await AWSService.updateCredentials();
+          return await request();
+        } else {
+          throw error;
+        }
       }
+    } catch (error) {
+      if (error.response && error.response.data && error.response.data.errors) {
+        throw new Error(error.response.data.errors[0].detail);
+      }
+      throw new Error(`An unexpected error occurred: ${error.message}`);
     }
   }
 }

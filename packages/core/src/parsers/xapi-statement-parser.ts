@@ -1,5 +1,7 @@
 import get from "lodash/fp/get";
+
 import { calculateIdentifier, decode64, isBlank, toArray } from "../helpers/app-helper";
+import { Channel } from "../interfaces/channel";
 import LambdaEventParser from "./lambda-event-parser";
 
 export default class XAPIStatementParser extends LambdaEventParser {
@@ -12,6 +14,10 @@ export default class XAPIStatementParser extends LambdaEventParser {
     });
 
     return parsedContent;
+  }
+
+  protected channel(): Channel {
+    return "XAPI";
   }
 
   protected format() {

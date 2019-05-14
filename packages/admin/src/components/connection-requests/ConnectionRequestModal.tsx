@@ -2,7 +2,7 @@ import capitalize from "lodash/fp/capitalize";
 import { ReactNode } from "react";
 import * as React from "react";
 import { Button, Col, Container, Modal, Row } from "react-bootstrap";
-import ConnectionRequest from "../../interfaces/connection-request";
+import { ConnectionRequest } from "../../interfaces/connection-request";
 
 interface ConnectionRequestModalProps {
   connectionRequest: ConnectionRequest;
@@ -23,7 +23,7 @@ const ConnectionAttribute = (props: { name: string; children: ReactNode }) => (
 
 export default function ConnectionRequestModal(props: ConnectionRequestModalProps) {
   const verificationCode = () => {
-    if (props.connectionRequest.type === "provider") {
+    if (props.connectionRequest.type === "submitted") {
       return (
         <ConnectionAttribute name="Verification Code">
           <p className="text-info">{props.connectionRequest.verificationCode}</p>
@@ -39,11 +39,21 @@ export default function ConnectionRequestModal(props: ConnectionRequestModalProp
       </Modal.Header>
       <Modal.Body>
         <Container>
+          <ConnectionAttribute name="Id">
+            {capitalize(props.connectionRequest.id)}
+          </ConnectionAttribute>
           <ConnectionAttribute name="Status">
             {capitalize(props.connectionRequest.status)}
           </ConnectionAttribute>
-          <ConnectionAttribute name="Endpoint URL">
-            <a href={props.connectionRequest.endpoint}>{props.connectionRequest.endpoint}</a>
+          <ConnectionAttribute name="Consumer Endpoint URL">
+            <a href={props.connectionRequest.consumerEndpoint}>
+              {props.connectionRequest.consumerEndpoint}
+            </a>
+          </ConnectionAttribute>
+          <ConnectionAttribute name="Provider Endpoint URL">
+            <a href={props.connectionRequest.providerEndpoint}>
+              {props.connectionRequest.providerEndpoint}
+            </a>
           </ConnectionAttribute>
           <ConnectionAttribute name="Creation Date">
             {new Date(props.connectionRequest.creationDate).toLocaleString("en-US")}

@@ -1,7 +1,10 @@
 import { APIGatewayProxyEvent } from "aws-lambda";
 
 import { calculateIdentifier } from "../helpers/app-helper";
+import { Channel } from "../interfaces/channel";
 import LambdaEventParser from "./lambda-event-parser";
+
+import get from "lodash/fp/get";
 
 export default class XAPIBeaconParser extends LambdaEventParser {
   private content: any;
@@ -18,12 +21,24 @@ export default class XAPIBeaconParser extends LambdaEventParser {
     this.content = content;
   }
 
+  protected channel(): Channel {
+    return "XAPI";
+  }
+
   protected interpretContent() {
     return this.content;
   }
 
   protected format() {
     return "xAPI";
+  }
+
+  protected namespace() {
+    const queryStringNamespace = get("ns")(this.queryParams);
+    if (queryStringNamespace) {
+      return decodeURIComponent(queryStringNamespace);
+    }
+    return super.namespace();
   }
 
   protected representation() {

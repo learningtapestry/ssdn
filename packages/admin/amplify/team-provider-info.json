@@ -49,5 +49,29 @@
                 "cognito4745444d": {}
             }
         }
+    },
+    "rmalice": {
+        "awscloudformation": {
+            "AuthRoleName": "nucleus-admin-rmalice-20190508195123-authRole",
+            "UnauthRoleArn": "arn:aws:iam::264441468378:role/nucleus-admin-rmalice-20190508195123-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::264441468378:role/nucleus-admin-rmalice-20190508195123-authRole",
+            "Region": "us-east-1",
+            "DeploymentBucketName": "nucleus-admin-rmalice-20190508195123-deployment",
+            "UnauthRoleName": "nucleus-admin-rmalice-20190508195123-unauthRole",
+            "StackName": "nucleus-admin-rmalice-20190508195123",
+            "StackId": "arn:aws:cloudformation:us-east-1:264441468378:stack/nucleus-admin-rmalice-20190508195123/ce9ab0f0-71e3-11e9-9a18-0ee5479654d4"
+        }
+    },
+    "rmbob": {
+        "awscloudformation": {
+            "AuthRoleName": "nucleus-admin-rmbob-20190513170917-authRole",
+            "UnauthRoleArn": "arn:aws:iam::264441468378:role/nucleus-admin-rmbob-20190513170917-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::264441468378:role/nucleus-admin-rmbob-20190513170917-authRole",
+            "Region": "us-east-1",
+            "DeploymentBucketName": "nucleus-admin-rmbob-20190513170917-deployment",
+            "UnauthRoleName": "nucleus-admin-rmbob-20190513170917-unauthRole",
+            "StackName": "nucleus-admin-rmbob-20190513170917",
+            "StackId": "arn:aws:cloudformation:us-east-1:264441468378:stack/nucleus-admin-rmbob-20190513170917/fd7486f0-75ba-11e9-9c68-0e6c5fec19cc"
+        }
     }
 }

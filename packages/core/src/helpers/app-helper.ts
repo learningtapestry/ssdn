@@ -1,7 +1,6 @@
 /**
  * app-helper.ts: General module containing utility functions
  */
-
 import get from "lodash/fp/get";
 import has from "lodash/fp/has";
 import isArray from "lodash/fp/isArray";
@@ -23,13 +22,16 @@ export function utcDate(timestamp: number) {
 
 export function readEnv(name: string, defaultValue?: any) {
   const value = get(name)(process.env);
-  if (isBlank(value) && !isNil(defaultValue)) {
-    return defaultValue;
-  } else if (isBlank(value)) {
-    throw new Error(`Variable '${name}' has not been initialized`);
-  } else {
+
+  if (!isBlank(value)) {
     return value;
   }
+
+  if (arguments.length === 2) {
+    return defaultValue;
+  }
+
+  throw new Error(`Variable '${name}' has not been initialized`);
 }
 
 export function calculateIdentifier(content: object) {
