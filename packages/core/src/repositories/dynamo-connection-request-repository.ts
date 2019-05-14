@@ -1,31 +1,34 @@
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 
-import { getDocumentClient } from "../aws-clients";
+import { isoDate } from "../helpers/app-helper";
 import { getOrFail } from "../helpers/dynamo-helper";
+import { TABLES } from "../interfaces/aws-metadata-keys";
 import {
   ConnectionRequest,
   ConnectionRequestStatus,
   IncomingConnectionRequestStatus,
 } from "../interfaces/connection-request";
-import { TABLES } from "../services/aws-entity-names";
+import NucleusMetadataService from "../services/nucleus-metadata-service";
 import { ConnectionRequestRepository } from "./connection-request-repository";
 
 export default class DynamoConnectionRequestRepository implements ConnectionRequestRepository {
+  private metadata: NucleusMetadataService;
   private client: DocumentClient;
 
-  constructor() {
-    this.client = getDocumentClient();
+  constructor(metadata: NucleusMetadataService, client: DocumentClient) {
+    this.metadata = metadata;
+    this.client = client;
   }
 
   public async get(id: string) {
-    return getOrFail<ConnectionRequest>(this.client, { id }, TABLES.nucleusConnectionRequests);
+    return getOrFail<ConnectionRequest>(this.client, { id }, await this.getTableName());
   }
 
   public async getIncoming(consumerEndpoint: string, id: string) {
     return getOrFail<ConnectionRequest>(
       this.client,
       { consumerEndpoint, id },
-      TABLES.nucleusIncomingConnectionRequests,
+      await this.getIncomingTableName(),
     );
   }
 
@@ -41,7 +44,7 @@ export default class DynamoConnectionRequestRepository implements ConnectionRequ
         Key: {
           id,
         },
-        TableName: TABLES.nucleusConnectionRequests,
+        TableName: await this.getTableName(),
         UpdateExpression: "SET #status = :status",
       })
       .promise();
@@ -65,7 +68,7 @@ export default class DynamoConnectionRequestRepository implements ConnectionRequ
           consumerEndpoint,
           id,
         },
-        TableName: TABLES.nucleusIncomingConnectionRequests,
+        TableName: await this.getIncomingTableName(),
         UpdateExpression: "SET #status = :status",
       })
       .promise();
@@ -75,12 +78,12 @@ export default class DynamoConnectionRequestRepository implements ConnectionRequ
   public async put(connectionRequest: ConnectionRequest) {
     connectionRequest = {
       ...connectionRequest,
-      creationDate: connectionRequest.creationDate || new Date().toUTCString(),
+      creationDate: connectionRequest.creationDate || isoDate(),
     };
     await this.client
       .put({
         Item: connectionRequest,
-        TableName: TABLES.nucleusConnectionRequests,
+        TableName: await this.getTableName(),
       })
       .promise();
     return connectionRequest;
@@ -89,14 +92,24 @@ export default class DynamoConnectionRequestRepository implements ConnectionRequ
   public async putIncoming(connectionRequest: ConnectionRequest) {
     connectionRequest = {
       ...connectionRequest,
-      creationDate: connectionRequest.creationDate || new Date().toUTCString(),
+      creationDate: connectionRequest.creationDate || isoDate(),
     };
     await this.client
       .put({
         Item: connectionRequest,
-        TableName: TABLES.nucleusIncomingConnectionRequests,
+        TableName: await this.getIncomingTableName(),
       })
       .promise();
     return connectionRequest;
+  }
+
+  private async getTableName() {
+    const name = await this.metadata.getMetadataValue(TABLES.nucleusConnectionRequests);
+    return name.value;
+  }
+
+  private async getIncomingTableName() {
+    const name = await this.metadata.getMetadataValue(TABLES.nucleusIncomingConnectionRequests);
+    return name.value;
   }
 }

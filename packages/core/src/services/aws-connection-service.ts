@@ -1,10 +1,12 @@
 import { NucleusError } from "../errors/nucleus-error";
 import { readEnv } from "../helpers/app-helper";
+import { POLICIES } from "../interfaces/aws-metadata-keys";
 import { Channel } from "../interfaces/channel";
 import {
   Connection,
   ExternalConnectionDetails,
-  ProviderIssuedConnectionDetails,
+  ProviderIssuedConnection,
+  PublicNucleusMetadata,
 } from "../interfaces/connection";
 import {
   ConnectionRequest,
@@ -15,7 +17,6 @@ import { StreamUpdate } from "../interfaces/exchange";
 import { Stream, StreamStatus } from "../interfaces/stream";
 import ConnectionRepository from "../repositories/connection-repository";
 import { ConnectionRequestRepository } from "../repositories/connection-request-repository";
-import { POLICIES } from "./aws-entity-names";
 import ConnectionRequestService from "./connection-request-service";
 import ConnectionService from "./connection-service";
 import ExchangeService from "./exchange-service";
@@ -65,13 +66,15 @@ export default class AwsConnectionService implements ConnectionService {
           arn: connection.connection.arn,
           externalId: connection.connection.externalId,
         },
+        metadata: await this.metadata.getPublicMetadata(),
       },
     });
 
     await this.iamService.attachEndpointRolePolicy(
-      connectionRequest.connection.awsAccountId,
+      await this.metadata.getMetadataValue(POLICIES.consumerPolicy),
+      await this.metadata.getEndpoint(),
       connectionRequest.consumerEndpoint,
-      POLICIES.consumerPolicy,
+      connectionRequest.connection.awsAccountId,
     );
 
     connection = {
@@ -82,6 +85,7 @@ export default class AwsConnectionService implements ConnectionService {
         externalId: acceptanceResponse.externalConnection.externalId,
       },
       isConsumer: true,
+      metadata: acceptanceResponse.metadata,
       outputStreams: this.mergeStreams(
         connection.outputStreams,
         connectionRequest.channels.map((c) => ({
@@ -123,7 +127,7 @@ export default class AwsConnectionService implements ConnectionService {
 
   public async createForProviderAcceptance(
     connectionRequest: ConnectionRequest,
-    connectionDetails: ProviderIssuedConnectionDetails,
+    connectionDetails: ProviderIssuedConnection,
   ) {
     await this.connectionRequestService.assertConnectionRequestUpdatable(connectionRequest);
 
@@ -148,12 +152,14 @@ export default class AwsConnectionService implements ConnectionService {
         })),
       ),
       isProvider: true,
+      metadata: connectionDetails.metadata,
     };
 
     await this.iamService.attachEndpointRolePolicy(
-      connection.connection.awsAccountId,
+      await this.metadata.getMetadataValue(POLICIES.providerPolicy),
+      await this.metadata.getEndpoint(),
       connectionRequest.providerEndpoint,
-      POLICIES.providerPolicy,
+      connection.connection.awsAccountId,
     );
 
     await this.repository.put(connection);
@@ -187,7 +193,7 @@ export default class AwsConnectionService implements ConnectionService {
     const ownEndpoint = await this.metadata.getEndpoint();
     const update: StreamUpdate = {
       channel: stream.channel,
-      endpoint: ownEndpoint,
+      endpoint: ownEndpoint.value,
       namespace: stream.namespace,
       status: stream.status,
       type: type === "input" ? "output" : "input",
@@ -249,6 +255,9 @@ export default class AwsConnectionService implements ConnectionService {
         inputStreams: [],
         isConsumer: false,
         isProvider: false,
+        metadata: {
+          EventProcessorStream: "",
+        },
         outputStreams: [],
         updateDate: "",
       };
@@ -257,6 +266,7 @@ export default class AwsConnectionService implements ConnectionService {
 
     if (isNew) {
       const role = await this.iamService.findOrCreateEndpointRole(
+        await this.metadata.getEndpoint(),
         connection.endpoint,
         connectionOptions.awsAccountId,
       );

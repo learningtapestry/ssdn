@@ -1,4 +1,5 @@
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
+
 import { NucleusError } from "../errors/nucleus-error";
 
 export async function getOrFail<T>(

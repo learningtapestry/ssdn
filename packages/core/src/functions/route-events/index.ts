@@ -1,9 +1,11 @@
 import { KinesisStreamHandler } from "aws-lambda";
 import chunk from "lodash/fp/chunk";
 
-import { getEventRouter } from "../../aws-services";
+import { decode64 } from "../../helpers/app-helper";
 import Event from "../../interfaces/event";
+import { getEventRouter } from "../../services";
 
+// Cache router lookups by defining the router in the outer scope.
 const router = getEventRouter();
 
 export const handler: KinesisStreamHandler = async (event) => {
@@ -15,6 +17,6 @@ export const handler: KinesisStreamHandler = async (event) => {
 function parseKinesisData<T>(data: string) {
   // Kinesis data is stored as a Base64 encoded string.
   // The Base64 decoded value must then parsed as a JSON.
-  const decodedData = new Buffer(data, "base64").toString("ascii");
+  const decodedData = decode64(data);
   return JSON.parse(decodedData) as T;
 }

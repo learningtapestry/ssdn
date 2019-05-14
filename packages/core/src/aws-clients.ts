@@ -19,7 +19,7 @@ export function getDocumentClient(clientSettings = {}) {
   );
 }
 
-export function getApiGatewayClient(clientSettings = {}) {
+export function getApiGateway(clientSettings = {}) {
   return new APIGateway(
     Object.assign(
       {
@@ -31,7 +31,7 @@ export function getApiGatewayClient(clientSettings = {}) {
   );
 }
 
-export function getIamClient(clientSettings = {}) {
+export function getIam(clientSettings = {}) {
   return new IAM(
     Object.assign(
       {
@@ -43,7 +43,7 @@ export function getIamClient(clientSettings = {}) {
   );
 }
 
-export function getCloudFormationClient(clientSettings = {}) {
+export function getCloudFormation(clientSettings = {}) {
   return new CloudFormation(
     Object.assign(
       {

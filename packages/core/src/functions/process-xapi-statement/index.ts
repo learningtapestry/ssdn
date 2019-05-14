@@ -5,8 +5,7 @@ import isEmpty from "lodash/fp/isEmpty";
 import trim from "lodash/fp/trim";
 
 import XAPIStatementParser from "../../parsers/xapi-statement-parser";
-import KinesisEventRepository from "../../repositories/kinesis-event-repository";
-import { STREAMS } from "../../services/aws-entity-names";
+import { getEventRepository } from "../../services";
 import XAPIStatementService from "../../services/xapi-statement-service";
 import XAPIValidator from "../../validators/xapi-validator";
 
@@ -25,7 +24,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
   const results = await XAPIStatementService.process(
     new XAPIStatementParser(event).parse(),
     new XAPIValidator(),
-    new KinesisEventRepository(STREAMS.eventProcessor),
+    getEventRepository(),
   );
   const hasErrors = has("errors")(results);
 

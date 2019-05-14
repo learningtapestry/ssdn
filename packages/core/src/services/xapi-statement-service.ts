@@ -2,11 +2,12 @@
  * event-service.ts: Receives a collected event, parses it to convert it to an internal Nucleus
  * event representation, then puts it into the repository.
  */
-
 import get from "lodash/fp/get";
 import map from "lodash/fp/map";
+
 import { toArray } from "../helpers/app-helper";
 import logger from "../logger";
+import { EventRepository } from "../repositories/event-repository";
 
 export default class XAPIStatementService {
   public static async process(event: object, validator: Validator, repository: EventRepository) {

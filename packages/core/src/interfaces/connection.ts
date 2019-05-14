@@ -1,5 +1,9 @@
 import { Stream } from "./stream";
 
+export interface PublicNucleusMetadata {
+  EventProcessorStream: string;
+}
+
 export interface ConnectionDetails {
   arn: string;
   awsAccountId: string;
@@ -12,19 +16,22 @@ export interface ExternalConnectionDetails {
   externalId: string;
 }
 
-export interface ProviderIssuedConnectionDetails {
+export interface ProviderIssuedConnection {
   connection: {
     awsAccountId: string;
     nucleusId: string;
   };
   externalConnection: ExternalConnectionDetails;
+  metadata: PublicNucleusMetadata;
 }
 
-export interface ConsumerIssuedConnectionDetails {
+export interface ConsumerIssuedConnection {
   externalConnection: ExternalConnectionDetails;
+  metadata: PublicNucleusMetadata;
 }
 
 export interface Connection {
+  metadata: PublicNucleusMetadata;
   endpoint: string;
   isConsumer: boolean;
   isProvider: boolean;

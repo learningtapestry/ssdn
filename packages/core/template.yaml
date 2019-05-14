@@ -111,7 +111,7 @@ Resources:
           PolicyDocument:
             Version: "2012-10-17"
             Statement:
-              - Effect: "Allow"
+              - Effect: Allow
                 Action:
                   - "sns:Publish"
                 Resource: "*"
@@ -271,7 +271,7 @@ Resources:
       AssumeRolePolicyDocument:
         Version: "2012-10-17"
         Statement:
-          - Effect: "Allow"
+          - Effect: Allow
             Principal:
               Service:
                 - "firehose.amazonaws.com"
@@ -281,13 +281,13 @@ Resources:
           PolicyDocument:
             Version: "2012-10-17"
             Statement:
-              - Effect: "Allow"
+              - Effect: Allow
                 Action:
                   - "s3:*"
                 Resource:
                   - !Sub arn:aws:s3:::${DeliveryS3Bucket}
                   - !Sub arn:aws:s3:::${DeliveryS3Bucket}/*
-              - Effect: "Allow"
+              - Effect: Allow
                 Action:
                   - "kinesis:DescribeStream"
                   - "kinesis:GetShardIterator"
@@ -313,7 +313,7 @@ Resources:
       AssumeRolePolicyDocument:
         Version: "2012-10-17"
         Statement:
-          - Effect: "Allow"
+          - Effect: Allow
             Principal:
               Service:
                 - "apigateway.amazonaws.com"
@@ -324,7 +324,7 @@ Resources:
           PolicyDocument:
             Version: "2012-10-17"
             Statement:
-              - Effect: "Allow"
+              - Effect: Allow
                 Action:
                   - lambda:InvokeAsync
                   - lambda:InvokeFunction
@@ -348,6 +348,11 @@ Resources:
                 - kinesis:PutRecord
                 - kinesis:PutRecords
               Resource: !GetAtt EventProcessorStream.Arn
+            - Effect: Allow
+              Action:
+                - cloudformation:DescribeStacks
+              Resource:
+                - !Sub arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/${AWS::StackName}/*
       DeadLetterQueue:
         Type: SNS
         TargetArn: !Ref LambdaDeadLetterQueueTopic
@@ -376,6 +381,11 @@ Resources:
                 - kinesis:PutRecord
                 - kinesis:PutRecords
               Resource: !GetAtt EventProcessorStream.Arn
+            - Effect: Allow
+              Action:
+                - cloudformation:DescribeStacks
+              Resource:
+                - !Sub arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/${AWS::StackName}/*
       DeadLetterQueue:
         Type: SNS
         TargetArn: !Ref LambdaDeadLetterQueueTopic
@@ -725,36 +735,6 @@ Resources:
                 passthroughBehavior: when_no_match
                 httpMethod: POST
                 type: aws_proxy
-          /connections/incoming-requests/cancel:
-            options:
-              responses:
-                "200":
-                  description: 200 response
-                  headers:
-                    Access-Control-Allow-Origin:
-                      type: string
-                    Access-Control-Allow-Methods:
-                      type: string
-                    Access-Control-Allow-Headers:
-                      type: string
-              x-amazon-apigateway-integration:
-                responses:
-                  default:
-                    statusCode: 200
-                    responseParameters:
-                      method.response.header.Access-Control-Allow-Methods: "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'"
-                      method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'"
-                      method.response.header.Access-Control-Allow-Origin: "'*'"
-                requestTemplates:
-                  "application/json": '{"statusCode": 200}'
-                passthroughBehavior: when_no_match
-                type: mock
-            post:
-              x-amazon-apigateway-integration:
-                uri: !Sub arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${IncomingConnectionRequestCancelFunction.Arn}/invocations
-                passthroughBehavior: when_no_match
-                httpMethod: POST
-                type: aws_proxy
           /connections/incoming-requests/accept:
             options:
               responses:
@@ -844,22 +824,6 @@ Resources:
           Type: Api
           Properties:
             Path: /connections/requests/{id}/accept
-            Method: post
-            RestApiId: !Ref ExchangeApi
-      Policies:
-        - !Ref ExchangeAdminFunctionPolicy
-      DeadLetterQueue:
-        Type: SNS
-        TargetArn: !Ref LambdaDeadLetterQueueTopic
-  ConnectionRequestCancelFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      CodeUri: ./dist/connection-request-cancel
-      Events:
-        ConnectionRequestCancel:
-          Type: Api
-          Properties:
-            Path: /connections/requests/{id}/cancel
             Method: post
             RestApiId: !Ref ExchangeApi
       Policies:
@@ -963,22 +927,6 @@ Resources:
       DeadLetterQueue:
         Type: SNS
         TargetArn: !Ref LambdaDeadLetterQueueTopic
-  IncomingConnectionRequestCancelFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      CodeUri: ./dist/incoming-connection-request-cancel
-      Events:
-        IncomingConnectionRequestCancel:
-          Type: Api
-          Properties:
-            Path: /connections/incoming-requests/cancel
-            Method: post
-            RestApiId: !Ref ExchangeApi
-      Policies:
-        - !Ref ExchangeAdminFunctionPolicy
-      DeadLetterQueue:
-        Type: SNS
-        TargetArn: !Ref LambdaDeadLetterQueueTopic
   RouteEventsFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -1003,12 +951,12 @@ Resources:
       PolicyDocument:
         Version: "2012-10-17"
         Statement:
-          - Effect: "Allow"
+          - Effect: Allow
             Action:
               - cloudformation:DescribeStacks
             Resource:
               - "*"
-          - Effect: "Allow"
+          - Effect: Allow
             Action:
               - iam:GetRole
               - iam:CreateRole
@@ -1016,12 +964,12 @@ Resources:
             Resource:
               - arn:aws:iam::*:role/nucleus*
               - arn:aws:iam::*:policy/*
-          - Effect: "Allow"
+          - Effect: Allow
             Action:
               - sts:AssumeRole
             Resource:
               - arn:aws:iam::*:role/nucleus_ex_*
-          - Effect: "Allow"
+          - Effect: Allow
             Action:
               - dynamodb:GetItem
               - dynamodb:Query
@@ -1085,13 +1033,13 @@ Outputs:
   CollectionApiKeyId:
     Description: CollectionApiKey
     Value: !Ref CollectionApiKey
-  EventProcessorStreamName:
+  EventProcessorStream:
     Description: EventProcessorStream
     Value: !Ref EventProcessorStream
-  EventDeliveryStreamName:
+  EventDeliveryStream:
     Description: EventDeliveryStream
     Value: !Ref EventDeliveryStream
-  DeliveryS3BucketName:
+  DeliveryS3Bucket:
     Description: DeliveryS3Bucket
     Value: !Ref DeliveryS3Bucket
   AuthorizeBeaconFunction:
@@ -1109,13 +1057,13 @@ Outputs:
   ProcessXAPIBeaconApi:
     Description: ProcessXAPIBeaconApi
     Value: !Sub https://${ProcessXAPIBeaconApi}.execute-api.${AWS::Region}.amazonaws.com/${Environment}
-  NucleusConnectionRequestsTableName:
+  NucleusConnectionRequestsTable:
     Description: NucleusConnectionRequestsTable
     Value: !Ref NucleusConnectionRequestsTable
-  NucleusIncomingConnectionRequestsTableName:
+  NucleusIncomingConnectionRequestsTable:
     Description: NucleusIncomingConnectionRequestsTable
     Value: !Ref NucleusIncomingConnectionRequestsTable
-  NucleusConnectionsTableName:
+  NucleusConnectionsTable:
     Description: NucleusConnectionsTable
     Value: !Ref NucleusConnectionsTable
   ExchangeApi:
@@ -1124,9 +1072,6 @@ Outputs:
   ConnectionRequestAcceptFunction:
     Description: ConnectionRequestAcceptFunction
     Value: !GetAtt ConnectionRequestAcceptFunction.Arn
-  ConnectionRequestCancelFunction:
-    Description: ConnectionRequestCancelFunction
-    Value: !GetAtt ConnectionRequestCancelFunction.Arn
   ConnectionRequestCreateFunction:
     Description: ConnectionRequestCreateFunction
     Value: !GetAtt ConnectionRequestCreateFunction.Arn
@@ -1145,9 +1090,6 @@ Outputs:
   IncomingConnectionRequestCreateFunction:
     Description: IncomingConnectionRequestCreateFunction
     Value: !GetAtt IncomingConnectionRequestCreateFunction.Arn
-  IncomingConnectionRequestCancelFunction:
-    Description: IncomingConnectionRequestCancelFunction
-    Value: !GetAtt IncomingConnectionRequestCancelFunction.Arn
   RouteEventsFunction:
     Description: RouteEventsFunction
     Value: !GetAtt RouteEventsFunction.Arn

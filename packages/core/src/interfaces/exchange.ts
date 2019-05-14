@@ -1,5 +1,5 @@
 import { Channel } from "./channel";
-import { ProviderIssuedConnectionDetails } from "./connection";
+import { ProviderIssuedConnection } from "./connection";
 import { StreamStatus } from "./stream";
 
 export interface ConnectionRequestAcceptance {
@@ -15,7 +15,7 @@ export interface ConnectionRequestCancel {
 
 export interface ProviderIssuedAcceptance {
   accepted: boolean;
-  details: ProviderIssuedConnectionDetails;
+  details: ProviderIssuedConnection;
 }
 
 export interface StreamUpdate {

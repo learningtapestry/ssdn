@@ -1,10 +1,11 @@
-import { APIGatewayProxyEvent, APIGatewayProxyResult, Handler } from "aws-lambda";
-import middy, { MiddlewareObject } from "middy";
-import { cors } from "middy/middlewares";
+import { APIGatewayProxyEvent, APIGatewayProxyResult, Context, Handler } from "aws-lambda";
+
+import middy from "@middy/core";
+import cors from "@middy/http-cors";
 
 import { NucleusError } from "../errors/nucleus-error";
 
-const errorMiddleware: MiddlewareObject<any, any> = {
+const errorMiddleware: middy.IMiddyMiddlewareObject = {
   onError: (h, next) => {
     if (h.error instanceof NucleusError) {
       // as per JSON spec http://jsonapi.org/examples/#error-objects-basics
@@ -28,11 +29,16 @@ const errorMiddleware: MiddlewareObject<any, any> = {
   },
 };
 
-export function applyMiddlewares<T extends Handler>(fn: T): Handler {
-  const handler = middy(fn);
-  handler.use(errorMiddleware);
-  handler.use(cors());
-  return handler;
+export type AsyncHandler<TEvent = any, TResult = any> = (
+  event: TEvent,
+  context?: Context,
+) => Promise<TResult>;
+
+export function applyMiddlewares<T extends Handler>(fn: T) {
+  const handler = middy(fn)
+    .use(errorMiddleware)
+    .use(cors());
+  return (handler as unknown) as AsyncHandler;
 }
 
 export function verifyAuthorization(event: APIGatewayProxyEvent, value: string) {

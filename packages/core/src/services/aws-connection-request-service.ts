@@ -2,7 +2,8 @@ import generate from "nanoid/generate";
 import uuid from "uuid/v4";
 
 import { NucleusError } from "../errors/nucleus-error";
-import { readEnv } from "../helpers/app-helper";
+import { isoDate, readEnv } from "../helpers/app-helper";
+import { LAMBDAS } from "../interfaces/aws-metadata-keys";
 import {
   ConnectionRequest,
   ConnectionRequestStatus,
@@ -10,7 +11,6 @@ import {
 } from "../interfaces/connection-request";
 import logger from "../logger";
 import { ConnectionRequestRepository } from "../repositories/connection-request-repository";
-import { LAMBDAS } from "./aws-entity-names";
 import ConnectionRequestService from "./connection-request-service";
 import ExchangeService from "./exchange-service";
 import LambdaService from "./lambda-service";
@@ -42,11 +42,12 @@ export default class AwsConnectionRequestService implements ConnectionRequestSer
       nucleusId: readEnv("NUCLEUS_ID"),
     };
     connectionRequest.verificationCode = generate("0123456789", 6);
-    connectionRequest.consumerEndpoint = await this.metadata.getEndpoint();
+    const endpoint = await this.metadata.getEndpoint();
+    connectionRequest.consumerEndpoint = endpoint.value;
     connectionRequest.namespace = connectionRequest.namespace || readEnv("NUCLEUS_NAMESPACE");
     connectionRequest.channels = ["XAPI"];
     connectionRequest.status = ConnectionRequestStatus.Created;
-    connectionRequest.creationDate = new Date().toUTCString();
+    connectionRequest.creationDate = isoDate();
     await this.validateConnectionRequest(connectionRequest);
     await this.repository.put(connectionRequest);
     try {
@@ -55,7 +56,8 @@ export default class AwsConnectionRequestService implements ConnectionRequestSer
       // Could not send the request, let's trigger a lambda so it can get into the
       // dead letter queue if it fails again.
       try {
-        this.lambdaService.invokeApiGatewayLambda(LAMBDAS.connectionRequestSend, {
+        const lambdaName = await this.metadata.getMetadataValue(LAMBDAS.connectionRequestSend);
+        this.lambdaService.invokeApiGatewayLambda(lambdaName, {
           pathParameters: {
             id: connectionRequest.id,
           },
@@ -114,14 +116,14 @@ export default class AwsConnectionRequestService implements ConnectionRequestSer
 
   private async validateConnectionRequest(connectionRequest: ConnectionRequest) {
     const ownEndpoint = await this.metadata.getEndpoint();
-    if (connectionRequest.providerEndpoint === ownEndpoint) {
+    if (connectionRequest.providerEndpoint === ownEndpoint.value) {
       throw new NucleusError("An instance cannot create an stream to itself.", 400);
     }
   }
 
   private async validateIncomingConnectionRequest(connectionRequest: ConnectionRequest) {
     const ownEndpoint = await this.metadata.getEndpoint();
-    if (connectionRequest.consumerEndpoint === ownEndpoint) {
+    if (connectionRequest.consumerEndpoint === ownEndpoint.value) {
       throw new NucleusError("An instance cannot create an stream to itself.", 400);
     }
   }

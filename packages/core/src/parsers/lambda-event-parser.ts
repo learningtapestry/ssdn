@@ -5,7 +5,7 @@
 import { APIGatewayProxyEvent } from "aws-lambda";
 import get from "lodash/fp/get";
 
-import { readEnv, utcDate } from "../helpers/app-helper";
+import { isoDate, readEnv } from "../helpers/app-helper";
 import { Channel } from "../interfaces/channel";
 import Event from "../interfaces/event";
 import logger from "../logger";
@@ -32,7 +32,7 @@ export default abstract class LambdaEventParser {
       content: this.interpretContent(),
       event: {
         channel: this.channel(),
-        date: utcDate(get("requestTimeEpoch")(this.request)),
+        date: isoDate(get("requestTimeEpoch")(this.request)),
         format: this.format(),
         namespace: this.namespace(),
         operation: get("httpMethod")(this.lambdaEvent),

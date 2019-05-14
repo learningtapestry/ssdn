@@ -1,5 +1,6 @@
-import { TemporaryCredentials } from "aws-sdk";
+import Kinesis from "aws-sdk/clients/kinesis";
 import { AssumeRoleRequest } from "aws-sdk/clients/sts";
+import { TemporaryCredentials } from "aws-sdk/lib/core";
 import { sign } from "aws4";
 import Axios from "axios";
 import { RequestOptions } from "https";
@@ -7,9 +8,10 @@ import { parse } from "url";
 
 import { NucleusError } from "../errors/nucleus-error";
 import { readEnv } from "../helpers/app-helper";
+import { Factory } from "../interfaces/base-types";
 import {
   Connection,
-  ConsumerIssuedConnectionDetails,
+  ConsumerIssuedConnection,
   ExternalConnectionDetails,
 } from "../interfaces/connection";
 import { ConnectionRequest } from "../interfaces/connection-request";
@@ -17,14 +19,8 @@ import Event from "../interfaces/event";
 import { ProviderIssuedAcceptance, StreamUpdate } from "../interfaces/exchange";
 import logger from "../logger";
 import KinesisEventRepository from "../repositories/kinesis-event-repository";
-import { STREAMS } from "./aws-entity-names";
 import ExchangeService from "./exchange-service";
-import {
-  connectionRequestsAcceptPath,
-  connectionRequestVerifyPath,
-  incomingRequestsPath,
-  streamsPath,
-} from "./paths";
+import ExternalNucleusMetadataService from "./external-nucleus-metadata-service";
 
 type SignedRequestOptions = RequestOptions & {
   body: string;
@@ -32,9 +28,36 @@ type SignedRequestOptions = RequestOptions & {
   url: string;
 };
 
+export const connectionRequestVerifyPath = (endpoint: string, id: string) =>
+  `${endpoint}/connections/requests/${id}/verify`;
+
+export const connectionRequestsAcceptPath = (endpoint: string, id: string) =>
+  `${endpoint}/connections/requests/${id}/accept`;
+
+export const incomingRequestsPath = (endpoint: string) =>
+  `${endpoint}/connections/incoming-requests`;
+
+export const streamsPath = (endpoint: string) => `${endpoint}/connections/streams/update`;
+
 const CREDENTIALS_CACHE: { [k: string]: TemporaryCredentials } = {};
 
+type ExternalRepoFactory = (
+  p1: ConstructorParameters<typeof ExternalNucleusMetadataService>,
+  p2: ConstructorParameters<typeof Kinesis>,
+) => KinesisEventRepository;
+
 export default class AwsExchangeService implements ExchangeService {
+  private temporaryCredentialsFactory: Factory<TemporaryCredentials>;
+  private kinesisEventRepoFactory: ExternalRepoFactory;
+
+  constructor(
+    temporaryCredentialsFactory: Factory<TemporaryCredentials>,
+    kinesisEventRepoFactory: ExternalRepoFactory,
+  ) {
+    this.temporaryCredentialsFactory = temporaryCredentialsFactory;
+    this.kinesisEventRepoFactory = kinesisEventRepoFactory;
+  }
+
   public async sendAcceptance(
     connectionRequest: ConnectionRequest,
     providerAcceptance: ProviderIssuedAcceptance,
@@ -49,7 +72,7 @@ export default class AwsExchangeService implements ExchangeService {
       },
     );
 
-    return response.data as ConsumerIssuedConnectionDetails;
+    return response.data as ConsumerIssuedConnection;
   }
 
   public async sendConnectionRequest(connectionRequest: ConnectionRequest) {
@@ -61,8 +84,7 @@ export default class AwsExchangeService implements ExchangeService {
     logger.info(`Sending events to ${connection.endpoint}`);
     const { arn, externalId } = connection.externalConnection;
     const credentials = this.temporaryCredentials(arn, externalId);
-    const destinationStream = STREAMS.eventProcessorFor(connection.connection.nucleusId);
-    const externalRepository = new KinesisEventRepository(destinationStream, { credentials });
+    const externalRepository = this.kinesisEventRepoFactory([connection], [{ credentials }]);
     const annotatedEvents: Event[] = events.map((evt) => ({
       ...evt,
       source: {
@@ -70,7 +92,7 @@ export default class AwsExchangeService implements ExchangeService {
       },
     }));
     await externalRepository.storeBatch(annotatedEvents);
-    logger.info(`Wrote to ${destinationStream}`);
+    logger.info(`Wrote to ${connection.endpoint}'s stream.`);
   }
 
   public async sendRejection(connectionRequest: ConnectionRequest) {
@@ -119,11 +141,10 @@ export default class AwsExchangeService implements ExchangeService {
     const key = `${roleArn}.${externalId}`;
     let tempCredentials = CREDENTIALS_CACHE[key];
     if (!tempCredentials) {
-      tempCredentials = CREDENTIALS_CACHE[key] = new TemporaryCredentials({
+      tempCredentials = CREDENTIALS_CACHE[key] = this.temporaryCredentialsFactory({
         ExternalId: externalId,
         RoleArn: roleArn,
         RoleSessionName: `Nucleus-${new Date().getTime()}`,
-        endpoint: readEnv("NUCLEUS_STS_ENDPOINT", undefined),
       } as AssumeRoleRequest);
     }
     return tempCredentials;

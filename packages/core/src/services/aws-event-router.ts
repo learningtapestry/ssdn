@@ -1,7 +1,7 @@
+import TtlCache from "../helpers/ttl-cache";
 import { Connection } from "../interfaces/connection";
 import Event from "../interfaces/event";
 import { StreamStatus } from "../interfaces/stream";
-import logger from "../logger";
 import ConnectionRepository from "../repositories/connection-repository";
 import EventRouter from "./event-router";
 import ExchangeService from "./exchange-service";
@@ -16,9 +16,7 @@ export default class AwsEventRouter implements EventRouter {
 
   private routes: RouterRoutes = new Map();
 
-  private cacheUpdatedAt = 0;
-
-  private cacheDuration = 60 * 1000;
+  private cache = new TtlCache<string, Connection[]>(60 * 1000);
 
   constructor(connectionRepository: ConnectionRepository, exchangeService: ExchangeService) {
     this.connectionRepository = connectionRepository;
@@ -26,7 +24,7 @@ export default class AwsEventRouter implements EventRouter {
   }
 
   public async route(events: Event[]) {
-    await this.updateCache();
+    await this.updateRoutes();
     const groupedEvents = events.reduce(this.groupEventsByConnection.bind(this), new Map());
     await Promise.all(
       Array.from(groupedEvents.values()).map((eventGroup) =>
@@ -35,12 +33,13 @@ export default class AwsEventRouter implements EventRouter {
     );
   }
 
-  private async updateCache() {
-    const now = new Date().getTime();
-    if (this.cacheDuration > now - this.cacheUpdatedAt) {
+  private async updateRoutes() {
+    let connections = await this.cache.get("Connections");
+    if (connections) {
       return;
     }
-    const connections = await this.connectionRepository.findAllWithOutputStreams();
+
+    connections = await this.connectionRepository.findAllWithOutputStreams();
     for (const connection of connections) {
       for (const stream of connection.outputStreams) {
         if (stream.status !== StreamStatus.Active) {
@@ -60,7 +59,7 @@ export default class AwsEventRouter implements EventRouter {
         }
       }
     }
-    this.cacheUpdatedAt = new Date().getTime();
+    this.cache.set("Connections", connections);
   }
 
   private groupEventsByConnection(eventsByConnection: GroupedEvents, event: Event) {

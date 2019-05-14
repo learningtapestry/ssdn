@@ -57,7 +57,7 @@
   },
   "event": {
     "channel": "XAPI",
-    "date": "Thu, 09 Apr 2015 12:34:56 GMT",
+    "date": "2015-04-09T12:34:56.000Z",
     "format": "xAPI",
     "namespace": "nucleus-test.learningtapestry.com",
     "operation": "GET",

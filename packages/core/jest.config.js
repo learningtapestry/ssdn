@@ -5,9 +5,9 @@ const pathToEnvFile = path.resolve(process.cwd(), `.env.${currentEnv}`);
 if (fs.existsSync(pathToEnvFile)) {
   require("dotenv").config({ path: pathToEnvFile });
 }
+
 module.exports = {
   coverageDirectory: "coverage",
-  globalSetup: "<rootDir>/src/setup.ts",
   preset: "ts-jest",
   testEnvironment: "node",
 };

@@ -1,12 +1,13 @@
 import { APIGatewayProxyHandler } from "aws-lambda";
 
+import { ConsumerIssuedConnection } from "../../interfaces/connection";
+import { ProviderIssuedAcceptance } from "../../interfaces/exchange";
 import {
   getConnectionRequestRepository,
   getConnectionRequestService,
   getConnectionService,
-} from "../../aws-services";
-import { ConsumerIssuedConnectionDetails } from "../../interfaces/connection";
-import { ProviderIssuedAcceptance } from "../../interfaces/exchange";
+  getMetadataService,
+} from "../../services";
 import { apiResponse, applyMiddlewares, verifyAuthorization } from "../api-helper";
 
 export const handler = applyMiddlewares<APIGatewayProxyHandler>(async (event) => {
@@ -26,11 +27,12 @@ export const handler = applyMiddlewares<APIGatewayProxyHandler>(async (event) =>
     acceptance.details,
   );
 
-  const response: ConsumerIssuedConnectionDetails = {
+  const response: ConsumerIssuedConnection = {
     externalConnection: {
       arn: connection.connection.arn,
       externalId: connection.connection.externalId,
     },
+    metadata: await getMetadataService().getPublicMetadata(),
   };
   return apiResponse(response);
 });

@@ -1,7 +1,7 @@
 import { APIGatewayProxyHandler } from "aws-lambda";
 
-import { getConnectionService } from "../../aws-services";
 import { StreamUpdate } from "../../interfaces/exchange";
+import { getConnectionService } from "../../services";
 import { apiResponse, applyMiddlewares } from "../api-helper";
 
 export const handler = applyMiddlewares<APIGatewayProxyHandler>(async (event, context) => {

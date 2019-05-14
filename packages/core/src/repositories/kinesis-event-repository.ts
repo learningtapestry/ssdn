@@ -2,20 +2,21 @@
  * kinesis-repository.ts: Repository class to manage Kinesis Data Streams access
  */
 import Kinesis, { PutRecordsInput, PutRecordsResultEntry } from "aws-sdk/clients/kinesis";
-import chunk from "lodash/fp/chunk";
 
-import { getKinesis } from "../aws-clients";
 import { readEnv } from "../helpers/app-helper";
+import { STREAMS } from "../interfaces/aws-metadata-keys";
 import logger from "../logger";
+import NucleusMetadataService from "../services/nucleus-metadata-service";
+import { Content, EventRepository } from "./event-repository";
 
 export default class KinesisEventRepository implements EventRepository {
   public client: Kinesis;
 
-  public streamName: string;
+  public metadata: NucleusMetadataService;
 
-  constructor(streamName: string, clientOptions: Kinesis.ClientConfiguration = {}) {
-    this.streamName = streamName;
-    this.client = getKinesis(clientOptions);
+  constructor(metadata: NucleusMetadataService, client: Kinesis) {
+    this.metadata = metadata;
+    this.client = client;
   }
 
   public async store(
@@ -26,7 +27,7 @@ export default class KinesisEventRepository implements EventRepository {
     const record = {
       Data: JSON.stringify(content),
       PartitionKey: partitionKey,
-      StreamName: this.streamName,
+      StreamName: await this.getStreamName(),
     };
 
     return await this.client.putRecord(record).promise();
@@ -42,31 +43,25 @@ export default class KinesisEventRepository implements EventRepository {
       partitionKey,
     );
 
-    const resultsAgg = {
-      FailedRecordCount: 0,
-      Records: [] as PutRecordsResultEntry[],
-    };
-
     // The maximum chunksize for `PutRecords` is 500.
     // See https://docs.aws.amazon.com/kinesis/latest/APIReference/API_PutRecords.html
-    for (const records of chunk(500, content)) {
-      const batchInput: PutRecordsInput = {
-        Records: records.map((item) => ({
-          Data: typeof item === "string" ? item : JSON.stringify(item),
-          PartitionKey: partitionKey,
-        })),
-        StreamName: this.streamName,
-      };
-
-      const result = await this.client.putRecords(batchInput).promise();
-      if (result.FailedRecordCount) {
-        resultsAgg.FailedRecordCount += result.FailedRecordCount;
-      }
-      if (result.Records) {
-        resultsAgg.Records = resultsAgg.Records.concat(result.Records);
-      }
+    if (content.length > 500) {
+      throw new Error("This method should not be called with more than 500 entries.");
     }
 
-    return resultsAgg;
+    const batchInput: PutRecordsInput = {
+      Records: content.map((item) => ({
+        Data: typeof item === "string" ? item : JSON.stringify(item),
+        PartitionKey: partitionKey,
+      })),
+      StreamName: await this.getStreamName(),
+    };
+
+    return await this.client.putRecords(batchInput).promise();
+  }
+
+  private async getStreamName() {
+    const name = await this.metadata.getMetadataValue(STREAMS.eventProcessor);
+    return name.value;
   }
 }
