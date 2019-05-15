@@ -68,7 +68,11 @@ Resources:
   CognitoIdentityPool:
     Type: AWS::Cognito::IdentityPool
     Properties:
-      IdentityPoolName: !Sub Nucleus_${NucleusId}_IdentityPool
+      IdentityPoolName: !Join
+        - "_"
+        - !Split
+          - "-"
+          - !Sub Nucleus_${NucleusId}_IdentityPool
       CognitoIdentityProviders:
         - ClientId: !Ref CognitoUserPoolClient
           ProviderName: !Sub
