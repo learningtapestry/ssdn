@@ -173,7 +173,7 @@ Resources:
               ForAnyValue:StringLike:
                 cognito-identity.amazonaws.com:amr: unauthenticated
   #
-  # API Gateway
+  # Lambda
   #
   LambdaDeadLetterQueueTopic:
     Type: AWS::SNS::Topic
@@ -182,6 +182,27 @@ Resources:
       Subscription:
         - Endpoint: !Ref NotificationEmail
           Protocol: email
+  #
+  # API Gateway
+  #
+  ApiGatewayAccount:
+    Type: AWS::ApiGateway::Account
+    Properties:
+      CloudWatchRoleArn: !GetAtt ApiGatewayLoggingRole.Arn
+  ApiGatewayLoggingRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - apigateway.amazonaws.com
+            Action: sts:AssumeRole
+      Path: /
+      ManagedPolicyArns:
+        - !Sub arn:${AWS::Partition}:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs
   CollectionApiKey:
     Type: AWS::ApiGateway::ApiKey
     Properties:
