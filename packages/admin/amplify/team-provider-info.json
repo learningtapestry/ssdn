@@ -9,11 +9,6 @@
             "UnauthRoleName": "nucleus-admin-20190425145802-unauthRole",
             "StackName": "nucleus-admin-20190425145802",
             "StackId": "arn:aws:cloudformation:us-east-1:264441468378:stack/nucleus-admin-20190425145802/c29efb60-6759-11e9-9b12-0ab87eb901cc"
-        },
-        "categories": {
-            "auth": {
-                "cognito4745444d": {}
-            }
         }
     },
     "prod": {
@@ -26,11 +21,6 @@
             "UnauthRoleName": "nucleus-admin-20190425203147-unauthRole",
             "StackName": "nucleus-admin-20190425203147",
             "StackId": "arn:aws:cloudformation:us-east-1:264441468378:stack/nucleus-admin-20190425203147/62f000e0-6788-11e9-a39b-0a545e22b5be"
-        },
-        "categories": {
-            "auth": {
-                "cognito4745444d": {}
-            }
         }
     },
     "dev": {
@@ -43,11 +33,6 @@
             "UnauthRoleName": "nucleus-admin-20190425203422-unauthRole",
             "StackName": "nucleus-admin-20190425203422",
             "StackId": "arn:aws:cloudformation:us-east-1:264441468378:stack/nucleus-admin-20190425203422/bf1023f0-6788-11e9-a451-0a522351f81e"
-        },
-        "categories": {
-            "auth": {
-                "cognito4745444d": {}
-            }
         }
     },
     "rmalice": {

@@ -6,12 +6,14 @@
     "aws-sdk": "2.329.0",
     "axios": "^0.18.0",
     "lodash": "^4.17.11",
+    "nanoid": "^2.0.1",
     "uuid": "^3.3.2"
   },
   "devDependencies": {
     "@types/dotenv": "^6.1.0",
     "@types/jest": "^24.0.11",
     "@types/lodash": "^4.14.123",
+    "@types/nanoid": "^2.0.0",
     "@types/node": "^11.13.6",
     "@types/uuid": "^3.4.4",
     "dotenv": "^7.0.0",

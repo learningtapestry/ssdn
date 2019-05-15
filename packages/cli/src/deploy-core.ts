@@ -46,9 +46,10 @@ export default class DeployCore {
         "--template-file",
         "packaged.yaml",
         "--stack-name",
-        `Nucleus-${this.nucleusConfig.environment}`,
+        this.nucleusConfig.stackName,
         "--capabilities",
-        "CAPABILITY_IAM",
+        "CAPABILITY_NAMED_IAM",
+        "--no-fail-on-empty-changeset",
         "--parameter-overrides",
       ].concat(this.parameters()),
     );
@@ -85,7 +86,9 @@ export default class DeployCore {
   private parameters() {
     return [
       `Environment=${this.nucleusConfig.environment}`,
+      `Namespace=${this.nucleusConfig.namespace}`,
       `NotificationEmail=${this.nucleusConfig.email}`,
+      `NucleusId=${this.nucleusConfig.instanceId}`,
     ];
   }
 }

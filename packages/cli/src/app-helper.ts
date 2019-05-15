@@ -2,6 +2,9 @@
  * app-helper.ts: General module containing utility functions
  */
 
+import CloudFormation from "aws-sdk/clients/cloudformation";
+import keyBy from "lodash/fp/keyBy";
+import mapValues from "lodash/fp/mapValues";
 import logger from "./logger";
 
 export async function execute(command: () => void) {
@@ -26,4 +29,13 @@ export function printSuccess(text: string) {
 
 export function printError(text: string) {
   console.log("\x1b[1m\x1b[31m%s\x1b[0m", text);
+}
+
+export async function getStackValues(stackName: string) {
+  const cloudFormation = new CloudFormation({ apiVersion: "2010-05-15" });
+  const stackData = await cloudFormation.describeStacks({ StackName: stackName }).promise();
+
+  if (stackData.Stacks) {
+    return mapValues("OutputValue")(keyBy("OutputKey")(stackData.Stacks[0].Outputs));
+  }
 }
