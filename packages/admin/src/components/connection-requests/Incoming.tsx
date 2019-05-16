@@ -1,6 +1,6 @@
 import find from "lodash/fp/find";
-import React, { useEffect, useState } from "react";
-import { ButtonGroup } from "react-bootstrap";
+import React, { useCallback, useEffect, useState } from "react";
+import { ButtonGroup, Form } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 import Table from "react-bootstrap/Table";
 
@@ -18,6 +18,9 @@ export default function Incoming() {
   const [selectedConnectionRequest, setSelectedConnectionRequest] = useState<ConnectionRequest>(
     nullConnectionRequest(),
   );
+  const [verificationCode, setVerificationCode] = useState("");
+  const [matchingCodes, setMatchingCodes] = useState(false);
+  const [inputTouched, setInputTouched] = useState(false);
 
   const [alertContent, setAlertContent, renderAlert, showOnError] = useAlert();
 
@@ -62,13 +65,19 @@ export default function Incoming() {
   };
 
   const handleConfirmAccept = showOnError(async () => {
-    await AWSService.acceptConnectionRequest(
-      selectedConnectionRequest.consumerEndpoint,
-      selectedConnectionRequest.id,
-      true,
-    );
-    setShowConfirmAccept(false);
-    setTriggerRefresh(!triggerRefresh);
+    setInputTouched(true);
+    if (selectedConnectionRequest.verificationCode === verificationCode) {
+      setMatchingCodes(true);
+      await AWSService.acceptConnectionRequest(
+        selectedConnectionRequest.consumerEndpoint,
+        selectedConnectionRequest.id,
+        true,
+      );
+      setShowConfirmAccept(false);
+      setTriggerRefresh(!triggerRefresh);
+    } else {
+      setMatchingCodes(false);
+    }
   });
 
   const handleConfirmReject = showOnError(async () => {
@@ -80,6 +89,10 @@ export default function Incoming() {
     setShowConfirmReject(false);
     setTriggerRefresh(!triggerRefresh);
   });
+
+  const handleVerificationCodeChange = useCallback((event) => {
+    setVerificationCode(event.target.value);
+  }, []);
 
   // tslint:disable: jsx-wrap-multiline
   const requestButtons = (request: ConnectionRequest) => {
@@ -164,6 +177,7 @@ export default function Incoming() {
         connectionRequest={selectedConnectionRequest}
         show={showViewInfoModal}
         onClose={handleCloseViewInfoModal}
+        type="incoming"
       />
       <ConfirmationModal
         title="Confirm connection request"
@@ -171,9 +185,22 @@ export default function Incoming() {
         onConfirm={handleConfirmAccept}
         onClose={handleCloseConfirmAccept}
       >
-        <p>
-          Do you confirm the connection request should be <strong>accepted</strong>?
-        </p>
+        <div>
+          <p>
+            Enter the verification code delivered by the consumer to <strong>accept</strong> the
+            connection request.
+          </p>
+          <Form.Control
+            className="w-50"
+            type="text"
+            name="verificationCode"
+            placeholder="Verification Code"
+            value={verificationCode}
+            onChange={handleVerificationCodeChange}
+            isInvalid={inputTouched && !matchingCodes}
+          />
+          <Form.Control.Feedback type="invalid">Code does not seem correct</Form.Control.Feedback>
+        </div>
       </ConfirmationModal>
       <ConfirmationModal
         title="Confirm connection request"

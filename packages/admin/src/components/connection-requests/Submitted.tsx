@@ -94,6 +94,7 @@ export default function Submitted() {
         connectionRequest={selectedConnectionRequest}
         show={showViewInfoModal}
         onClose={handleCloseViewInfoModal}
+        type="submitted"
       />
     </section>
   );

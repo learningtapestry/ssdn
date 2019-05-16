@@ -8,6 +8,7 @@ interface ConnectionRequestModalProps {
   connectionRequest: ConnectionRequest;
   show: boolean;
   onClose: () => void;
+  type: string;
 }
 
 const ConnectionAttribute = (props: { name: string; children: ReactNode }) => (
@@ -23,7 +24,7 @@ const ConnectionAttribute = (props: { name: string; children: ReactNode }) => (
 
 export default function ConnectionRequestModal(props: ConnectionRequestModalProps) {
   const verificationCode = () => {
-    if (props.connectionRequest.type === "submitted") {
+    if (props.type === "submitted") {
       return (
         <ConnectionAttribute name="Verification Code">
           <p className="text-info">{props.connectionRequest.verificationCode}</p>
@@ -35,7 +36,7 @@ export default function ConnectionRequestModal(props: ConnectionRequestModalProp
   return (
     <Modal show={props.show} onHide={props.onClose} size="lg">
       <Modal.Header closeButton={true}>
-        <Modal.Title>{capitalize(props.connectionRequest.type)} Connection Request</Modal.Title>
+        <Modal.Title>{capitalize(props.type)} Connection Request</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Container>
