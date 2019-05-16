@@ -245,7 +245,7 @@ Resources:
     Properties:
       Name: !Sub Nucleus-${NucleusId}-EventProcessor
       RetentionPeriodHours: 48
-      ShardCount: 100
+      ShardCount: 1
   EventDeliveryStream:
     Type: AWS::KinesisFirehose::DeliveryStream
     Properties:
