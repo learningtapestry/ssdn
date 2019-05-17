@@ -1,7 +1,9 @@
 import "jest-dom/extend-expect";
+
 import omit from "lodash/fp/omit";
 import React from "react";
 import { fireEvent, render } from "react-testing-library";
+
 import * as factories from "../../../test-support/factories";
 import ConnectionRequestModal from "./ConnectionRequestModal";
 
@@ -10,6 +12,7 @@ describe("<ConnectionRequestModal />", () => {
     connectionRequest: factories.connectionRequests()[0],
     onClose: jest.fn(),
     show: true,
+    type: "incoming",
   };
 
   it("renders the dialog components", () => {
@@ -21,21 +24,23 @@ describe("<ConnectionRequestModal />", () => {
   it("renders the title", () => {
     const { getByText } = render(<ConnectionRequestModal {...props} />);
 
-    getByText("Consumer Connection Request");
+    getByText("Incoming Connection Request");
   });
 
   it("renders the request values", () => {
-    const { getByText, queryByText } = render(<ConnectionRequestModal {...props} />);
-    const displayedAttributes = omit(["creationDate", "id", "status", "type", "verificationCode"])(
-      props.connectionRequest,
-    );
+    const { getByText } = render(<ConnectionRequestModal {...props} />);
 
-    getByText("2/13/2019, 1:21:36 PM");
+    getByText("2/13/2019, 7:21:36 AM");
     getByText("Accepted");
-    queryByText("825150");
-    Object.entries(displayedAttributes).forEach((entry) => {
-      getByText(entry[1]); // Attribute value
-    });
+    getByText(props.connectionRequest.firstName);
+    getByText(props.connectionRequest.lastName);
+    getByText(props.connectionRequest.organization);
+    getByText(props.connectionRequest.title);
+    getByText(props.connectionRequest.email);
+    getByText(props.connectionRequest.phoneNumber);
+    if (props.connectionRequest.extension) {
+      getByText(props.connectionRequest.extension);
+    }
   });
 
   it("shows the verification code when seeing a provider request", () => {
@@ -45,12 +50,12 @@ describe("<ConnectionRequestModal />", () => {
       <ConnectionRequestModal {...props} connectionRequest={providerRequest} />,
     );
 
-    queryByText("825150");
+    queryByText("Verify1");
   });
   it("executes the event handlers", () => {
-    const { getByText } = render(<ConnectionRequestModal {...props} />);
+    const { getAllByText } = render(<ConnectionRequestModal {...props} />);
 
-    fireEvent.click(getByText("Close"));
+    fireEvent.click(getAllByText("Close")[0]);
 
     expect(props.onClose).toHaveBeenCalled();
   });

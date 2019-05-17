@@ -6,12 +6,13 @@ import CloudWatchLogs from "aws-sdk/clients/cloudwatchlogs";
 import CognitoIdentityServiceProvider from "aws-sdk/clients/cognitoidentityserviceprovider";
 import DynamoDB from "aws-sdk/clients/dynamodb";
 import { config } from "aws-sdk/global";
-import { filter, map } from "lodash/fp";
+import { flatMap, map } from "lodash/fp";
 
 import API from "@aws-amplify/api";
 import Auth from "@aws-amplify/auth";
 import Amplify from "@aws-amplify/core";
 
+import { nullInstance } from "../app-helper";
 import awsconfiguration from "../aws-configuration";
 import awsmobile from "../aws-exports";
 import { Connection } from "../interfaces/connection";
@@ -57,20 +58,18 @@ export default class AWSService {
         return [];
       }
 
-      return (items.Items as Connection[])
-        .flatMap((e) =>
-          e[filterAttr]!.map((ex) => ({
-            channel: ex.channel,
-            endpoint: e.endpoint,
-            namespace: ex.namespace,
-            status: ex.status,
-          })),
-        )
-        .sort((a, b) =>
-          `${a.endpoint}.${a.namespace}.${a.channel}`.localeCompare(
-            `${a.endpoint}.${b.namespace}.${b.channel}`,
-          ),
-        );
+      return flatMap((e: Connection) =>
+        e[filterAttr]!.map((ex) => ({
+          channel: ex.channel,
+          endpoint: e.endpoint,
+          namespace: ex.namespace,
+          status: ex.status,
+        })),
+      )(items.Items as Connection[]).sort((a, b) =>
+        `${a.endpoint}.${a.namespace}.${a.channel}`.localeCompare(
+          `${a.endpoint}.${b.namespace}.${b.channel}`,
+        ),
+      );
     });
   }
 
@@ -102,7 +101,7 @@ export default class AWSService {
     type: "input" | "output",
   ) {
     return AWSService.withCredentials(async () => {
-      const response = await API.post("ExchangeApiSigv4", "/connections/streams/update", {
+      await API.post("ExchangeApiSigv4", "/connections/streams/update", {
         body: {
           channel,
           endpoint,
@@ -112,7 +111,6 @@ export default class AWSService {
           type,
         },
       });
-      return response as ConnectionRequest;
     });
   }
 
@@ -124,21 +122,6 @@ export default class AWSService {
         body: connectionRequest,
       });
       return response as ConnectionRequest;
-    });
-  }
-
-  public static async submitConnectionRequest(id: string) {
-    return AWSService.withCredentials(async () => {
-      return await API.post("ExchangeApi", `/connections/requests/${id}/send`, {});
-    });
-  }
-
-  public static async deleteConnectionRequest(id: string) {
-    return AWSService.withCredentials(async () => {
-      const documentClient = new DynamoDB.DocumentClient();
-      const params = { Key: { id }, TableName: awsconfiguration.Storage.nucleusConnectionRequests };
-
-      return await documentClient.delete(params).promise();
     });
   }
 
@@ -155,17 +138,20 @@ export default class AWSService {
     });
   }
 
-  public static async retrieveStacks() {
+  public static async retrieveStack() {
     return AWSService.withCredentials(async () => {
       const cloudFormation = new CloudFormation();
       const stackData = await cloudFormation.describeStacks().promise();
 
       if (stackData.Stacks) {
-        const isNucleusStack = (stack: CloudFormation.Stack) =>
-          stack.StackName.toLowerCase().startsWith(awsconfiguration.Auth.stackName.toLowerCase());
-
-        return AWSAdapter.convertStacks(filter(isNucleusStack)(stackData.Stacks));
+        const stack = stackData.Stacks.find(
+          (s: CloudFormation.Stack) => s.StackName === awsconfiguration.Auth.stackName,
+        );
+        if (stack) {
+          return AWSAdapter.convertStack(stack);
+        }
       }
+      return nullInstance();
     });
   }
 

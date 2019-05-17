@@ -1,45 +1,50 @@
+import flatMap from "lodash/fp/flatMap";
+
+import { Connection } from "../src/interfaces/connection";
 /**
  * factories.ts: Utility functions that create domain objects, useful for testing.
  */
-
 import UserForm from "../src/interfaces/user-form";
 import * as responses from "./service-responses";
 
+export const nucleusDevStack = {
+  name: "Nucleus-Dev",
+  settings: [
+    {
+      description: "Name of the Event Processor Kinesis Data Stream",
+      key: "EventProcessorStreamName",
+      value: "Nucleus-Development-EventProcessor",
+    },
+    {
+      description: "Hello Nucleus Lambda Function ARN",
+      key: "HelloNucleusFunction",
+      value:
+        `arn:aws:lambda:us-east-1:111111111111:function:` +
+        `Nucleus-Dev-HelloNucleusFunction-HCJE3P62QE5P`,
+    },
+  ],
+};
+
+export const nucleusStack = {
+  name: "Nucleus",
+  settings: [
+    {
+      description: "Name of the Event Processor Kinesis Data Stream",
+      key: "EventProcessorStreamName",
+      value: "Nucleus-Production-EventProcessor",
+    },
+    {
+      description: "Hello Nucleus Lambda Function ARN",
+      key: "HelloNucleusFunction",
+      value:
+        "arn:aws:lambda:us-east-1:111111111111:function:" +
+        "Nucleus-HelloNucleusFunction-60K87QSYCYTJ",
+    },
+  ],
+};
+
 export function instances() {
-  return [
-    {
-      name: "Nucleus-Dev",
-      settings: [
-        {
-          description: "Name of the Event Processor Kinesis Data Stream",
-          key: "EventProcessorStreamName",
-          value: "Nucleus-Development-EventProcessor",
-        },
-        {
-          description: "Hello Nucleus Lambda Function ARN",
-          key: "HelloNucleusFunction",
-          value: `arn:aws:lambda:us-east-1:111111111111:function:
-          Nucleus-Dev-HelloNucleusFunction-HCJE3P62QE5P`,
-        },
-      ],
-    },
-    {
-      name: "Nucleus",
-      settings: [
-        {
-          description: "Name of the Event Processor Kinesis Data Stream",
-          key: "EventProcessorStreamName",
-          value: "Nucleus-Production-EventProcessor",
-        },
-        {
-          description: "Hello Nucleus Lambda Function ARN",
-          key: "HelloNucleusFunction",
-          value: `arn:aws:lambda:us-east-1:111111111111:function:
-          Nucleus-HelloNucleusFunction-60K87QSYCYTJ`,
-        },
-      ],
-    },
-  ];
+  return [{ ...nucleusDevStack }, { ...nucleusStack }];
 }
 
 export function users() {
@@ -76,6 +81,36 @@ export function userForm(userParams: UserForm) {
 
 export function connectionRequests() {
   return responses.connectionRequestItems().Items;
+}
+
+export function connections() {
+  return responses.connections().Items;
+}
+
+export function inputStreams() {
+  return flatMap((item: Connection) =>
+    item.inputStreams
+      ? item.inputStreams.map((stream) => ({
+          channel: stream.channel,
+          endpoint: item.endpoint,
+          namespace: stream.namespace,
+          status: stream.status,
+        }))
+      : [],
+  )(responses.connections().Items);
+}
+
+export function outputStreams() {
+  return flatMap((item: Connection) =>
+    item.outputStreams
+      ? item.outputStreams.map((stream) => ({
+          channel: stream.channel,
+          endpoint: item.endpoint,
+          namespace: stream.namespace,
+          status: stream.status,
+        }))
+      : [],
+  )(responses.connections().Items);
 }
 
 export function logGroups() {

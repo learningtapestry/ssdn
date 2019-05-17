@@ -31,7 +31,6 @@ export default function Streams(props: StreamsProps) {
 
   const selectStream = (event: React.MouseEvent<HTMLElement>) => {
     const data = (event.target as HTMLElement).dataset;
-    console.log(data);
     const ex = find({ endpoint: data.endpoint, namespace: data.namespace, channel: data.channel })(
       streams,
     ) as EndpointStream;

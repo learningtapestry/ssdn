@@ -1,7 +1,8 @@
 import capitalize from "lodash/fp/capitalize";
-import { ReactNode } from "react";
-import * as React from "react";
+import React, { ReactNode } from "react";
 import { Button, Col, Container, Modal, Row } from "react-bootstrap";
+
+import { displayDate } from "../../app-helper";
 import { ConnectionRequest } from "../../interfaces/connection-request";
 
 interface ConnectionRequestModalProps {
@@ -40,9 +41,7 @@ export default function ConnectionRequestModal(props: ConnectionRequestModalProp
       </Modal.Header>
       <Modal.Body>
         <Container>
-          <ConnectionAttribute name="Id">
-            {capitalize(props.connectionRequest.id)}
-          </ConnectionAttribute>
+          <ConnectionAttribute name="Id">{props.connectionRequest.id}</ConnectionAttribute>
           <ConnectionAttribute name="Status">
             {capitalize(props.connectionRequest.status)}
           </ConnectionAttribute>
@@ -57,7 +56,7 @@ export default function ConnectionRequestModal(props: ConnectionRequestModalProp
             </a>
           </ConnectionAttribute>
           <ConnectionAttribute name="Creation Date">
-            {new Date(props.connectionRequest.creationDate).toLocaleString("en-US")}
+            {displayDate(props.connectionRequest.creationDate)}
           </ConnectionAttribute>
           <ConnectionAttribute name="First Name">
             {props.connectionRequest.firstName}

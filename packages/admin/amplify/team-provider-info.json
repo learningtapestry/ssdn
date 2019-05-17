@@ -58,5 +58,17 @@
             "StackName": "nucleus-admin-rmbob-20190513170917",
             "StackId": "arn:aws:cloudformation:us-east-1:264441468378:stack/nucleus-admin-rmbob-20190513170917/fd7486f0-75ba-11e9-9c68-0e6c5fec19cc"
         }
+    },
+    "rmcypress": {
+        "awscloudformation": {
+            "AuthRoleName": "nucleus-admin-rmcypress-20190517112754-authRole",
+            "UnauthRoleArn": "arn:aws:iam::264441468378:role/nucleus-admin-rmcypress-20190517112754-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::264441468378:role/nucleus-admin-rmcypress-20190517112754-authRole",
+            "Region": "us-east-1",
+            "DeploymentBucketName": "nucleus-admin-rmcypress-20190517112754-deployment",
+            "UnauthRoleName": "nucleus-admin-rmcypress-20190517112754-unauthRole",
+            "StackName": "nucleus-admin-rmcypress-20190517112754",
+            "StackId": "arn:aws:cloudformation:us-east-1:264441468378:stack/nucleus-admin-rmcypress-20190517112754/f62c7770-78af-11e9-b8e2-0e0d3a451244"
+        }
     }
 }

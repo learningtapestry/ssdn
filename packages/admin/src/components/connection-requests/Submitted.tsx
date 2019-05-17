@@ -1,15 +1,14 @@
 import find from "lodash/fp/find";
 import React, { useEffect, useState } from "react";
-import { Alert, ButtonGroup } from "react-bootstrap";
+import { ButtonGroup } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 import ButtonToolbar from "react-bootstrap/ButtonToolbar";
 import Table from "react-bootstrap/Table";
 import { LinkContainer } from "react-router-bootstrap";
 
-import { nullConnectionRequest } from "../../app-helper";
+import { displayDate, nullConnectionRequest } from "../../app-helper";
 import { ConnectionRequest } from "../../interfaces/connection-request";
 import AWSService from "../../services/aws-service";
-import { ColorVariant } from "../ui/base-types";
 import useModal from "../ui/use-modal";
 import ConnectionRequestModal from "./ConnectionRequestModal";
 import { StatusLabel } from "./StatusLabel";
@@ -49,7 +48,7 @@ export default function Submitted() {
   const renderedConnectionRequests = connectionRequests.map((request) => (
     <tr key={request.id}>
       <td>{request.providerEndpoint}</td>
-      <td>{new Date(request.creationDate).toLocaleDateString("en-US")}</td>
+      <td>{displayDate(request.creationDate)}</td>
       <td>{request.email}</td>
       <td>
         <StatusLabel status={request.status} statusType="submitted" />

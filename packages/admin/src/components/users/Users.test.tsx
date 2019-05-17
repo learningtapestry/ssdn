@@ -1,6 +1,8 @@
 import "jest-dom/extend-expect";
+
 import React from "react";
 import { fireEvent, wait } from "react-testing-library";
+
 import * as factories from "../../../test-support/factories";
 import { renderWithRouter } from "../../../test-support/test-helper";
 import AWSService from "../../services/aws-service";
@@ -16,18 +18,18 @@ describe("<Users/>", () => {
   });
 
   it("renders title and users in the list", async () => {
-    const { getByText } = renderWithRouter(<Users />, { route: "/users" });
+    const { getByText, queryByText } = renderWithRouter(<Users />, { route: "/users" });
 
     getByText("Users");
     await wait(() => {
       getByText("test-user-1");
-      getByText("4/5/2019");
+      queryByText("4/5/2019");
       getByText("test-user-1@example.org");
       getByText("Test User 1");
       getByText("+1555555555");
       getByText("CONFIRMED");
       getByText("test-user-2");
-      getByText("4/8/2019");
+      queryByText("4/8/2019");
       getByText("test-user-2@example.org");
       getByText("Test User 2");
       getByText("+1666666666");
@@ -36,10 +38,10 @@ describe("<Users/>", () => {
   });
 
   it("handles the delete modal dialog", async () => {
-    const { getByText } = renderWithRouter(<Users />, { route: "/users" });
+    const { getAllByText, getByText } = renderWithRouter(<Users />, { route: "/users" });
 
     await wait(() => {
-      fireEvent.click(getByText("Delete"));
+      fireEvent.click(getAllByText("Delete")[0]);
       getByText("Are you sure you want to delete user 'test-user-1'?");
     });
     fireEvent.click(getByText("Confirm"));

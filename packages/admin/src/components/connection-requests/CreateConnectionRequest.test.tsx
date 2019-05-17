@@ -1,15 +1,16 @@
 import "jest-dom/extend-expect";
+
 import React from "react";
 import { fireEvent, render, wait, waitForElement } from "react-testing-library";
+
 import * as factories from "../../../test-support/factories";
+import { nullConnectionRequest } from "../../app-helper";
 import AWSService from "../../services/aws-service";
-import ConsumerRequestService from "../../services/consumer-request-service";
 import CreateConnectionRequest from "./CreateConnectionRequest";
 
 describe("<CreateConnectionRequest/>", () => {
   beforeAll(() => {
-    AWSService.saveConnectionRequest = jest.fn();
-    ConsumerRequestService.register = jest.fn();
+    AWSService.saveConnectionRequest = jest.fn(async () => nullConnectionRequest());
   });
 
   it("renders title and connection request form", () => {
@@ -32,7 +33,7 @@ describe("<CreateConnectionRequest/>", () => {
     fireEvent.click(getByText("Send"));
 
     await wait(() => {
-      getByText("endpoint is a required field");
+      getByText("providerEndpoint is a required field");
       getByText("firstName is a required field");
       getByText("lastName is a required field");
       getByText("organization is a required field");
@@ -46,7 +47,9 @@ describe("<CreateConnectionRequest/>", () => {
     const { getByText, getByLabelText, getByRole } = render(<CreateConnectionRequest />);
 
     const request = factories.connectionRequests()[0];
-    fireEvent.change(getByLabelText("Endpoint URL"), { target: { value: request.endpoint } });
+    fireEvent.change(getByLabelText("Endpoint URL"), {
+      target: { value: request.providerEndpoint },
+    });
     fireEvent.change(getByLabelText("First Name"), { target: { value: request.firstName } });
     fireEvent.change(getByLabelText("Last Name"), { target: { value: request.lastName } });
     fireEvent.change(getByLabelText("Organization"), { target: { value: request.organization } });
@@ -56,7 +59,6 @@ describe("<CreateConnectionRequest/>", () => {
     fireEvent.click(getByText("Send"));
 
     await waitForElement(() => getByRole("dialog"));
-    expect(ConsumerRequestService.register).toHaveBeenCalled();
     expect(AWSService.saveConnectionRequest).toHaveBeenCalled();
   });
 });

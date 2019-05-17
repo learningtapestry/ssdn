@@ -1,22 +1,22 @@
 /**
  * aws-adapter.ts: Converts AWS types to internal ones
  */
-
 import CloudFormation from "aws-sdk/clients/cloudformation";
 import CloudWatchLogs from "aws-sdk/clients/cloudwatchlogs";
 import CognitoIdentityServiceProvider from "aws-sdk/clients/cognitoidentityserviceprovider";
 import find from "lodash/fp/find";
+
 import Instance from "../interfaces/instance";
 import LogEvent from "../interfaces/log-event";
 import Setting from "../interfaces/setting";
 import User from "../interfaces/user";
 
 export default class AWSAdapter {
-  public static convertStacks(stacks: CloudFormation.Stack[]): Instance[] {
-    return stacks.map((stack) => ({
+  public static convertStack(stack: CloudFormation.Stack): Instance {
+    return {
       name: stack.StackName,
       settings: AWSAdapter.convertOutputs(stack.Outputs!),
-    }));
+    };
   }
 
   public static convertOutputs(outputs: CloudFormation.Output[]): Setting[] {

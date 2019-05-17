@@ -1,6 +1,8 @@
 import "jest-dom/extend-expect";
+
 import React from "react";
 import { render, wait } from "react-testing-library";
+
 import * as factories from "../../../test-support/factories";
 import AWSService from "../../services/aws-service";
 import Settings from "./Settings";
@@ -10,26 +12,18 @@ import Settings from "./Settings";
  */
 describe("<Settings/>", () => {
   beforeEach(() => {
-    AWSService.retrieveStacks = jest.fn().mockReturnValue(factories.instances());
+    AWSService.retrieveStack = jest.fn().mockReturnValue(factories.instances()[1]);
   });
 
-  it("renders the title and instance tabs", async () => {
-    const { getByText } = render(<Settings />);
-
-    getByText("Settings");
-    await wait(() => {
-      getByText("Nucleus-Dev");
-      getByText("Nucleus");
-    });
-  });
-
-  it("renders the settings for all instances", async () => {
+  it("renders a table with the settings", async () => {
     const { getByText } = render(<Settings />);
 
     await wait(() => {
-      getByText("Nucleus-Development-EventProcessor");
-      getByText(/Nucleus-Dev-HelloNucleusFunction-HCJE3P62QE5P/i);
+      getByText("EventProcessorStreamName");
+      getByText("Name of the Event Processor Kinesis Data Stream");
       getByText("Nucleus-Production-EventProcessor");
+      getByText("Hello Nucleus Lambda Function ARN");
+      getByText("HelloNucleusFunction");
       getByText(/Nucleus-HelloNucleusFunction-60K87QSYCYTJ/i);
     });
   });

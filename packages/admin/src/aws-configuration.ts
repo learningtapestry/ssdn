@@ -1,12 +1,18 @@
 import Auth from "@aws-amplify/auth";
 
-const ensure = (env: NodeJS.ProcessEnv, k: string) => {
-  const v = env[k];
+const env = {
+  cypress: (k: string) => (window as any).Cypress.env(k),
+  none: (k: string) => {},
+  process: (k: string) => process.env[k],
+}[Object.keys(process.env).length ? "process" : (window as any).Cypress ? "cypress" : "none"];
+
+export function ensure(k: string) {
+  const v = env(k);
   if (!v) {
     throw new Error(`Key not found: ${k}`);
   }
   return v;
-};
+}
 
 const awsapi = {
   endpoints: [
@@ -17,34 +23,32 @@ const awsapi = {
           "Content-Type": "application/json",
         };
       },
-      endpoint: ensure(process.env, "REACT_APP_ENDPOINT"),
+      endpoint: ensure("REACT_APP_ENDPOINT"),
       name: "ExchangeApi",
     },
     {
-      endpoint: ensure(process.env, "REACT_APP_ENDPOINT"),
+      endpoint: ensure("REACT_APP_ENDPOINT"),
       name: "ExchangeApiSigv4",
     },
   ],
 };
 
+const ENV = process.env ? process.env : (window as any).Cypress ? (window as any).Cypress : {};
+
 const awsconfiguration = {
   Api: awsapi,
   Auth: {
-    identityPoolId: ensure(process.env, "REACT_APP_IDENTITY_POOL_ID"),
-    nucleusId: ensure(process.env, "REACT_APP_NUCLEUS_ID"),
-    region: ensure(process.env, "REACT_APP_AWS_REGION"),
-    stackName: ensure(process.env, "REACT_APP_STACK_NAME"),
-    userPoolId: ensure(process.env, "REACT_APP_USER_POOL_ID"),
-    userPoolWebClientId: ensure(process.env, "REACT_APP_USER_POOL_WEB_CLIENT_ID"),
+    identityPoolId: ensure("REACT_APP_IDENTITY_POOL_ID"),
+    nucleusId: ensure("REACT_APP_NUCLEUS_ID"),
+    region: ensure("REACT_APP_AWS_REGION"),
+    stackName: ensure("REACT_APP_STACK_NAME"),
+    userPoolId: ensure("REACT_APP_USER_POOL_ID"),
+    userPoolWebClientId: ensure("REACT_APP_USER_POOL_WEB_CLIENT_ID"),
   },
   Storage: {
-    nucleusConnectionRequests: `Nucleus-${ensure(
-      process.env,
-      "REACT_APP_NUCLEUS_ID",
-    )}-ConnectionRequests`,
-    nucleusConnections: `Nucleus-${ensure(process.env, "REACT_APP_NUCLEUS_ID")}-Connections`,
+    nucleusConnectionRequests: `Nucleus-${ensure("REACT_APP_NUCLEUS_ID")}-ConnectionRequests`,
+    nucleusConnections: `Nucleus-${ensure("REACT_APP_NUCLEUS_ID")}-Connections`,
     nucleusIncomingConnectionRequests: `Nucleus-${ensure(
-      process.env,
       "REACT_APP_NUCLEUS_ID",
     )}-IncomingConnectionRequests`,
   },

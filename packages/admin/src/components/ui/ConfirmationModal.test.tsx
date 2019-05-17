@@ -1,6 +1,8 @@
 import "jest-dom/extend-expect";
+
 import React from "react";
 import { fireEvent, render } from "react-testing-library";
+
 import ConfirmationModal from "./ConfirmationModal";
 
 describe("<ConfirmationModal />", () => {
@@ -26,9 +28,9 @@ describe("<ConfirmationModal />", () => {
   });
 
   it("executes the event handlers", () => {
-    const { getByText } = render(<ConfirmationModal {...props} />);
+    const { getByText, getAllByText } = render(<ConfirmationModal {...props} />);
 
-    fireEvent.click(getByText("Close"));
+    fireEvent.click(getAllByText("Close")[0]);
     fireEvent.click(getByText("Confirm"));
 
     expect(props.onClose).toHaveBeenCalled();

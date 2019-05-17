@@ -1,10 +1,9 @@
-import find from "lodash/fp/find";
 import React, { useCallback, useEffect, useState } from "react";
 import { ButtonGroup, Form } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 import Table from "react-bootstrap/Table";
 
-import { nullConnectionRequest } from "../../app-helper";
+import { displayDate, nullConnectionRequest } from "../../app-helper";
 import { ConnectionRequest, ConnectionRequestStatus } from "../../interfaces/connection-request";
 import AWSService from "../../services/aws-service";
 import ConfirmationModal from "../ui/ConfirmationModal";
@@ -26,10 +25,10 @@ export default function Incoming() {
 
   const selectConnectionRequest = (event: React.MouseEvent<HTMLElement>) => {
     const target = event.target as HTMLElement;
-    const connectionRequest = find({ id: target.dataset.connectionRequest })(
-      connectionRequests,
-    ) as ConnectionRequest;
-    setSelectedConnectionRequest(connectionRequest);
+    const connectionRequest = connectionRequests.find(
+      (req) => `${req.consumerEndpoint}${req.id}` === target.dataset.connectionRequest,
+    );
+    setSelectedConnectionRequest(connectionRequest!);
   };
 
   const [
@@ -102,7 +101,7 @@ export default function Incoming() {
           <Button
             variant="outline-success"
             size="sm"
-            data-connection-request={request.id}
+            data-connection-request={`${request.consumerEndpoint}${request.id}`}
             data-status="accepted"
             onClick={openConfirmAccept}
           >
@@ -111,7 +110,7 @@ export default function Incoming() {
           <Button
             variant="outline-danger"
             size="sm"
-            data-connection-request={request.id}
+            data-connection-request={`${request.consumerEndpoint}${request.id}`}
             data-status="rejected"
             onClick={openConfirmReject}
           >
@@ -120,7 +119,7 @@ export default function Incoming() {
           <Button
             variant="outline-primary"
             size="sm"
-            data-connection-request={request.id}
+            data-connection-request={`${request.consumerEndpoint}${request.id}`}
             onClick={openViewInfoModal}
           >
             View info
@@ -133,7 +132,7 @@ export default function Incoming() {
         <Button
           variant="outline-primary"
           size="sm"
-          data-connection-request={request.id}
+          data-connection-request={`${request.consumerEndpoint}${request.id}`}
           onClick={openViewInfoModal}
         >
           View info
@@ -146,7 +145,7 @@ export default function Incoming() {
     <tr key={request.id}>
       <td>{request.consumerEndpoint}</td>
       <td>{request.organization}</td>
-      <td>{new Date(request.creationDate).toLocaleDateString("en-US")}</td>
+      <td>{displayDate(request.creationDate)}</td>
       <td>{request.email}</td>
       <td>
         <StatusLabel status={request.status} statusType="incoming" />

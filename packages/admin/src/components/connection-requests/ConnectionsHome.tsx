@@ -22,19 +22,6 @@ export default function ConnectionsHome(props: {}) {
         <Col md="3">
           <Nav variant="pills" defaultActiveKey="/home" className="flex-column">
             <Nav.Item>
-              <NavHeading>Streams</NavHeading>
-            </Nav.Item>
-            <Nav.Item>
-              <LinkContainer to="/connections/streams/outputs" exact={true}>
-                <Nav.Link>Consumers</Nav.Link>
-              </LinkContainer>
-            </Nav.Item>
-            <Nav.Item>
-              <LinkContainer to="/connections/streams/inputs" exact={true}>
-                <Nav.Link>Providers</Nav.Link>
-              </LinkContainer>
-            </Nav.Item>
-            <Nav.Item>
               <NavHeading>Connection Requests</NavHeading>
             </Nav.Item>
             <Nav.Item>
@@ -50,6 +37,19 @@ export default function ConnectionsHome(props: {}) {
             <Nav.Item>
               <LinkContainer to="/connections/requests/create" exact={true}>
                 <Nav.Link>Create new connection</Nav.Link>
+              </LinkContainer>
+            </Nav.Item>
+            <Nav.Item>
+              <NavHeading>Streams</NavHeading>
+            </Nav.Item>
+            <Nav.Item>
+              <LinkContainer to="/connections/streams/outputs" exact={true}>
+                <Nav.Link>Consumers</Nav.Link>
+              </LinkContainer>
+            </Nav.Item>
+            <Nav.Item>
+              <LinkContainer to="/connections/streams/inputs" exact={true}>
+                <Nav.Link>Providers</Nav.Link>
               </LinkContainer>
             </Nav.Item>
           </Nav>

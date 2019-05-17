@@ -1,6 +1,8 @@
 import "jest-dom/extend-expect";
+
 import React from "react";
 import { fireEvent, render, wait } from "react-testing-library";
+
 import * as factories from "../../../test-support/factories";
 import AWSService from "../../services/aws-service";
 import Logs from "./Logs";
@@ -27,9 +29,9 @@ describe("<Logs/>", () => {
     const { getByText } = render(<Logs />);
 
     await wait(() => {
-      getByText("4/14/2019, 5:21:55 PM");
+      getByText("4/14/2019, 11:21:55 AM");
       getByText("START RequestId: df528d1a-6049-4430-8835-38e7ef58b800 Version: $LATEST");
-      getByText("4/14/2019, 5:21:56 PM");
+      getByText("4/14/2019, 11:21:56 AM");
       getByText("END RequestId: df528d1a-6049-4430-8835-38e7ef58b800");
     });
   });

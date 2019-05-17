@@ -1,6 +1,6 @@
 describe("Create Provider", () => {
   before(() => {
-    cy.login({ url: "/providers/create" });
+    cy.login({ url: "/connections/requests/create" });
     cy.contains("h1", "Data Provider Request Form");
   });
 
@@ -9,7 +9,7 @@ describe("Create Provider", () => {
   });
 
   it("creates a new provider connection and shows verification code", () => {
-    cy.get("input[name=endpoint]").type(Cypress.env("REGISTER_ENDPOINT"));
+    cy.get("input[name=providerEndpoint]").type(Cypress.env("REGISTER_ENDPOINT"));
     cy.get("input[name=firstName]").type("Cypress Test");
     cy.get("input[name=lastName]").type("Connection");
     cy.get("input[name=organization]").type("Learning Tapestry");
@@ -30,7 +30,7 @@ describe("Create Provider", () => {
       .invoke("text")
       .should("have.length", 6);
 
-    cy.contains("button", "Close").click();
+    cy.contains("button", "Confirm").click();
   });
 
   it("receives validation errors", () => {
@@ -38,15 +38,21 @@ describe("Create Provider", () => {
       .contains("Send")
       .click();
 
-    ["endpoint", "firstName", "lastName", "organization", "title", "email", "phoneNumber"].forEach(
-      (field) => {
-        cy.contains(".invalid-feedback", `${field} is a required field`);
-      },
-    );
+    [
+      "providerEndpoint",
+      "firstName",
+      "lastName",
+      "organization",
+      "title",
+      "email",
+      "phoneNumber",
+    ].forEach((field) => {
+      cy.contains(".invalid-feedback", `${field} is a required field`);
+    });
   });
 
   it("tries to submit an invalid endpoint", () => {
-    cy.get("input[name=endpoint]").type("http://invalid.example.org/dev/register");
+    cy.get("input[name=providerEndpoint]").type("http://invalid.example.org/dev/register");
     cy.get("input[name=firstName]").type("Cypress Test");
     cy.get("input[name=lastName]").type("Connection");
     cy.get("input[name=organization]").type("Learning Tapestry");
@@ -59,6 +65,6 @@ describe("Create Provider", () => {
       .contains("Send")
       .click();
 
-    cy.contains(".alert-danger", "Network Error");
+    cy.contains(".alert-danger", "An unexpected error occurred");
   });
 });
