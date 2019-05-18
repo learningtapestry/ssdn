@@ -1,6 +1,5 @@
-import { Channel } from "./channel";
 import { ProviderIssuedConnection } from "./connection";
-import { StreamStatus } from "./stream";
+import { Stream, StreamType } from "./stream";
 
 export interface ConnectionRequestAcceptance {
   endpoint: string;
@@ -19,9 +18,7 @@ export interface ProviderIssuedAcceptance {
 }
 
 export interface StreamUpdate {
-  endpoint: string;
-  namespace: string;
-  channel: Channel;
-  status: StreamStatus;
-  type: "input" | "output";
+  endpoint?: string;
+  stream: Stream;
+  streamType: StreamType;
 }

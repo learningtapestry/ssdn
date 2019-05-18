@@ -180,12 +180,9 @@ describe(AWSService, () => {
       await AWSService.updateStream("https://test.com", "XAPI", "test.com", "active", "input");
       expect(API.post).toHaveBeenCalledWith("ExchangeApiSigv4", "/connections/streams/update", {
         body: {
-          channel: "XAPI",
           endpoint: "https://test.com",
-          namespace: "test.com",
-          notify: true,
-          status: "active",
-          type: "input",
+          stream: { channel: "XAPI", namespace: "test.com", status: "active" },
+          streamType: "input",
         },
       });
     });

@@ -9,6 +9,7 @@ export interface ConnectionDetails {
   awsAccountId: string;
   externalId: string;
   nucleusId: string;
+  roleName: string;
 }
 
 export interface ExternalConnectionDetails {

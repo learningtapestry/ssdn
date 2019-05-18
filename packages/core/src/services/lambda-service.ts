@@ -34,7 +34,7 @@ export default class LambdaService {
         .promise();
     } catch (e) {
       // Something went wrong with this invokation, but we're dismissing the results.
-      logger.error(e);
+      logger.error(`Something went wrong when invoking lambda ${functionArn.value}`);
     }
   }
 }

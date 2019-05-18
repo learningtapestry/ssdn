@@ -4,6 +4,7 @@ import middy from "@middy/core";
 import cors from "@middy/http-cors";
 
 import { NucleusError } from "../errors/nucleus-error";
+import logger from "../logger";
 
 const errorMiddleware: middy.IMiddyMiddlewareObject = {
   onError: (h, next) => {
@@ -56,5 +57,24 @@ export function apiResponse(content: any = "", statusCode: number = 200): APIGat
   return {
     body: content,
     statusCode,
+  };
+}
+
+export function getRoleName(event: APIGatewayProxyEvent) {
+  const arn = event.requestContext.identity.userArn;
+  if (!arn) {
+    logger.error("Could not figure out the ARN for a request.");
+    throw new NucleusError("An unrecoverable error occurred.", 500);
+  }
+
+  const name = arn.split(":")[5].split("/")[1];
+  if (!name) {
+    logger.error(`A name for the role ${arn} could not be extracted.`);
+    throw new NucleusError("An unrecoverable error occurred.", 500);
+  }
+
+  return {
+    isExternal: name.startsWith("nucleus_ex"),
+    name,
   };
 }

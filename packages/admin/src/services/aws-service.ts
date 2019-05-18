@@ -103,12 +103,13 @@ export default class AWSService {
     return AWSService.withCredentials(async () => {
       await API.post("ExchangeApiSigv4", "/connections/streams/update", {
         body: {
-          channel,
           endpoint,
-          namespace,
-          notify: true,
-          status,
-          type,
+          stream: {
+            channel,
+            namespace,
+            status,
+          },
+          streamType: type,
         },
       });
     });

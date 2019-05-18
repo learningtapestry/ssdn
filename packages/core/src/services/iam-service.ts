@@ -35,9 +35,10 @@ export default class IamService {
     externalAwsAccountId: string,
   ) {
     const roleName = this.buildRoleName(externalAwsAccountId, endpoint.value, externalEndpoint);
-    let role: {
-      arn: string;
-      externalId: string;
+    const role = {
+      arn: "",
+      externalId: "",
+      name: roleName,
     };
 
     try {
@@ -46,10 +47,8 @@ export default class IamService {
           RoleName: roleName,
         })
         .promise();
-      role = {
-        arn: response.Role.Arn,
-        externalId: this.findRoleExternalId(response.Role.AssumeRolePolicyDocument!),
-      };
+      role.arn = response.Role.Arn;
+      role.externalId = this.findRoleExternalId(response.Role.AssumeRolePolicyDocument!);
     } catch (e) {
       const externalId = uuid();
       const response = await this.client
@@ -70,10 +69,8 @@ export default class IamService {
           RoleName: roleName,
         })
         .promise();
-      role = {
-        arn: response.Role.Arn,
-        externalId,
-      };
+      role.arn = response.Role.Arn;
+      role.externalId = externalId;
     }
 
     return role;

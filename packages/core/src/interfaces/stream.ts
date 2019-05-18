@@ -1,5 +1,10 @@
 import { Channel } from "./channel";
 
+export enum StreamType {
+  Input = "input",
+  Output = "output",
+}
+
 export enum StreamStatus {
   Active = "active",
   Paused = "paused",

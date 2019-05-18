@@ -11,6 +11,6 @@ export default interface ExchangeService {
   sendConnectionRequest(connectionRequest: ConnectionRequest): Promise<void>;
   sendEvents(connection: Connection, events: Event[]): Promise<void>;
   sendRejection(connectionRequest: ConnectionRequest): Promise<void>;
-  sendStreamUpdate(connection: Connection, stream: StreamUpdate): Promise<void>;
+  sendStreamUpdate(connection: Connection, streamUpdate: StreamUpdate): Promise<void>;
   verifyConnectionRequest(connectionRequest: ConnectionRequest): Promise<void>;
 }

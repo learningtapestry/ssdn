@@ -1,8 +1,7 @@
 import IAM from "aws-sdk/clients/iam";
 
-import { fakeAws, fakeImpl } from "../../test-support/jest-helper";
+import { fakeAws } from "../../test-support/jest-helper";
 import IamService from "./iam-service";
-import NucleusMetadataService from "./nucleus-metadata-service";
 
 const fakeIam = fakeAws<IAM>({
   attachRolePolicy: jest.fn(() => Promise.resolve()),
@@ -65,6 +64,7 @@ describe("IamService", () => {
       expect(result).toEqual({
         arn: "nucleus_ex_654321_nucleustest_externaltestArn",
         externalId: "123456",
+        name: "nucleus_ex_654321_nucleustest_externaltest",
       });
     });
 

@@ -8,6 +8,7 @@ const connection: Connection = {
     awsAccountId: "",
     externalId: "",
     nucleusId: "",
+    roleName: "",
   },
   creationDate: "",
   endpoint: "https://test.com/connections",

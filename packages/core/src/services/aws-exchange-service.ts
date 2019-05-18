@@ -17,6 +17,7 @@ import {
 import { ConnectionRequest } from "../interfaces/connection-request";
 import Event from "../interfaces/event";
 import { ProviderIssuedAcceptance, StreamUpdate } from "../interfaces/exchange";
+import { Stream, StreamType } from "../interfaces/stream";
 import logger from "../logger";
 import KinesisEventRepository from "../repositories/kinesis-event-repository";
 import ExchangeService from "./exchange-service";

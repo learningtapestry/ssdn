@@ -1099,6 +1099,9 @@ Outputs:
   ExchangeProviderPolicy:
     Description: Provider policy for Nucleus instances
     Value: !Ref ExchangeProviderPolicy
+  AwsAccountId:
+    Description: The AWS account ID
+    Value: !Ref AWS::AccountId
   NucleusId:
     Description: An identifier for this particular Nucleus installation. Used in resource names.
     Value: !Ref NucleusId

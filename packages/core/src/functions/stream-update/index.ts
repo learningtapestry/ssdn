@@ -1,36 +1,30 @@
 import { APIGatewayProxyHandler } from "aws-lambda";
 
 import { StreamUpdate } from "../../interfaces/exchange";
-import { getConnectionService } from "../../services";
-import { apiResponse, applyMiddlewares } from "../api-helper";
+import { getConnectionRepository, getConnectionService } from "../../services";
+import { apiResponse, applyMiddlewares, getRoleName } from "../api-helper";
 
-export const handler = applyMiddlewares<APIGatewayProxyHandler>(async (event, context) => {
+export const handler = applyMiddlewares<APIGatewayProxyHandler>(async (event) => {
   const update = JSON.parse(event.body!) as StreamUpdate;
+  const connectionRepository = getConnectionRepository();
   const connectionService = getConnectionService();
 
-  const userRole = getRoleName(event.requestContext.identity.userArn!);
-  if (userRole.startsWith("nucleus_ex")) {
-    await connectionService.updateStreamByExternal(
-      userRole,
-      update.endpoint,
-      update.namespace,
-      update.channel,
-      update.status,
-      update.type,
+  const roleName = getRoleName(event);
+  if (roleName.isExternal) {
+    await connectionService.updateStream(
+      await connectionRepository.getByConnectionSecret(roleName.name),
+      update.stream,
+      update.streamType,
+      false,
     );
     return apiResponse();
   }
 
   await connectionService.updateStream(
-    update.endpoint,
-    update.namespace,
-    update.channel,
-    update.status,
-    update.type,
+    await connectionRepository.get(update.endpoint!),
+    update.stream,
+    update.streamType,
+    true,
   );
   return apiResponse();
 });
-
-const getRoleName = (arn: string) => {
-  return arn.split(":")[5].split("/")[1];
-};

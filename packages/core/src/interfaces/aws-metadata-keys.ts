@@ -8,6 +8,11 @@ export enum API_KEYS {
   collectionApiKeyId = "CollectionApiKeyId",
 }
 
+export enum AWS_NUCLEUS {
+  nucleusId = "NucleusId",
+  awsAccountId = "AwsAccountId",
+}
+
 export enum LAMBDAS {
   authorizeBeacon = "AuthorizeBeaconFunction",
   connectionRequestAccept = "ConnectionRequestAcceptFunction",

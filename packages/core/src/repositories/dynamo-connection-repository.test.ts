@@ -24,6 +24,8 @@ const fakeDocumentClient = fakeAws<DocumentClient>({
 });
 
 describe("DynamoConnectionRepository", () => {
+  beforeEach(() => jest.clearAllMocks());
+
   describe("findAllWithOutputStreams", () => {
     it("finds connections with output streams", async () => {
       const connectionRepository = new DynamoConnectionRepository(
@@ -90,6 +92,43 @@ describe("DynamoConnectionRepository", () => {
         "message",
         'Item {"endpoint":"https://testfail.com"} not found.',
       );
+    });
+  });
+
+  describe("getByConnectionSecret", () => {
+    it("queries by connection role name", async () => {
+      const connectionRepository = new DynamoConnectionRepository(
+        fakeMetadataService,
+        fakeDocumentClient,
+      );
+      fakeDocumentClient.impl.scan!.mockImplementationOnce(() =>
+        Promise.resolve({
+          Items: [buildConnection({ endpoint: "https://test.com" })],
+        }),
+      );
+      const result = await connectionRepository.getByConnectionSecret("test");
+      expect(result).toEqual(buildConnection({ endpoint: "https://test.com" }));
+      expect(fakeDocumentClient.impl.scan!).toHaveBeenCalledWith({
+        ExpressionAttributeNames: {
+          "#connection": "connection",
+          "#roleName": "roleName",
+        },
+        ExpressionAttributeValues: {
+          ":roleName": "test",
+        },
+        FilterExpression: "#connection.#roleName = :roleName",
+        TableName: "NucleusConnections",
+      });
+    });
+
+    it("throws when nothing is found", async () => {
+      const connectionRepository = new DynamoConnectionRepository(
+        fakeMetadataService,
+        fakeDocumentClient,
+      );
+      fakeDocumentClient.impl.scan!.mockResolvedValue({ Items: [] });
+      const result = connectionRepository.getByConnectionSecret("test");
+      await expect(result).rejects.toHaveProperty("message", "Role not found: test");
     });
   });
 

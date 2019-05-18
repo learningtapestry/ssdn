@@ -33,13 +33,11 @@ describe("LambdaService", () => {
       const fakeLambda = fakeAws<Lambda>({
         invoke: jest.fn(() => Promise.reject()),
       });
-      expect(
-        async () =>
-          await new LambdaService(fakeLambda).invokeApiGatewayLambda(
-            { value: "TestFunctionArn" },
-            {},
-          ),
-      ).not.toThrowError();
+      const result = new LambdaService(fakeLambda).invokeApiGatewayLambda(
+        { value: "TestFunctionArn" },
+        {},
+      );
+      expect(result).resolves.toBeTruthy();
     });
   });
 });

@@ -36,6 +36,7 @@ const fakeConnectionService = fakeImpl<AwsConnectionService>({
           awsAccountId: "123456",
           externalId: "123456",
           nucleusId: "123456",
+          roleName: "123456",
         },
       }),
     ),

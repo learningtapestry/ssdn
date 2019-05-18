@@ -35,6 +35,28 @@ export default class DynamoConnectionRepository implements ConnectionRepository 
     return getOrFail<Connection>(this.client, { endpoint }, await this.getTableName());
   }
 
+  public async getByConnectionSecret(roleName: string) {
+    const items = await this.client
+      .scan({
+        ExpressionAttributeNames: {
+          "#connection": "connection",
+          "#roleName": "roleName",
+        },
+        ExpressionAttributeValues: {
+          ":roleName": roleName,
+        },
+        FilterExpression: `#connection.#roleName = :roleName`,
+        TableName: await this.getTableName(),
+      })
+      .promise();
+
+    if (!items.Items || items.Items.length !== 1) {
+      throw new Error(`Role not found: ${roleName}`);
+    }
+
+    return items.Items[0] as Connection;
+  }
+
   public async put(connection: Connection) {
     connection = {
       ...connection,

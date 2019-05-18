@@ -1,20 +1,16 @@
+import isEqual from "lodash/fp/isEqual";
+
 import { NucleusError } from "../errors/nucleus-error";
-import { readEnv } from "../helpers/app-helper";
-import { POLICIES } from "../interfaces/aws-metadata-keys";
-import { Channel } from "../interfaces/channel";
-import {
-  Connection,
-  ExternalConnectionDetails,
-  ProviderIssuedConnection,
-  PublicNucleusMetadata,
-} from "../interfaces/connection";
+import { AWS_NUCLEUS, POLICIES } from "../interfaces/aws-metadata-keys";
+import { Connection, ProviderIssuedConnection } from "../interfaces/connection";
 import {
   ConnectionRequest,
   ConnectionRequestStatus,
   IncomingConnectionRequestStatus,
 } from "../interfaces/connection-request";
 import { StreamUpdate } from "../interfaces/exchange";
-import { Stream, StreamStatus } from "../interfaces/stream";
+import { Stream, StreamStatus, StreamType } from "../interfaces/stream";
+import logger from "../logger";
 import ConnectionRepository from "../repositories/connection-repository";
 import { ConnectionRequestRepository } from "../repositories/connection-request-repository";
 import ConnectionRequestService from "./connection-request-service";
@@ -50,17 +46,24 @@ export default class AwsConnectionService implements ConnectionService {
   public async createForConsumerRequest(connectionRequest: ConnectionRequest) {
     await this.connectionRequestService.assertConnectionRequestUpdatable(connectionRequest);
 
-    let connection = await this.findOrInitializeConnection(connectionRequest.consumerEndpoint, {
-      awsAccountId: connectionRequest.connection.awsAccountId,
-      nucleusId: connectionRequest.connection.nucleusId,
-    });
+    let connection;
+    let isNew;
+    [connection, isNew] = await this.findOrInitializeConnection(
+      connectionRequest.consumerEndpoint,
+      {
+        awsAccountId: connectionRequest.connection.awsAccountId,
+        nucleusId: connectionRequest.connection.nucleusId,
+      },
+    );
 
+    const awsAccountId = await this.metadata.getMetadataValue(AWS_NUCLEUS.awsAccountId);
+    const nucleusId = await this.metadata.getMetadataValue(AWS_NUCLEUS.nucleusId);
     const acceptanceResponse = await this.exchangeService.sendAcceptance(connectionRequest, {
       accepted: true,
       details: {
         connection: {
-          awsAccountId: readEnv("NUCLEUS_AWS_ACCOUNT_ID"),
-          nucleusId: readEnv("NUCLEUS_ID"),
+          awsAccountId: awsAccountId.value,
+          nucleusId: nucleusId.value,
         },
         externalConnection: {
           arn: connection.connection.arn,
@@ -131,10 +134,29 @@ export default class AwsConnectionService implements ConnectionService {
   ) {
     await this.connectionRequestService.assertConnectionRequestUpdatable(connectionRequest);
 
-    let connection = await this.findOrInitializeConnection(connectionRequest.providerEndpoint, {
-      awsAccountId: connectionDetails.connection.awsAccountId,
-      nucleusId: connectionDetails.connection.nucleusId,
-    });
+    let connection;
+    let isNew;
+    [connection, isNew] = await this.findOrInitializeConnection(
+      connectionRequest.providerEndpoint,
+      {
+        awsAccountId: connectionDetails.connection.awsAccountId,
+        nucleusId: connectionDetails.connection.nucleusId,
+      },
+    );
+
+    if (isNew && !isEqual(connection.externalConnection, connectionDetails.externalConnection)) {
+      logger.info(
+        `The external connection details for ${
+          connection.endpoint
+        } have been updated and are being reassigned.`,
+      );
+    }
+
+    if (isNew && !isEqual(connection.metadata, connectionDetails.metadata)) {
+      logger.info(
+        `The metadata for ${connection.endpoint} has been updated and are being reassigned.`,
+      );
+    }
 
     connection = {
       ...connection,
@@ -173,66 +195,35 @@ export default class AwsConnectionService implements ConnectionService {
   }
 
   public async updateStream(
-    endpoint: string,
-    namespace: string,
-    channel: string,
-    status: StreamStatus,
-    type: "input" | "output",
+    connection: Connection,
+    stream: Stream,
+    type: StreamType,
+    isInternalUpdate: boolean,
   ) {
-    let connection = await this.repository.get(endpoint);
-    let stream;
     ({ connection, stream } = this.updateStreamInConnection(
       connection,
-      namespace,
-      channel,
-      status,
+      stream,
       type,
+      isInternalUpdate,
     ));
     await this.repository.put(connection);
 
-    const ownEndpoint = await this.metadata.getEndpoint();
-    const update: StreamUpdate = {
-      channel: stream.channel,
-      endpoint: ownEndpoint.value,
-      namespace: stream.namespace,
-      status: stream.status,
-      type: type === "input" ? "output" : "input",
-    };
-    await this.exchangeService.sendStreamUpdate(connection, update);
-
-    return connection;
-  }
-
-  public async updateStreamByExternal(
-    userId: string,
-    endpoint: string,
-    namespace: string,
-    channel: string,
-    status: StreamStatus,
-    type: "input" | "output",
-  ) {
-    let connection = await this.repository.get(endpoint);
-    this.assertConnectionOwnership(connection.externalConnection, userId);
-    connection = this.updateStreamInConnection(connection, namespace, channel, status, type, true)
-      .connection;
-    await this.repository.put(connection);
-    return connection;
-  }
-
-  private async assertConnectionOwnership(
-    connectionDetails: ExternalConnectionDetails,
-    userId: string,
-  ) {
-    const roleName = connectionDetails.arn.split(":")[5].split("/")[1];
-    if (roleName !== userId) {
-      throw new NucleusError("The user is not authorized for this action.", 401);
+    if (isInternalUpdate) {
+      // Notify the external endpoint.
+      const update: StreamUpdate = {
+        stream,
+        streamType: type === StreamType.Input ? StreamType.Output : StreamType.Input,
+      };
+      await this.exchangeService.sendStreamUpdate(connection, update);
     }
+
+    return connection;
   }
 
   private async findOrInitializeConnection(
     endpoint: string,
     connectionOptions: { awsAccountId: string; nucleusId: string },
-  ) {
+  ): Promise<[Connection, boolean]> {
     let connection: Connection;
     let isNew = false;
 
@@ -245,6 +236,7 @@ export default class AwsConnectionService implements ConnectionService {
           awsAccountId: "",
           externalId: "",
           nucleusId: "",
+          roleName: "",
         },
         creationDate: "",
         endpoint,
@@ -275,50 +267,61 @@ export default class AwsConnectionService implements ConnectionService {
         awsAccountId: connectionOptions.awsAccountId,
         externalId: role.externalId,
         nucleusId: connectionOptions.nucleusId,
+        roleName: role.name,
       };
     }
 
-    return connection;
+    return [connection, isNew];
   }
 
   private updateStreamInConnection(
     connection: Connection,
-    namespace: string,
-    channel: string,
-    status: StreamStatus,
+    stream: Stream,
     type: string,
-    isExternal: boolean = false,
+    isInternalUpdate: boolean,
   ) {
+    const { namespace, channel } = stream;
+    let status = stream.status;
     const streamAccessor = type === "input" ? "inputStreams" : "outputStreams";
 
-    const oldStream = connection[streamAccessor]!.find(
+    const oldStream = connection[streamAccessor].find(
       (e) => e.namespace === namespace && e.channel === channel,
     );
 
-    if (oldStream!.status === StreamStatus.PausedExternal && !isExternal) {
+    if (!oldStream) {
+      throw new NucleusError(
+        "A stream update has been attempted for a stream which does not exist.",
+        400,
+      );
+    }
+
+    if (oldStream.status === StreamStatus.PausedExternal && isInternalUpdate) {
       throw new NucleusError("A stream can't be resumed after it has been paused externally.", 400);
     }
 
-    if (oldStream!.status === status) {
+    if (oldStream.status === StreamStatus.Paused && !isInternalUpdate) {
+      throw new NucleusError("A stream can't be resumed externally.", 400);
+    }
+
+    if (oldStream.status === status) {
       throw new NucleusError("The status has already been set.");
     }
 
-    if (status === StreamStatus.Paused && isExternal) {
+    if (status === StreamStatus.Paused && !isInternalUpdate) {
       status = StreamStatus.PausedExternal;
     }
 
-    const newInputs = connection[streamAccessor]!.filter(
-      (e) => e.namespace !== namespace && e.channel !== channel,
-    );
+    const updatedStreams = connection[streamAccessor].filter((s) => s !== oldStream);
 
     const newStream: Stream = {
-      channel: channel as Channel,
+      channel,
       namespace,
       status,
     };
-    newInputs.push(newStream);
 
-    connection[streamAccessor] = newInputs;
+    updatedStreams.push(newStream);
+
+    connection[streamAccessor] = updatedStreams;
 
     return {
       connection,

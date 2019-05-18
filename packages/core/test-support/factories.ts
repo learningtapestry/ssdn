@@ -40,6 +40,7 @@ export function buildConnection(overrides?: Partial<Connection>): Connection {
       awsAccountId: "",
       externalId: "",
       nucleusId: "",
+      roleName: "",
     },
     creationDate: "",
     endpoint: "",
