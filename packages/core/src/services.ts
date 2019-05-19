@@ -71,7 +71,12 @@ export function getLambdaService() {
 export function getExchangeService() {
   return singleton(
     "AwsExchangeService",
-    () => new AwsExchangeService(getTemporaryCredentials, getExternalEventRepository),
+    () =>
+      new AwsExchangeService(
+        getMetadataService(),
+        getTemporaryCredentials,
+        getExternalEventRepository,
+      ),
   );
 }
 

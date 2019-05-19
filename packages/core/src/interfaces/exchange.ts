@@ -12,10 +12,16 @@ export interface ConnectionRequestCancel {
   id: string;
 }
 
-export interface ProviderIssuedAcceptance {
-  accepted: boolean;
+export interface ProviderIssuedAccept {
+  accepted: true;
   details: ProviderIssuedConnection;
 }
+
+export interface ProviderIssuedReject {
+  accepted: false;
+}
+
+export type ProviderIssuedAcceptance = ProviderIssuedAccept | ProviderIssuedReject;
 
 export interface StreamUpdate {
   endpoint?: string;
