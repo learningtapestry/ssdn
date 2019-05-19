@@ -51,7 +51,7 @@ export default class AwsConnectionRequestService implements ConnectionRequestSer
     await this.validateConnectionRequest(connectionRequest);
     await this.repository.put(connectionRequest);
     try {
-      this.sendConnectionRequest(connectionRequest);
+      await this.sendConnectionRequest(connectionRequest);
     } catch {
       // Could not send the request, let's trigger a lambda so it can get into the
       // dead letter queue if it fails again.
@@ -70,15 +70,16 @@ export default class AwsConnectionRequestService implements ConnectionRequestSer
   }
 
   public async createIncoming(connectionRequest: ConnectionRequest) {
-    let alreadySubmitted;
+    let alreadySubmitted = false;
     try {
       await this.repository.getIncoming(connectionRequest.consumerEndpoint, connectionRequest.id);
       alreadySubmitted = true;
-    } catch {
-      alreadySubmitted = false;
-    }
-    if (alreadySubmitted) {
       throw new NucleusError("The connection request has already been submitted.");
+    } catch (e) {
+      // Otherwise, continue as usual; a connection request has not been found
+      if (alreadySubmitted) {
+        throw e;
+      }
     }
     connectionRequest.status = ConnectionRequestStatus.Created;
     await this.validateIncomingConnectionRequest(connectionRequest);
@@ -86,13 +87,15 @@ export default class AwsConnectionRequestService implements ConnectionRequestSer
   }
 
   public async sendConnectionRequest(connectionRequest: ConnectionRequest) {
-    this.assertConnectionRequestUpdatable(connectionRequest, [ConnectionRequestStatus.Created]);
+    await this.assertConnectionRequestUpdatable(connectionRequest, [
+      ConnectionRequestStatus.Created,
+    ]);
     await this.exchangeService.sendConnectionRequest(connectionRequest);
     await this.repository.updateStatus(connectionRequest.id, ConnectionRequestStatus.Pending);
   }
 
   public async receiveProviderRejection(connectionRequest: ConnectionRequest) {
-    this.assertConnectionRequestUpdatable(connectionRequest);
+    await this.assertConnectionRequestUpdatable(connectionRequest);
     await this.repository.updateStatus(connectionRequest.id, ConnectionRequestStatus.Rejected);
   }
 
@@ -105,13 +108,9 @@ export default class AwsConnectionRequestService implements ConnectionRequestSer
       IncomingConnectionRequestStatus.RejectedPending,
     ],
   ) {
-    return new Promise<void>((resolve, reject) => {
-      if (!pendingStatuses.includes(connectionRequest.status)) {
-        reject(new NucleusError("The connection request cannot be updated.", 400));
-      } else {
-        resolve();
-      }
-    });
+    if (!pendingStatuses.includes(connectionRequest.status)) {
+      throw new NucleusError("The connection request cannot be updated.", 400);
+    }
   }
 
   private async validateConnectionRequest(connectionRequest: ConnectionRequest) {
