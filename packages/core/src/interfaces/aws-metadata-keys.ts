@@ -9,8 +9,9 @@ export enum API_KEYS {
 }
 
 export enum AWS_NUCLEUS {
-  nucleusId = "NucleusId",
   awsAccountId = "AwsAccountId",
+  namespace = "Namespace",
+  nucleusId = "NucleusId",
 }
 
 export enum LAMBDAS {

@@ -1,7 +1,6 @@
 import CloudFormation from "aws-sdk/clients/cloudformation";
 
 import { NucleusError } from "../errors/nucleus-error";
-import { readEnv } from "../helpers/app-helper";
 import TtlCache from "../helpers/ttl-cache";
 import { API, STREAMS } from "../interfaces/aws-metadata-keys";
 import { MetadataKey } from "../interfaces/base-types";
@@ -13,8 +12,11 @@ export default class AwsNucleusMetadataService implements NucleusMetadataService
 
   private cache = new TtlCache<string, CloudFormation.Stack>(60 * 60 * 1000);
 
-  constructor(client: CloudFormation) {
+  private stackId: string;
+
+  constructor(client: CloudFormation, stackId: string) {
     this.client = client;
+    this.stackId = stackId;
   }
 
   public async getMetadataValue(configurationKey: MetadataKey) {
@@ -44,7 +46,7 @@ export default class AwsNucleusMetadataService implements NucleusMetadataService
   private async getCurrentStack() {
     const stacks = await this.client
       .describeStacks({
-        StackName: readEnv("NUCLEUS_STACK_ID"),
+        StackName: this.stackId,
       })
       .promise();
     return stacks.Stacks![0];

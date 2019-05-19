@@ -5,20 +5,22 @@
 import { APIGatewayProxyEvent } from "aws-lambda";
 import get from "lodash/fp/get";
 
-import { isoDate, readEnv } from "../helpers/app-helper";
+import { isoDate } from "../helpers/app-helper";
 import { Channel } from "../interfaces/channel";
 import Event from "../interfaces/event";
 import logger from "../logger";
 
 export default abstract class LambdaEventParser {
   public event: APIGatewayProxyEvent;
+  public defaultNamespace: string;
   public request: object;
   public queryParams: { [k: string]: string };
   public headers: object;
   public body: any;
 
-  constructor(public lambdaEvent: APIGatewayProxyEvent) {
+  constructor(public lambdaEvent: APIGatewayProxyEvent, defaultNamespace: string) {
     this.event = lambdaEvent;
+    this.defaultNamespace = defaultNamespace;
     this.request = get("requestContext")(lambdaEvent);
     this.queryParams = get("queryStringParameters")(lambdaEvent);
     this.headers = get("headers")(lambdaEvent);
@@ -57,7 +59,7 @@ export default abstract class LambdaEventParser {
     if (eventNamespace) {
       return eventNamespace;
     }
-    return readEnv("NUCLEUS_NAMESPACE");
+    return this.defaultNamespace;
   }
 
   protected abstract representation(): string;

@@ -83,7 +83,7 @@ export function getExchangeService() {
 export function getMetadataService() {
   return singleton(
     "AwsNucleusMetadataService",
-    () => new AwsNucleusMetadataService(getCloudFormation()),
+    () => new AwsNucleusMetadataService(getCloudFormation(), readEnv("NUCLEUS_STACK_ID")),
   );
 }
 

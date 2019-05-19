@@ -1,9 +1,8 @@
 /**
  * kinesis-repository.ts: Repository class to manage Kinesis Data Streams access
  */
-import Kinesis, { PutRecordsInput, PutRecordsResultEntry } from "aws-sdk/clients/kinesis";
+import Kinesis, { PutRecordsInput } from "aws-sdk/clients/kinesis";
 
-import { readEnv } from "../helpers/app-helper";
 import { STREAMS } from "../interfaces/aws-metadata-keys";
 import logger from "../logger";
 import NucleusMetadataService from "../services/nucleus-metadata-service";
@@ -19,10 +18,7 @@ export default class KinesisEventRepository implements EventRepository {
     this.client = client;
   }
 
-  public async store(
-    content: Content,
-    { partitionKey = `${readEnv("NUCLEUS_NAMESPACE")}/unknown` } = {},
-  ) {
+  public async store(content: Content, { partitionKey = "DEFAULT" } = {}) {
     logger.debug("Storing content: %j using partition key: %s", content, partitionKey);
     const record = {
       Data: JSON.stringify(content),
@@ -33,10 +29,7 @@ export default class KinesisEventRepository implements EventRepository {
     return await this.client.putRecord(record).promise();
   }
 
-  public async storeBatch(
-    content: Content[] = [],
-    { partitionKey = `${readEnv("NUCLEUS_NAMESPACE")}/unknown` } = {},
-  ) {
+  public async storeBatch(content: Content[] = [], { partitionKey = "DEFAULT" } = {}) {
     logger.debug(
       "Storing content (batch): %i records using partition key: %s",
       content.length,

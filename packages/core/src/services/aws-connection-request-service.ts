@@ -2,8 +2,8 @@ import generate from "nanoid/generate";
 import uuid from "uuid/v4";
 
 import { NucleusError } from "../errors/nucleus-error";
-import { isoDate, readEnv } from "../helpers/app-helper";
-import { LAMBDAS } from "../interfaces/aws-metadata-keys";
+import { isoDate } from "../helpers/app-helper";
+import { AWS_NUCLEUS, LAMBDAS } from "../interfaces/aws-metadata-keys";
 import {
   ConnectionRequest,
   ConnectionRequestStatus,
@@ -35,16 +35,19 @@ export default class AwsConnectionRequestService implements ConnectionRequestSer
   }
 
   public async create(connectionRequest: ConnectionRequest) {
+    const awsAccountId = await this.metadata.getMetadataValue(AWS_NUCLEUS.awsAccountId);
+    const nucleusId = await this.metadata.getMetadataValue(AWS_NUCLEUS.nucleusId);
+    const namespace = await this.metadata.getMetadataValue(AWS_NUCLEUS.namespace);
     connectionRequest.id = uuid();
     connectionRequest.acceptanceToken = uuid();
     connectionRequest.connection = {
-      awsAccountId: readEnv("NUCLEUS_AWS_ACCOUNT_ID"),
-      nucleusId: readEnv("NUCLEUS_ID"),
+      awsAccountId: awsAccountId.value,
+      nucleusId: nucleusId.value,
     };
     connectionRequest.verificationCode = generate("0123456789", 6);
     const endpoint = await this.metadata.getEndpoint();
     connectionRequest.consumerEndpoint = endpoint.value;
-    connectionRequest.namespace = connectionRequest.namespace || readEnv("NUCLEUS_NAMESPACE");
+    connectionRequest.namespace = connectionRequest.namespace || namespace.value;
     connectionRequest.channels = ["XAPI"];
     connectionRequest.status = ConnectionRequestStatus.Created;
     connectionRequest.creationDate = isoDate();

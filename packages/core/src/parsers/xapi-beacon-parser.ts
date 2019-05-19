@@ -1,16 +1,15 @@
 import { APIGatewayProxyEvent } from "aws-lambda";
+import get from "lodash/fp/get";
 
 import { calculateIdentifier } from "../helpers/app-helper";
 import { Channel } from "../interfaces/channel";
 import LambdaEventParser from "./lambda-event-parser";
 
-import get from "lodash/fp/get";
-
 export default class XAPIBeaconParser extends LambdaEventParser {
   private content: any;
 
-  constructor(public lambdaEvent: APIGatewayProxyEvent) {
-    super(lambdaEvent);
+  constructor(public lambdaEvent: APIGatewayProxyEvent, defaultNamespace: string) {
+    super(lambdaEvent, defaultNamespace);
 
     const content = JSON.parse(decodeURIComponent(this.queryParams.event));
 

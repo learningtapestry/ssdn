@@ -1,5 +1,6 @@
 import { buildConnectionRequest } from "../../test-support/factories";
 import { fakeImpl, mocked } from "../../test-support/jest-helper";
+import { AWS_NUCLEUS } from "../interfaces/aws-metadata-keys";
 import { ConnectionRequestStatus } from "../interfaces/connection-request";
 import { ConnectionRequestRepository } from "../repositories/connection-request-repository";
 import AwsConnectionRequestService from "./aws-connection-request-service";
@@ -17,7 +18,15 @@ const fakeRepository = fakeImpl<ConnectionRequestRepository>({
 
 const fakeMetadata = fakeImpl<NucleusMetadataService>({
   getEndpoint: jest.fn(() => Promise.resolve({ value: "https://red.com" })),
-  getMetadataValue: jest.fn(),
+  getMetadataValue: jest.fn((k: string) =>
+    Promise.resolve({
+      value: ({
+        [AWS_NUCLEUS.awsAccountId]: "nucleusaccountid",
+        [AWS_NUCLEUS.namespace]: "nucleus-test.learningtapestry.com",
+        [AWS_NUCLEUS.nucleusId]: "nucleus-test",
+      } as any)[k],
+    }),
+  ),
 });
 
 const fakeExchangeService = fakeImpl<ExchangeService>({

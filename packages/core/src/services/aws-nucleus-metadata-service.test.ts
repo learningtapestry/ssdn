@@ -29,26 +29,28 @@ const fakeCloudFormation = fakeAws<CloudFormation>({
   ),
 });
 
+const buildMetadataService = () => {
+  return new AwsNucleusMetadataService(fakeCloudFormation, "nucleus-test");
+};
+
 describe("AwsNucleusMetadataService", () => {
   describe("getConfigurationValue", () => {
     it("returns the value for an output key", async () => {
-      const value = await new AwsNucleusMetadataService(fakeCloudFormation).getMetadataValue(
-        STREAMS.eventProcessor,
-      );
+      const value = await buildMetadataService().getMetadataValue(STREAMS.eventProcessor);
       expect(value).toEqual({ value: "TestValue" });
     });
   });
 
   describe("getEndpoint", () => {
     it("returns the endpoint for the instance", async () => {
-      const endpoint = await new AwsNucleusMetadataService(fakeCloudFormation).getEndpoint();
+      const endpoint = await buildMetadataService().getEndpoint();
       expect(endpoint).toEqual({ value: "TestValue" });
     });
   });
 
   describe("getPublicMetadata", () => {
     it("returns public metadata for the instance", async () => {
-      const metadata = await new AwsNucleusMetadataService(fakeCloudFormation).getPublicMetadata();
+      const metadata = await buildMetadataService().getPublicMetadata();
       expect(metadata).toEqual({
         EventProcessorStream: "TestValue",
       });
