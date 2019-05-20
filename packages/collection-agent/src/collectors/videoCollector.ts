@@ -153,12 +153,9 @@ export class VideoCollector implements Collector {
         ytState = "uncertain";
     }
 
-    const blacklist = [-1, 3, 5];
-    if (blacklist.includes(event.data)) {
-      return;
+    if ([0, 1, 2].includes(event.data)) {
+      this.trackVideoEvent(ytState, event.target.getVideoUrl());
     }
-
-    this.trackVideoEvent(ytState, event.target.getVideoUrl());
   }
 
   private trackVideoEvent(state: string, url: string) {

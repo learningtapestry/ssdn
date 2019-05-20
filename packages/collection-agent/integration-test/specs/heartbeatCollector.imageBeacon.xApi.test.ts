@@ -2,13 +2,13 @@ import uuid from "lil-uuid";
 
 import { baseUrl, getMessages, homePage } from "../specUtil";
 
-const xApiBase = "https://xapi-learningtapestry.github.io/nucleus";
+const xApiBase = "https://learningtapestry.github.io/xapi/nucleus/collection";
 
 const extensions = {
-  heartbeatId: `${xApiBase}/extensions/heartbeat/heartbeatId`,
-  pageTitle: `${xApiBase}/extensions/heartbeat/pageTitle`,
-  pageUrl: `${xApiBase}/extensions/heartbeat/pageUrl`,
-  timeSpentOnPage: `${xApiBase}/extensions/heartbeat/timeSpentOnPage`,
+  heartbeatId: `${xApiBase}/extensions/heartbeatId`,
+  pageTitle: `${xApiBase}/extensions/pageTitle`,
+  pageUrl: `${xApiBase}/extensions/pageUrl`,
+  timeSpentOnPage: `${xApiBase}/extensions/timeSpentOnPage`,
 };
 
 describe("heartbeatCollector.imageBeacon.xApi", () => {
@@ -43,18 +43,11 @@ describe("heartbeatCollector.imageBeacon.xApi", () => {
 
     // Verb is set
     expect(firstMessage.event.verb).toEqual({
-      id: "https://xapi-learningtapestry.github.io/nucleus/verbs/heartbeat",
+      id: "https://learningtapestry.github.io/xapi/nucleus/collection/verbs/heartbeat",
     });
 
     // Extensions are set
     expect(firstMessage.event.context.extensions[extensions.pageTitle]).toEqual("Document");
-
-    // tslint:disable-next-line: no-unused-expression
-    expect(
-      firstMessage.event.context.extensions[extensions.pageUrl].startsWith(
-        "http://localhost:3000/",
-      ),
-    ).toBeTruthy();
 
     const heartbeatId = firstMessage.event.context.extensions[extensions.heartbeatId];
     // tslint:disable-next-line: no-unused-expression

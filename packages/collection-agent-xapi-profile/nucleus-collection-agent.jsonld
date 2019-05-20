@@ -1,0 +1,85 @@
+{
+  "@context": "https://w3id.org/xapi/profiles/context",
+  "id": "https://learningtapestry.github.io/xapi/nucleus/collection/schema",
+  "type": "Profile",
+  "conformsTo": "https://w3id.org/xapi/profiles#1.0",
+  "prefLabel": {
+    "en": "Nucleus Browser Collection Agent Vocabulary"
+  },
+  "definition": {
+    "en": "A list of concepts for the Nucleus solution's browser collection agent."
+  },
+  "seeAlso": "https://github.com/learningtapestry/nucleus",
+  "author": {
+    "type": "Organization",
+    "name": "Learning Tapestry"
+  },
+  "concepts": [
+    {
+      "id": "https://learningtapestry.github.io/xapi/nucleus/collection/verbs/heartbeat",
+      "inScheme": "https://learningtapestry.github.io/xapi/nucleus/collection/schema/1.0.0",
+      "type": "Verb",
+      "definition": {
+        "en": "A 'heartbeat' by the collection agent in a website. It means the browser tab is currently active for that website. Heartbeats are sent periodically."
+      },
+      "prefLabel": {
+        "en": "heartbeat"
+      }
+    },
+    {
+      "id": "https://learningtapestry.github.io/xapi/nucleus/collection/activities/page",
+      "inScheme": "https://learningtapestry.github.io/xapi/nucleus/collection/schema/1.0.0",
+      "type": "ActivityType",
+      "definition": {
+        "en": "A page in a website that the browser user has visited."
+      },
+      "prefLabel": {
+        "en": "page"
+      }
+    },
+    {
+      "id": "https://learningtapestry.github.io/xapi/nucleus/collection/extensions/timeSpentOnPage",
+      "inScheme": "https://learningtapestry.github.io/xapi/nucleus/collection/schema/1.0.0",
+      "type": "ContextExtension",
+      "prefLabel": {
+        "en": "timeSpentOnPage"
+      },
+      "definition": {
+        "en": "The amount of time in milliseconds the user has actively spent on the page."
+      }
+    },
+    {
+      "id": "https://learningtapestry.github.io/xapi/nucleus/collection/extensions/heartbeatId",
+      "inScheme": "https://learningtapestry.github.io/xapi/nucleus/collection/schema/1.0.0",
+      "type": "ContextExtension",
+      "prefLabel": {
+        "en": "heartbeatId"
+      },
+      "definition": {
+        "en": "The unique identifier for the user's browser session."
+      }
+    },
+    {
+      "id": "https://learningtapestry.github.io/xapi/nucleus/collection/extensions/pageTitle",
+      "inScheme": "https://learningtapestry.github.io/xapi/nucleus/collection/schema/1.0.0",
+      "type": "ContextExtension",
+      "prefLabel": {
+        "en": "pageTitle"
+      },
+      "definition": {
+        "en": "The HTML title of the page being accessed."
+      }
+    },
+    {
+      "id": "https://learningtapestry.github.io/xapi/nucleus/collection/extensions/pageUrl",
+      "inScheme": "https://learningtapestry.github.io/xapi/nucleus/collection/schema/1.0.0",
+      "type": "ContextExtension",
+      "prefLabel": {
+        "en": "pageUrl"
+      },
+      "definition": {
+        "en": "The full URL of the page being accessed."
+      }
+    }
+  ]
+}

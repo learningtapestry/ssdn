@@ -1,12 +1,5 @@
 import { baseUrl, getMessages, homePage } from "../specUtil";
 
-const xApiBase = "https://xapi-learningtapestry.github.io/nucleus";
-
-const extensions = {
-  state: `${xApiBase}/extensions/played/state`,
-  videoUrl: `${xApiBase}/extensions/played/videoUrl`,
-};
-
 describe("videoCollector.imageBeacon.xApi", () => {
   it("pushes video messages", async () => {
     browser.url(homePage("video-messages"));
@@ -56,8 +49,8 @@ describe("videoCollector.imageBeacon.xApi", () => {
 
     // Assertions.
     const messages = await getMessages(baseUrl("video-messages"));
-    const videoMessages = messages.filter(
-      (m) => m.event.verb.id === "https://xapi-learningtapestry.github.io/nucleus/verbs/played",
+    const videoMessages = messages.filter((m) =>
+      m.event.verb.id.startsWith("https://w3id.org/xapi/video"),
     );
 
     expect(videoMessages.length).toEqual(2);
@@ -78,23 +71,13 @@ describe("videoCollector.imageBeacon.xApi", () => {
 
     // Object is set
     // tslint:disable-next-line: no-unused-expression
-    expect(
-      (firstMessage.event.object.id as string).startsWith("https://www.youtube.com"),
-    ).toBeTruthy();
-
-    // Verb is set
-    expect(firstMessage.event.verb).toEqual({
-      id: "https://xapi-learningtapestry.github.io/nucleus/verbs/played",
-    });
-
-    // Extensions are set
-    expect(firstMessage.event.context.extensions[extensions.videoUrl]).toEqual(
+    expect(firstMessage.event.object.id as string).toEqual(
       "https://www.youtube.com/watch?v=I6xQtFsODIQ",
     );
 
-    expect(firstMessage.event.context.extensions[extensions.state]).toEqual("playing");
-
-    // A pause message should have arrived as well
-    expect(videoMessages[1].event.context.extensions[extensions.state]).toEqual("paused");
+    // Verb is set
+    expect(firstMessage.event.verb).toEqual({
+      id: "https://w3id.org/xapi/video/verbs/played",
+    });
   });
 });

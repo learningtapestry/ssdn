@@ -29,21 +29,22 @@ describe("XApiEncoder", () => {
         },
         context: {
           extensions: {
-            "https://xapi-learningtapestry.github.io/nucleus/extensions/heartbeat/heartbeatId":
+            "https://learningtapestry.github.io/xapi/nucleus/collection/extensions/heartbeatId":
               "1234567890",
-            "https://xapi-learningtapestry.github.io/nucleus/extensions/heartbeat/pageTitle":
+            "https://learningtapestry.github.io/xapi/nucleus/collection/extensions/pageTitle":
               "Khan Academy",
-            "https://xapi-learningtapestry.github.io/nucleus/extensions/heartbeat/pageUrl":
-              "https://www.khanacademy.org",
-            "https://xapi-learningtapestry.github.io/nucleus/extensions/heartbeat/timeSpentOnPage": 10,
+            "https://learningtapestry.github.io/xapi/nucleus/collection/extensions/timeSpentOnPage": 10,
           },
         },
         object: {
+          definition: {
+            type: "https://learningtapestry.github.io/xapi/nucleus/collection/activities/page",
+          },
           id: "https://www.khanacademy.org",
           objectType: "Activity",
         },
         verb: {
-          id: "https://xapi-learningtapestry.github.io/nucleus/verbs/heartbeat",
+          id: "https://learningtapestry.github.io/xapi/nucleus/collection/verbs/heartbeat",
         },
       });
     });
@@ -69,19 +70,15 @@ describe("XApiEncoder", () => {
           },
           objectType: "Agent",
         },
-        context: {
-          extensions: {
-            "https://xapi-learningtapestry.github.io/nucleus/extensions/played/state": "playing",
-            "https://xapi-learningtapestry.github.io/nucleus/extensions/played/videoUrl":
-              "https://www.youtube.com/watch?v=I6xQtFsODIQ",
-          },
-        },
         object: {
+          definition: {
+            type: "https://w3id.org/xapi/video/activity-type/video",
+          },
           id: "https://www.youtube.com/watch?v=I6xQtFsODIQ",
           objectType: "Activity",
         },
         verb: {
-          id: "https://xapi-learningtapestry.github.io/nucleus/verbs/played",
+          id: "https://w3id.org/xapi/video/verbs/played",
         },
       });
     });
