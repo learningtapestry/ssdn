@@ -37,19 +37,16 @@ describe("<Incoming />", () => {
       getByText("https://nucleus.adam.acme.org/");
       getByText("Stoltenberg-Harvey");
       queryByText("2/13/2019");
-      getByText("adam@example.org");
       getByText("Accepted");
 
       getByText("https://nucleus.jonah.acme.org/");
       getByText("Disney");
       queryByText("4/14/2019");
-      getByText("jonah@example.org");
       getByText("Created");
 
       getByText("https://nucleus.mickey.acme.org/");
       getByText("Heaney, Hackett and Jacobson");
       queryByText("4/14/2019");
-      getByText("mickey@example.org");
       getByText("Rejected");
     });
   });
@@ -98,11 +95,10 @@ describe("<Incoming />", () => {
   });
 
   it("handles the view detail action", async () => {
-    const { getByText, getAllByText, getByRole } = render(<Incoming />);
+    const { getAllByText, getByRole } = render(<Incoming />);
     await waitForElement(() => getAllByText("View info"));
     fireEvent.click(getAllByText("View info")[0]);
     await waitForElement(() => getByRole("dialog"));
-    await waitForElement(() => getByText("+1555555555"));
     fireEvent.click(getAllByText("Close")[0]);
     await waitForElementToBeRemoved(() => getByRole("dialog"));
   });

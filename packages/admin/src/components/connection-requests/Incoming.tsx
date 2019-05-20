@@ -146,7 +146,6 @@ export default function Incoming() {
       <td>{request.consumerEndpoint}</td>
       <td>{request.organization}</td>
       <td>{displayDate(request.creationDate)}</td>
-      <td>{request.email}</td>
       <td>
         <StatusLabel status={request.status} statusType="incoming" />
       </td>
@@ -165,7 +164,6 @@ export default function Incoming() {
             <th>Endpoint</th>
             <th>Organization</th>
             <th>Creation Date</th>
-            <th>Email</th>
             <th>Status</th>
             <th />
           </tr>

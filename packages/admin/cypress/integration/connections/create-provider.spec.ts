@@ -10,13 +10,7 @@ describe("Create Provider", () => {
 
   it("creates a new provider connection and shows verification code", () => {
     cy.get("input[name=providerEndpoint]").type(Cypress.env("REGISTER_ENDPOINT"));
-    cy.get("input[name=firstName]").type("Cypress Test");
-    cy.get("input[name=lastName]").type("Connection");
     cy.get("input[name=organization]").type("Learning Tapestry");
-    cy.get("input[name=title]").type("Test Runner");
-    cy.get("input[name=email]").type("cypress-user@example.org");
-    cy.get("input[name=phoneNumber]").type("+1555555555");
-    cy.get("input[name=extension]").type("1234");
 
     cy.contains("button[type=submit]", "Send").click();
 
@@ -38,28 +32,14 @@ describe("Create Provider", () => {
       .contains("Send")
       .click();
 
-    [
-      "providerEndpoint",
-      "firstName",
-      "lastName",
-      "organization",
-      "title",
-      "email",
-      "phoneNumber",
-    ].forEach((field) => {
+    ["providerEndpoint", "organization"].forEach((field) => {
       cy.contains(".invalid-feedback", `${field} is a required field`);
     });
   });
 
   it("tries to submit an invalid endpoint", () => {
     cy.get("input[name=providerEndpoint]").type("http://invalid.example.org/dev/register");
-    cy.get("input[name=firstName]").type("Cypress Test");
-    cy.get("input[name=lastName]").type("Connection");
     cy.get("input[name=organization]").type("Learning Tapestry");
-    cy.get("input[name=title]").type("Test Runner");
-    cy.get("input[name=email]").type("cypress-user@example.org");
-    cy.get("input[name=phoneNumber]").type("+1555555555");
-    cy.get("input[name=extension]").type("1234");
 
     cy.get("button[type=submit]")
       .contains("Send")
