@@ -22,11 +22,8 @@ const Header = () => (
         <LinkContainer to="/" exact={true}>
           <Nav.Link>Home</Nav.Link>
         </LinkContainer>
-        <LinkContainer to="/providers">
-          <Nav.Link>Providers</Nav.Link>
-        </LinkContainer>
-        <LinkContainer to="/consumers">
-          <Nav.Link>Consumers</Nav.Link>
+        <LinkContainer to="/connections">
+          <Nav.Link>Connections</Nav.Link>
         </LinkContainer>
         <LinkContainer to="/logs">
           <Nav.Link>Logs</Nav.Link>

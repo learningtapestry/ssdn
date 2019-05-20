@@ -24,9 +24,9 @@ Cypress.Commands.add("createConnectionRequest", async (connectionParams = {}) =>
 });
 
 Cypress.Commands.add("deleteConnectionRequests", async (type: string) => {
-  const allConnections = await AWSService.retrieveConnectionRequests({ type });
+  const allConnections = await AWSService.retrieveConnectionRequests("submitted");
   await allConnections.forEach(async (connection: ConnectionRequest) => {
-    await AWSService.deleteConnectionRequest(connection.id);
+    // How should we delete them?
   });
 });
 

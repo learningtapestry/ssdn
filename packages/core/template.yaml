@@ -4,8 +4,14 @@ Description: SAM Template for Nucleus
 Parameters:
   Environment:
     Type: String
-    Description: The current environment where they deployment is taking place.
+    Description: The current environment where the deployment is taking place.
     Default: Development
+  NucleusId:
+    Type: String
+    Description: An unique identifier for this particular Nucleus installation. Used in resource names.
+  Namespace:
+    Type: String
+    Description: A namespace that identifies the default data domain for this instance. Used for partitioning data.
   NotificationEmail:
     Type: String
     Description: The default e-mail address for notification purposes.
@@ -16,21 +22,228 @@ Globals:
     Handler: index.handler
     Environment:
       Variables:
-        NUCLEUS_EVENT_PROCESSOR_STREAM_NAME: !Sub Nucleus-${Environment}-EventProcessor
-        NUCLEUS_EVENT_STORAGE_STREAM_NAME: !Sub Nucleus-${Environment}-EventStorage
-        NUCLEUS_EVENT_DELIVERY_STREAM_NAME: !Sub Nucleus-${Environment}-EventDelivery
+        NUCLEUS_AWS_ACCOUNT_ID: !Ref AWS::AccountId
+        NUCLEUS_ENVIRONMENT: !Ref Environment
+        NUCLEUS_ID: !Ref NucleusId
         NUCLEUS_LOG_LEVEL: info
+        NUCLEUS_NAMESPACE: !Ref Namespace
+        NUCLEUS_STACK_ID: !Ref AWS::StackId
 Resources:
+  #
+  # Auth
+  #
+  CognitoUserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      UserPoolName: !Sub Nucleus-${NucleusId}-UserPool
+      Schema:
+        - Name: email
+          Required: true
+          Mutable: true
+      AutoVerifiedAttributes: ["email"]
+      EmailVerificationMessage: "Your verification code is {####}"
+      EmailVerificationSubject: "Your verification code"
+      Policies:
+        PasswordPolicy:
+          MinimumLength: 8
+          RequireLowercase: true
+          RequireNumbers: true
+          RequireSymbols: true
+          RequireUppercase: true
+      SmsVerificationMessage: "Your verification code is {####}"
+      SmsConfiguration:
+        SnsCallerArn: !GetAtt SNSRole.Arn
+        ExternalId: !Sub Nucleus-${NucleusId}-SNSExternalId
+  CognitoUserPoolClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      ClientName: !Sub Nucleus-${NucleusId}-AppClient
+      GenerateSecret: false
+      UserPoolId: !Ref CognitoUserPool
+  CognitoUserPoolClientWeb:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      ClientName: !Sub Nucleus-${NucleusId}-AppClientWeb
+      UserPoolId: !Ref CognitoUserPool
+  CognitoIdentityPool:
+    Type: AWS::Cognito::IdentityPool
+    Properties:
+      IdentityPoolName: !Join
+        - "_"
+        - !Split
+          - "-"
+          - !Sub Nucleus_${NucleusId}_IdentityPool
+      CognitoIdentityProviders:
+        - ClientId: !Ref CognitoUserPoolClient
+          ProviderName: !Sub
+            - cognito-idp.${region}.amazonaws.com/${client}
+            - { region: !Ref "AWS::Region", client: !Ref CognitoUserPool }
+        - ClientId: !Ref CognitoUserPoolClientWeb
+          ProviderName: !Sub
+            - cognito-idp.${region}.amazonaws.com/${client}
+            - { region: !Ref "AWS::Region", client: !Ref CognitoUserPool }
+      AllowUnauthenticatedIdentities: false
+  CognitoIdentityPoolRoleMap:
+    Type: AWS::Cognito::IdentityPoolRoleAttachment
+    Properties:
+      IdentityPoolId: !Ref CognitoIdentityPool
+      Roles:
+        unauthenticated: !GetAtt UnauthRole.Arn
+        authenticated: !GetAtt AuthRole.Arn
+  SNSRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub Nucleus-${NucleusId}-SNSRole
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: ""
+            Effect: "Allow"
+            Principal:
+              Service: "cognito-idp.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+            Condition:
+              StringEquals:
+                sts:ExternalId: !Sub Nucleus-${NucleusId}-SNSExternalId
+      Policies:
+        - PolicyName: !Sub Nucleus-${NucleusId}-SNSPolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "sns:Publish"
+                Resource: "*"
+  AuthRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub Nucleus-${NucleusId}-AuthRole
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Sid: ""
+            Effect: Allow
+            Principal:
+              Federated: cognito-identity.amazonaws.com
+            Action: sts:AssumeRoleWithWebIdentity
+            Condition:
+              ForAnyValue:StringLike:
+                cognito-identity.amazonaws.com:amr: authenticated
+      Policies:
+        - PolicyName: !Sub Nucleus-${NucleusId}-AdminPolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Action:
+                  - cloudformation:DescribeStacks
+                  - cognito-idp:ListUsers
+                  - cognito-idp:AdminCreateUser
+                  - cognito-idp:AdminDeleteUser
+                  - logs:DescribeLogGroups
+                  - logs:DescribeLogStreams
+                  - logs:GetLogEvents
+                Resource:
+                  - "*"
+                Effect: Allow
+              - Effect: Allow
+                Action:
+                  - dynamodb:GetItem
+                  - dynamodb:Query
+                  - dynamodb:Scan
+                  - dynamodb:PutItem
+                  - dynamodb:UpdateItem
+                  - dynamodb:DeleteItem
+                Resource:
+                  - !Sub ${NucleusConnectionRequestsTable.Arn}*
+                  - !Sub ${NucleusIncomingConnectionRequestsTable.Arn}*
+                  - !Sub ${NucleusConnectionsTable.Arn}*
+              - Effect: Allow
+                Action: execute-api:Invoke
+                Resource: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ExchangeApi}/${Environment}/*
+  UnauthRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub Nucleus-${NucleusId}-UnauthRole
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Sid: ""
+            Effect: Allow
+            Principal:
+              Federated: cognito-identity.amazonaws.com
+            Action: sts:AssumeRoleWithWebIdentity
+            Condition:
+              ForAnyValue:StringLike:
+                cognito-identity.amazonaws.com:amr: unauthenticated
+  #
+  # Lambda
+  #
+  LambdaDeadLetterQueueTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      DisplayName: !Sub Nucleus-${NucleusId}-DeadLetterQueue
+      Subscription:
+        - Endpoint: !Ref NotificationEmail
+          Protocol: email
+  #
+  # API Gateway
+  #
+  ApiGatewayAccount:
+    Type: AWS::ApiGateway::Account
+    Properties:
+      CloudWatchRoleArn: !GetAtt ApiGatewayLoggingRole.Arn
+  ApiGatewayLoggingRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - apigateway.amazonaws.com
+            Action: sts:AssumeRole
+      Path: /
+      ManagedPolicyArns:
+        - !Sub arn:${AWS::Partition}:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs
+  CollectionApiKey:
+    Type: AWS::ApiGateway::ApiKey
+    Properties:
+      Name: !Sub Nucleus-${NucleusId}-CollectionApiKey
+      Description: Default API Key to access the Nucleus collection endpoint
+      Enabled: true
+  ApiUsagePlan:
+    Type: AWS::ApiGateway::UsagePlan
+    DependsOn:
+      - ProcessXAPIStatementApiStage
+      - ProcessXAPIBeaconApiStage
+      - ExchangeApiStage
+    Properties:
+      ApiStages:
+        - ApiId: !Ref ProcessXAPIStatementApi
+          Stage: !Ref Environment
+        - ApiId: !Ref ProcessXAPIBeaconApi
+          Stage: !Ref Environment
+        - ApiId: !Ref ExchangeApi
+          Stage: !Ref Environment
+      UsagePlanName: !Sub Nucleus-${NucleusId}-UsagePlan
+  ApiUsagePlanKey:
+    Type: AWS::ApiGateway::UsagePlanKey
+    DependsOn:
+      - CollectionApiKey
+      - ApiUsagePlan
+    Properties:
+      KeyId: !Ref CollectionApiKey
+      KeyType: API_KEY
+      UsagePlanId: !Ref ApiUsagePlan
+  #
+  # Event Collection
+  #
   EventProcessorStream:
     Type: AWS::Kinesis::Stream
     Properties:
-      Name: !Sub Nucleus-${Environment}-EventProcessor
-      RetentionPeriodHours: 48
-      ShardCount: 1
-  EventStorageStream:
-    Type: AWS::Kinesis::Stream
-    Properties:
-      Name: !Sub Nucleus-${Environment}-EventStorage
+      Name: !Sub Nucleus-${NucleusId}-EventProcessor
       RetentionPeriodHours: 48
       ShardCount: 1
   EventDeliveryStream:
@@ -38,64 +251,144 @@ Resources:
     Properties:
       DeliveryStreamType: KinesisStreamAsSource
       KinesisStreamSourceConfiguration:
-        KinesisStreamARN: !GetAtt EventStorageStream.Arn
+        KinesisStreamARN: !GetAtt EventProcessorStream.Arn
         RoleARN: !GetAtt EventDeliveryStreamRole.Arn
       ExtendedS3DestinationConfiguration:
         BucketARN: !GetAtt DeliveryS3Bucket.Arn
         RoleARN: !GetAtt EventDeliveryStreamRole.Arn
         BufferingHints:
-          IntervalInSeconds: 300
-          SizeInMBs: 5
+          IntervalInSeconds: 60
+          SizeInMBs: 1
         CompressionFormat: UNCOMPRESSED
-        Prefix: "YYYY/MM/DD/HH"
+        Prefix: "Events/"
+        CloudWatchLoggingOptions:
+          Enabled: true
+          LogGroupName: !Sub Nucleus-${NucleusId}-EventDeliveryStreamGroup
+          LogStreamName: !Sub Nucleus-${NucleusId}-EventDeliveryStreamLog
   EventDeliveryStreamRole:
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
         Version: "2012-10-17"
         Statement:
-          - Effect: "Allow"
+          - Effect: Allow
             Principal:
               Service:
                 - "firehose.amazonaws.com"
             Action: "sts:AssumeRole"
       Policies:
-        - PolicyName: !Sub Nucleus-${Environment}-EventDeliveryStreamRole
+        - PolicyName: !Sub Nucleus-${NucleusId}-EventDeliveryStreamRole
           PolicyDocument:
             Version: "2012-10-17"
             Statement:
-              - Effect: "Allow"
+              - Effect: Allow
                 Action:
                   - "s3:*"
                 Resource:
                   - !Sub arn:aws:s3:::${DeliveryS3Bucket}
                   - !Sub arn:aws:s3:::${DeliveryS3Bucket}/*
-              - Effect: "Allow"
+              - Effect: Allow
                 Action:
                   - "kinesis:DescribeStream"
                   - "kinesis:GetShardIterator"
                   - "kinesis:GetRecords"
                 Resource:
-                  - !GetAtt EventStorageStream.Arn
+                  - !GetAtt EventProcessorStream.Arn
   DeliveryS3Bucket:
     Type: AWS::S3::Bucket
-  CognitoUserPool:
-    Type: AWS::Cognito::UserPool
+  AuthorizeBeaconFunction:
+    Type: AWS::Serverless::Function
     Properties:
-      UserPoolName: !Sub Nucleus-${Environment}-UserPool
-  CognitoUserPoolClient:
-    Type: AWS::Cognito::UserPoolClient
+      CodeUri: ./dist/authorize-beacon
+      Policies:
+        - Version: 2012-10-17
+          Statement:
+            - Effect: Allow
+              Action:
+                - apigateway:GET
+              Resource: !Sub arn:aws:apigateway:${AWS::Region}::/*
+  AuthorizeBeaconFunctionAssumeRole:
+    Type: AWS::IAM::Role
     Properties:
-      ClientName: !Sub Nucleus-${Environment}-AppClient
-      GenerateSecret: false
-      UserPoolId: !Ref CognitoUserPool
-  LambdaDeadLetterQueueTopic:
-    Type: AWS::SNS::Topic
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - "apigateway.amazonaws.com"
+            Action:
+              - sts:AssumeRole
+      Policies:
+        - PolicyName: "InvokeAuthorizerFunction"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - lambda:InvokeAsync
+                  - lambda:InvokeFunction
+                Resource: !GetAtt AuthorizeBeaconFunction.Arn
+  ProcessXAPIBeaconFunction:
+    Type: AWS::Serverless::Function
     Properties:
-      DisplayName: !Sub Nucleus-${Environment}-DeadLetterQueue
-      Subscription:
-        - Endpoint: !Ref NotificationEmail
-          Protocol: email
+      CodeUri: ./dist/process-xapi-beacon
+      Events:
+        ProcessXAPIBeacon:
+          Type: Api
+          Properties:
+            Path: /xAPI/beacon
+            Method: get
+            RestApiId: !Ref ProcessXAPIBeaconApi
+      Policies:
+        - Version: 2012-10-17
+          Statement:
+            - Effect: Allow
+              Action:
+                - kinesis:PutRecord
+                - kinesis:PutRecords
+              Resource: !GetAtt EventProcessorStream.Arn
+            - Effect: Allow
+              Action:
+                - cloudformation:DescribeStacks
+              Resource:
+                - !Sub arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/${AWS::StackName}/*
+      DeadLetterQueue:
+        Type: SNS
+        TargetArn: !Ref LambdaDeadLetterQueueTopic
+  ProcessXAPIStatementFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./dist/process-xapi-statement
+      Events:
+        PostStatements:
+          Type: Api
+          Properties:
+            Path: /xAPI/statements
+            Method: post
+            RestApiId: !Ref ProcessXAPIStatementApi
+        PutStatement:
+          Type: Api
+          Properties:
+            Path: /xAPI/statements
+            Method: put
+            RestApiId: !Ref ProcessXAPIStatementApi
+      Policies:
+        - Version: 2012-10-17
+          Statement:
+            - Effect: Allow
+              Action:
+                - kinesis:PutRecord
+                - kinesis:PutRecords
+              Resource: !GetAtt EventProcessorStream.Arn
+            - Effect: Allow
+              Action:
+                - cloudformation:DescribeStacks
+              Resource:
+                - !Sub arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/${AWS::StackName}/*
+      DeadLetterQueue:
+        Type: SNS
+        TargetArn: !Ref LambdaDeadLetterQueueTopic
   ProcessXAPIStatementApi:
     Type: AWS::Serverless::Api
     Properties:
@@ -105,7 +398,7 @@ Resources:
       DefinitionBody:
         openapi: 3.0.1
         info:
-          title: !Ref AWS::StackName
+          title: !Sub Nucleus-${NucleusId}-ProcessXAPIStatementApi
           version: 1.0
         x-amazon-apigateway-request-validators:
           parameters-only:
@@ -160,7 +453,7 @@ Resources:
       DefinitionBody:
         openapi: 3.0.1
         info:
-          title: !Sub ${AWS::StackName}-Beacon
+          title: !Sub Nucleus-${NucleusId}-ProcessXAPIBeaconApi
           version: 1.0
         x-amazon-apigateway-request-validators:
           parameters-only:
@@ -198,252 +491,620 @@ Resources:
                 authorizerCredentials: !GetAtt AuthorizeBeaconFunctionAssumeRole.Arn
                 authorizerResultTtlInSeconds: 60
                 identitySource: method.request.querystring.aid
-  CollectionApiKey:
-    Type: AWS::ApiGateway::ApiKey
+  #
+  # Interchange
+  #
+  NucleusConnectionRequestsTable:
+    Type: AWS::DynamoDB::Table
     Properties:
-      Name: !Sub Nucleus-${Environment}-CollectionApiKey
-      Description: Default API Key to access the Nucleus collection endpoint
-      Enabled: true
-  ApiUsagePlan:
-    Type: AWS::ApiGateway::UsagePlan
-    DependsOn:
-      - ProcessXAPIStatementApiStage
-      - ProcessXAPIBeaconApiStage
+      TableName: !Sub Nucleus-${NucleusId}-ConnectionRequests
+      ProvisionedThroughput:
+        ReadCapacityUnits: 2
+        WriteCapacityUnits: 2
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+  NucleusIncomingConnectionRequestsTable:
+    Type: AWS::DynamoDB::Table
     Properties:
-      ApiStages:
-        - ApiId: !Ref ProcessXAPIStatementApi
-          Stage: !Ref Environment
-        - ApiId: !Ref ProcessXAPIBeaconApi
-          Stage: !Ref Environment
-      UsagePlanName: !Sub Nucleus-${Environment}-UsagePlan
-  ApiUsagePlanKey:
-    Type: AWS::ApiGateway::UsagePlanKey
-    DependsOn:
-      - CollectionApiKey
-      - ApiUsagePlan
+      TableName: !Sub Nucleus-${NucleusId}-IncomingConnectionRequests
+      ProvisionedThroughput:
+        ReadCapacityUnits: 2
+        WriteCapacityUnits: 2
+      AttributeDefinitions:
+        - AttributeName: consumerEndpoint
+          AttributeType: S
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: consumerEndpoint
+          KeyType: HASH
+        - AttributeName: id
+          KeyType: RANGE
+  NucleusConnectionsTable:
+    Type: AWS::DynamoDB::Table
     Properties:
-      KeyId: !Ref CollectionApiKey
-      KeyType: API_KEY
-      UsagePlanId: !Ref ApiUsagePlan
-  HelloNucleusFunction:
+      TableName: !Sub Nucleus-${NucleusId}-Connections
+      ProvisionedThroughput:
+        ReadCapacityUnits: 2
+        WriteCapacityUnits: 2
+      AttributeDefinitions:
+        - AttributeName: endpoint
+          AttributeType: S
+      KeySchema:
+        - AttributeName: endpoint
+          KeyType: HASH
+  ExchangeApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: !Ref Environment
+      MethodSettings:
+        - LoggingLevel: ERROR
+          DataTraceEnabled: true
+          MetricsEnabled: true
+          ResourcePath: "/*"
+          HttpMethod: "*"
+      # The next section is needed because SAM does not implement API Usage Plans yet.
+      # See https://github.com/awslabs/serverless-application-model/issues/248
+      DefinitionBody:
+        openapi: 3.0.1
+        info:
+          title: !Sub Nucleus-${NucleusId}-ExchangeApi
+          version: 1.0
+        x-amazon-apigateway-request-validators:
+          parameters-only:
+            validateRequestParameters: true
+            validateRequestBody: false
+        x-amazon-apigateway-request-validator: parameters-only
+        paths:
+          /connections/requests:
+            options:
+              responses:
+                "200":
+                  description: 200 response
+                  headers:
+                    Access-Control-Allow-Origin:
+                      type: string
+                    Access-Control-Allow-Methods:
+                      type: string
+                    Access-Control-Allow-Headers:
+                      type: string
+              x-amazon-apigateway-integration:
+                responses:
+                  default:
+                    statusCode: 200
+                    responseParameters:
+                      method.response.header.Access-Control-Allow-Methods: "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'"
+                      method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'"
+                      method.response.header.Access-Control-Allow-Origin: "'*'"
+                requestTemplates:
+                  "application/json": '{"statusCode": 200}'
+                passthroughBehavior: when_no_match
+                type: mock
+            post:
+              x-amazon-apigateway-integration:
+                uri: !Sub arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ConnectionRequestCreateFunction.Arn}/invocations
+                passthroughBehavior: when_no_match
+                httpMethod: POST
+                type: aws_proxy
+              security:
+                - cognito_authorizer: []
+          /connections/requests/{id}/accept:
+            options:
+              responses:
+                "200":
+                  description: 200 response
+                  headers:
+                    Access-Control-Allow-Origin:
+                      type: string
+                    Access-Control-Allow-Methods:
+                      type: string
+                    Access-Control-Allow-Headers:
+                      type: string
+              x-amazon-apigateway-integration:
+                responses:
+                  default:
+                    statusCode: 200
+                    responseParameters:
+                      method.response.header.Access-Control-Allow-Methods: "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'"
+                      method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'"
+                      method.response.header.Access-Control-Allow-Origin: "'*'"
+                requestTemplates:
+                  "application/json": '{"statusCode": 200}'
+                passthroughBehavior: when_no_match
+                type: mock
+            post:
+              parameters:
+                - in: path
+                  name: id
+                  description: Connection request ID
+                  required: true
+                  schema:
+                    type: string
+              x-amazon-apigateway-integration:
+                uri: !Sub arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ConnectionRequestAcceptFunction.Arn}/invocations
+                passthroughBehavior: when_no_match
+                httpMethod: POST
+                type: aws_proxy
+          /connections/requests/{id}/send:
+            options:
+              responses:
+                "200":
+                  description: 200 response
+                  headers:
+                    Access-Control-Allow-Origin:
+                      type: string
+                    Access-Control-Allow-Methods:
+                      type: string
+                    Access-Control-Allow-Headers:
+                      type: string
+              x-amazon-apigateway-integration:
+                responses:
+                  default:
+                    statusCode: 200
+                    responseParameters:
+                      method.response.header.Access-Control-Allow-Methods: "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'"
+                      method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'"
+                      method.response.header.Access-Control-Allow-Origin: "'*'"
+                requestTemplates:
+                  "application/json": '{"statusCode": 200}'
+                passthroughBehavior: when_no_match
+                type: mock
+            post:
+              parameters:
+                - in: path
+                  name: id
+                  description: Connection request ID
+                  required: true
+                  schema:
+                    type: string
+              x-amazon-apigateway-integration:
+                uri: !Sub arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ConnectionRequestSendFunction.Arn}/invocations
+                passthroughBehavior: when_no_match
+                httpMethod: POST
+                type: aws_proxy
+              security:
+                - sigv4: []
+          /connections/requests/{id}/verify:
+            options:
+              responses:
+                "200":
+                  description: 200 response
+                  headers:
+                    Access-Control-Allow-Origin:
+                      type: string
+                    Access-Control-Allow-Methods:
+                      type: string
+                    Access-Control-Allow-Headers:
+                      type: string
+              x-amazon-apigateway-integration:
+                responses:
+                  default:
+                    statusCode: 200
+                    responseParameters:
+                      method.response.header.Access-Control-Allow-Methods: "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'"
+                      method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'"
+                      method.response.header.Access-Control-Allow-Origin: "'*'"
+                requestTemplates:
+                  "application/json": '{"statusCode": 200}'
+                passthroughBehavior: when_no_match
+                type: mock
+            get:
+              parameters:
+                - in: path
+                  name: id
+                  description: Connection request ID
+                  required: true
+                  schema:
+                    type: string
+              x-amazon-apigateway-integration:
+                uri: !Sub arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ConnectionRequestVerifyFunction.Arn}/invocations
+                passthroughBehavior: when_no_match
+                httpMethod: POST
+                type: aws_proxy
+          /connections/incoming-requests:
+            options:
+              responses:
+                "200":
+                  description: 200 response
+                  headers:
+                    Access-Control-Allow-Origin:
+                      type: string
+                    Access-Control-Allow-Methods:
+                      type: string
+                    Access-Control-Allow-Headers:
+                      type: string
+              x-amazon-apigateway-integration:
+                responses:
+                  default:
+                    statusCode: 200
+                    responseParameters:
+                      method.response.header.Access-Control-Allow-Methods: "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'"
+                      method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'"
+                      method.response.header.Access-Control-Allow-Origin: "'*'"
+                requestTemplates:
+                  "application/json": '{"statusCode": 200}'
+                passthroughBehavior: when_no_match
+                type: mock
+            post:
+              x-amazon-apigateway-integration:
+                uri: !Sub arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${IncomingConnectionRequestCreateFunction.Arn}/invocations
+                passthroughBehavior: when_no_match
+                httpMethod: POST
+                type: aws_proxy
+          /connections/incoming-requests/accept:
+            options:
+              responses:
+                "200":
+                  description: 200 response
+                  headers:
+                    Access-Control-Allow-Origin:
+                      type: string
+                    Access-Control-Allow-Methods:
+                      type: string
+                    Access-Control-Allow-Headers:
+                      type: string
+              x-amazon-apigateway-integration:
+                responses:
+                  default:
+                    statusCode: 200
+                    responseParameters:
+                      method.response.header.Access-Control-Allow-Methods: "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'"
+                      method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'"
+                      method.response.header.Access-Control-Allow-Origin: "'*'"
+                requestTemplates:
+                  "application/json": '{"statusCode": 200}'
+                passthroughBehavior: when_no_match
+                type: mock
+            post:
+              x-amazon-apigateway-integration:
+                uri: !Sub arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${IncomingConnectionRequestAcceptFunction.Arn}/invocations
+                passthroughBehavior: when_no_match
+                httpMethod: POST
+                type: aws_proxy
+              security:
+                - cognito_authorizer: []
+          /connections/streams/update:
+            options:
+              responses:
+                "200":
+                  description: 200 response
+                  headers:
+                    Access-Control-Allow-Origin:
+                      type: string
+                    Access-Control-Allow-Methods:
+                      type: string
+                    Access-Control-Allow-Headers:
+                      type: string
+              x-amazon-apigateway-integration:
+                responses:
+                  default:
+                    statusCode: 200
+                    responseParameters:
+                      method.response.header.Access-Control-Allow-Methods: "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'"
+                      method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'"
+                      method.response.header.Access-Control-Allow-Origin: "'*'"
+                requestTemplates:
+                  "application/json": '{"statusCode": 200}'
+                passthroughBehavior: when_no_match
+                type: mock
+            post:
+              x-amazon-apigateway-integration:
+                uri: !Sub arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${StreamUpdateFunction.Arn}/invocations
+                passthroughBehavior: when_no_match
+                httpMethod: POST
+                type: aws_proxy
+              security:
+                - sigv4: []
+        components:
+          securitySchemes:
+            cognito_authorizer:
+              name: Authorization
+              type: apiKey
+              in: header
+              x-amazon-apigateway-authtype: cognito_user_pools
+              x-amazon-apigateway-authorizer:
+                providerARNs:
+                  - !GetAtt CognitoUserPool.Arn
+                type: cognito_user_pools
+            sigv4:
+              name: Authorization
+              type: apiKey
+              in: header
+              x-amazon-apigateway-authtype: awsSigv4
+  ConnectionRequestAcceptFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: ./dist/hello-nucleus
-      Handler: index.lambdaHandler
+      CodeUri: ./dist/connection-request-accept
       Events:
-        HelloNucleus:
+        ConnectionRequestAccept:
           Type: Api
           Properties:
-            Path: /hello
-            Method: get
-  AuthorizeBeaconFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      CodeUri: ./dist/authorize-beacon
-      Policies:
-        - Version: 2012-10-17
-          Statement:
-            - Effect: Allow
-              Action:
-                - apigateway:GET
-              Resource: !Sub arn:aws:apigateway:${AWS::Region}::/*
-  AuthorizeBeaconFunctionAssumeRole:
-    Type: AWS::IAM::Role
-    Properties:
-      AssumeRolePolicyDocument:
-        Version: "2012-10-17"
-        Statement:
-          - Effect: "Allow"
-            Principal:
-              Service:
-                - "apigateway.amazonaws.com"
-            Action:
-              - sts:AssumeRole
-      Policies:
-        - PolicyName: "InvokeAuthorizerFunction"
-          PolicyDocument:
-            Version: "2012-10-17"
-            Statement:
-              - Effect: "Allow"
-                Action:
-                  - lambda:InvokeAsync
-                  - lambda:InvokeFunction
-                Resource: !GetAtt AuthorizeBeaconFunction.Arn
-  ProcessXAPIBeaconFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      CodeUri: ./dist/process-xapi-beacon
-      Events:
-        ProcessXAPIBeacon:
-          Type: Api
-          Properties:
-            Path: /xAPI/beacon
-            Method: get
-            RestApiId: !Ref ProcessXAPIBeaconApi
-      Policies:
-        - Version: 2012-10-17
-          Statement:
-            - Effect: Allow
-              Action:
-                - kinesis:PutRecord
-                - kinesis:PutRecords
-              Resource: !GetAtt EventProcessorStream.Arn
-      DeadLetterQueue:
-        Type: SNS
-        TargetArn: !Ref LambdaDeadLetterQueueTopic
-  ProcessXAPIStatementFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      CodeUri: ./dist/process-xapi-statement
-      Events:
-        PostStatements:
-          Type: Api
-          Properties:
-            Path: /xAPI/statements
+            Path: /connections/requests/{id}/accept
             Method: post
-            RestApiId: !Ref ProcessXAPIStatementApi
-        PutStatement:
-          Type: Api
-          Properties:
-            Path: /xAPI/statements
-            Method: put
-            RestApiId: !Ref ProcessXAPIStatementApi
+            RestApiId: !Ref ExchangeApi
       Policies:
-        - Version: 2012-10-17
-          Statement:
-            - Effect: Allow
-              Action:
-                - kinesis:PutRecord
-                - kinesis:PutRecords
-              Resource: !GetAtt EventProcessorStream.Arn
+        - !Ref ExchangeAdminFunctionPolicy
       DeadLetterQueue:
         Type: SNS
         TargetArn: !Ref LambdaDeadLetterQueueTopic
-  StoreEventFunction:
+  ConnectionRequestCreateFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: ./dist/store-event
+      CodeUri: ./dist/connection-request-create
       Events:
-        StoreEvent:
+        ConnectionRequestCreate:
+          Type: Api
+          Properties:
+            Path: /connections/requests
+            Method: post
+            RestApiId: !Ref ExchangeApi
+      Policies:
+        - !Ref ExchangeAdminFunctionPolicy
+      DeadLetterQueue:
+        Type: SNS
+        TargetArn: !Ref LambdaDeadLetterQueueTopic
+  ConnectionRequestSendFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./dist/connection-request-send
+      Events:
+        ConnectionRequestSend:
+          Type: Api
+          Properties:
+            Path: /connections/requests/{id}/send
+            Method: post
+            RestApiId: !Ref ExchangeApi
+      Policies:
+        - !Ref ExchangeAdminFunctionPolicy
+      DeadLetterQueue:
+        Type: SNS
+        TargetArn: !Ref LambdaDeadLetterQueueTopic
+  ConnectionRequestVerifyFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./dist/connection-request-verify
+      Events:
+        ConnectionRequestVerify:
+          Type: Api
+          Properties:
+            Path: /connections/requests/{id}/verify
+            Method: get
+            RestApiId: !Ref ExchangeApi
+      Policies:
+        - !Ref ExchangeAdminFunctionPolicy
+      DeadLetterQueue:
+        Type: SNS
+        TargetArn: !Ref LambdaDeadLetterQueueTopic
+  StreamUpdateFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./dist/stream-update
+      Events:
+        StreamUpdateFunction:
+          Type: Api
+          Properties:
+            Path: /connections/streams/update
+            Method: post
+            RestApiId: !Ref ExchangeApi
+      Policies:
+        - !Ref ExchangeAdminFunctionPolicy
+      DeadLetterQueue:
+        Type: SNS
+        TargetArn: !Ref LambdaDeadLetterQueueTopic
+  IncomingConnectionRequestAcceptFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./dist/incoming-connection-request-accept
+      Events:
+        IncomingConnectionRequestAccept:
+          Type: Api
+          Properties:
+            Path: /connections/incoming-requests/accept
+            Method: post
+            RestApiId: !Ref ExchangeApi
+      Policies:
+        - !Ref ExchangeAdminFunctionPolicy
+      DeadLetterQueue:
+        Type: SNS
+        TargetArn: !Ref LambdaDeadLetterQueueTopic
+  IncomingConnectionRequestCreateFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./dist/incoming-connection-request-create
+      Events:
+        IncomingConnectionRequestCreate:
+          Type: Api
+          Properties:
+            Path: /connections/incoming-requests
+            Method: post
+            RestApiId: !Ref ExchangeApi
+      Policies:
+        - !Ref ExchangeAdminFunctionPolicy
+      DeadLetterQueue:
+        Type: SNS
+        TargetArn: !Ref LambdaDeadLetterQueueTopic
+  RouteEventsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./dist/route-events
+      Events:
+        RouteEvents:
           Type: Kinesis
           Properties:
             Stream: !GetAtt EventProcessorStream.Arn
             StartingPosition: TRIM_HORIZON
             Enabled: true
       Policies:
-        - Version: 2012-10-17
-          Statement:
-            - Effect: Allow
-              Action:
-                - kinesis:DescribeStream
-                - kinesis:DescribeStreamSummary
-                - kinesis:GetRecords
-                - kinesis:GetShardIterator
-                - kinesis:ListShards
-                - kinesis:ListStreams
-                - kinesis:SubscribeToShard
-              Resource: !GetAtt EventProcessorStream.Arn
-            - Effect: Allow
-              Action:
-                - kinesis:PutRecord
-                - kinesis:PutRecords
-              Resource: !GetAtt EventStorageStream.Arn
+        - !Ref ExchangeAdminFunctionPolicy
       DeadLetterQueue:
         Type: SNS
         TargetArn: !Ref LambdaDeadLetterQueueTopic
-  AdminPanelPolicy:
+  ExchangeAdminFunctionPolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
-      Description: "Minimum set of permissions required to run the sections in the Nucleus admin panel"
+      ManagedPolicyName: !Sub Nucleus-${NucleusId}-ExchangeAdminFunction
+      Description: Admin access for a lambda in the exchange API
       PolicyDocument:
         Version: "2012-10-17"
         Statement:
-          - Effect: "Allow"
+          - Effect: Allow
             Action:
-              - "cloudformation:DescribeStacks"
-              - "cognito-idp:ListUsers"
-              - "cognito-idp:AdminCreateUser"
-              - "cognito-idp:AdminDeleteUser"
-              - "logs:DescribeLogGroups"
-              - "logs:DescribeLogStreams"
-              - "logs:GetLogEvents"
-            Resource: "*"
-          - Effect: "Allow"
+              - cloudformation:DescribeStacks
+            Resource:
+              - "*"
+          - Effect: Allow
             Action:
-              - "dynamodb:GetItem"
-              - "dynamodb:Query"
-              - "dynamodb:Scan"
-              - "dynamodb:PutItem"
-              - "dynamodb:UpdateItem"
-              - "dynamodb:DeleteItem"
-            Resource: !Sub arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/ConnectionRequestsTable*
+              - iam:GetRole
+              - iam:CreateRole
+              - iam:AttachRolePolicy
+            Resource:
+              - arn:aws:iam::*:role/nucleus*
+              - arn:aws:iam::*:policy/*
+          - Effect: Allow
+            Action:
+              - sts:AssumeRole
+            Resource:
+              - arn:aws:iam::*:role/nucleus_ex_*
+          - Effect: Allow
+            Action:
+              - dynamodb:GetItem
+              - dynamodb:Query
+              - dynamodb:Scan
+              - dynamodb:PutItem
+              - dynamodb:UpdateItem
+              - dynamodb:DeleteItem
+            Resource:
+              - !Sub ${NucleusConnectionRequestsTable.Arn}*
+              - !Sub ${NucleusIncomingConnectionRequestsTable.Arn}*
+              - !Sub ${NucleusConnectionsTable.Arn}*
+          - Effect: Allow
+            Action: lambda:InvokeFunction
+            Resource: !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${AWS::StackName}*
+  ExchangeConsumerPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: !Sub Nucleus-${NucleusId}-ExchangeConsumer
+      Description: Consumer access in the exchange API
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action: execute-api:Invoke
+            Resource: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ExchangeApi}/${Environment}/POST/connections/streams/update
+  ExchangeProviderPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: !Sub Nucleus-${NucleusId}-ExchangeProvider
+      Description: Provider access in the exchange API
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action: execute-api:Invoke
+            Resource: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ExchangeApi}/${Environment}/POST/connections/streams/update
+          - Effect: Allow
+            Action:
+              - kinesis:PutRecord
+              - kinesis:PutRecords
+            Resource: !GetAtt EventProcessorStream.Arn
 Outputs:
-  EventProcessorStreamName:
-    Description: Name of the Event Processor Kinesis Data Stream
-    Value: !Ref EventProcessorStream
-  EventStorageStreamName:
-    Description: Name of the Event Storage Kinesis Data Stream
-    Value:
-      Ref: EventStorageStream
-  EventDeliveryStreamName:
-    Description: Name of the Event Delivery Firehose Data Stream
-    Value:
-      Ref: EventDeliveryStream
-  DeliveryS3BucketName:
-    Description: Name of the S3 Bucket used by the Event Delivery Stream
-    Value:
-      Ref: DeliveryS3Bucket
   CognitoUserPoolId:
-    Description: Generated identifier for the Cognito User Pool
+    Description: CognitoUserPool
     Value: !Ref CognitoUserPool
   CognitoUserPoolClientId:
-    Description: Generated identifier for the Cognito User Pool App Client
+    Description: CognitoUserPoolClient
     Value: !Ref CognitoUserPoolClient
+  CognitoUserPoolClientWebId:
+    Description: CognitoUserPoolClientWeb
+    Value: !Ref CognitoUserPoolClientWeb
+  CognitoIdentityPoolId:
+    Description: CognitoIdentityPool
+    Value: !Ref CognitoIdentityPool
+  AuthRole:
+    Description: AuthRole
+    Value: !GetAtt AuthRole.Arn
+  UnauthRole:
+    Description: UnauthRole
+    Value: !GetAtt UnauthRole.Arn
   CollectionApiKeyId:
-    Description: Generated identifier for the default collection endpoint API Key
+    Description: CollectionApiKey
     Value: !Ref CollectionApiKey
-  BeaconApi:
-    Description: API Gateway endpoint URL for collecting xAPI statements via a beacon
-    Value: !Sub https://${ProcessXAPIBeaconApi}.execute-api.${AWS::Region}.amazonaws.com/${Environment}/xAPI/beacon
-  StatementsApi:
-    Description: API Gateway endpoint URL for collecting xAPI statements
-    Value: !Sub https://${ProcessXAPIStatementApi}.execute-api.${AWS::Region}.amazonaws.com/${Environment}/xAPI/statements
-  ProcessXAPIStatementFunction:
-    Description: Process xAPI Statement Lambda function ARN
-    Value: !GetAtt ProcessXAPIStatementFunction.Arn
-  ProcessXAPIStatementFunctionIamRole:
-    Description: Implicit IAM Role created for Process xAPI Statement function
-    Value: !GetAtt ProcessXAPIStatementFunctionRole.Arn
+  EventProcessorStream:
+    Description: EventProcessorStream
+    Value: !Ref EventProcessorStream
+  EventDeliveryStream:
+    Description: EventDeliveryStream
+    Value: !Ref EventDeliveryStream
+  DeliveryS3Bucket:
+    Description: DeliveryS3Bucket
+    Value: !Ref DeliveryS3Bucket
   AuthorizeBeaconFunction:
-    Description: Authorize Beacon Lambda function ARN
+    Description: AuthorizeBeaconFunction
     Value: !GetAtt AuthorizeBeaconFunction.Arn
-  AuthorizeBeaconFunctionIamRole:
-    Description: Implicit IAM Role created for Authorize Beacon function
-    Value: !GetAtt AuthorizeBeaconFunctionRole.Arn
   ProcessXAPIBeaconFunction:
-    Description: Process xAPI Beacon Lambda function ARN
+    Description: ProcessXAPIBeaconFunction
     Value: !GetAtt ProcessXAPIBeaconFunction.Arn
-  ProcessXAPIBeaconFunctionIamRole:
-    Description: Implicit IAM Role created for Process xAPI Beacon function
-    Value: !GetAtt ProcessXAPIBeaconFunctionRole.Arn
-  HelloNucleusApi:
-    Description: API Gateway endpoint URL for Prod stage for Hello Nucleus function
-    Value: !Sub https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/
-  HelloNucleusFunction:
-    Description: Hello Nucleus Lambda Function ARN
-    Value: !GetAtt HelloNucleusFunction.Arn
-  HelloNucleusFunctionIamRole:
-    Description: Implicit IAM Role created for Hello Nucleus function
-    Value: !GetAtt HelloNucleusFunctionRole.Arn
-  StoreEventFunction:
-    Description: Store Event Lambda function ARN
-    Value:
-      Fn::GetAtt:
-        - StoreEventFunction
-        - Arn
-  StoreEventFunctionIamRole:
-    Description: Implicit IAM Role created for Store Event function
-    Value:
-      Fn::GetAtt:
-        - StoreEventFunctionRole
-        - Arn
+  ProcessXAPIStatementFunction:
+    Description: ProcessXAPIStatementFunction
+    Value: !GetAtt ProcessXAPIStatementFunction.Arn
+  ProcessXAPIStatementApi:
+    Description: ProcessXAPIStatementApi
+    Value: !Sub https://${ProcessXAPIStatementApi}.execute-api.${AWS::Region}.amazonaws.com/${Environment}
+  ProcessXAPIBeaconApi:
+    Description: ProcessXAPIBeaconApi
+    Value: !Sub https://${ProcessXAPIBeaconApi}.execute-api.${AWS::Region}.amazonaws.com/${Environment}
+  NucleusConnectionRequestsTable:
+    Description: NucleusConnectionRequestsTable
+    Value: !Ref NucleusConnectionRequestsTable
+  NucleusIncomingConnectionRequestsTable:
+    Description: NucleusIncomingConnectionRequestsTable
+    Value: !Ref NucleusIncomingConnectionRequestsTable
+  NucleusConnectionsTable:
+    Description: NucleusConnectionsTable
+    Value: !Ref NucleusConnectionsTable
+  ExchangeApi:
+    Description: ExchangeApi
+    Value: !Sub https://${ExchangeApi}.execute-api.${AWS::Region}.amazonaws.com/${Environment}
+  ConnectionRequestAcceptFunction:
+    Description: ConnectionRequestAcceptFunction
+    Value: !GetAtt ConnectionRequestAcceptFunction.Arn
+  ConnectionRequestCreateFunction:
+    Description: ConnectionRequestCreateFunction
+    Value: !GetAtt ConnectionRequestCreateFunction.Arn
+  ConnectionRequestSendFunction:
+    Description: ConnectionRequestSendFunction
+    Value: !GetAtt ConnectionRequestSendFunction.Arn
+  ConnectionRequestVerifyFunction:
+    Description: ConnectionRequestVerifyFunction
+    Value: !GetAtt ConnectionRequestVerifyFunction.Arn
+  StreamUpdateFunction:
+    Description: StreamUpdateFunction
+    Value: !GetAtt StreamUpdateFunction.Arn
+  IncomingConnectionRequestAcceptFunction:
+    Description: IncomingConnectionRequestAcceptFunction
+    Value: !GetAtt IncomingConnectionRequestAcceptFunction.Arn
+  IncomingConnectionRequestCreateFunction:
+    Description: IncomingConnectionRequestCreateFunction
+    Value: !GetAtt IncomingConnectionRequestCreateFunction.Arn
+  RouteEventsFunction:
+    Description: RouteEventsFunction
+    Value: !GetAtt RouteEventsFunction.Arn
+  ExchangeConsumerPolicy:
+    Description: Consumer policy for Nucleus instances
+    Value: !Ref ExchangeConsumerPolicy
+  ExchangeProviderPolicy:
+    Description: Provider policy for Nucleus instances
+    Value: !Ref ExchangeProviderPolicy
+  AwsAccountId:
+    Description: The AWS account ID
+    Value: !Ref AWS::AccountId
+  NucleusId:
+    Description: An identifier for this particular Nucleus installation. Used in resource names.
+    Value: !Ref NucleusId
+  Namespace:
+    Description: A namespace that identifies the default data domain for this instance. Used for partitioning data.
+    Value: !Ref Namespace

@@ -5,32 +5,38 @@
 import { APIGatewayProxyEvent } from "aws-lambda";
 import get from "lodash/fp/get";
 
-import { utcDate } from "../helpers/app-helper";
+import { isoDate } from "../helpers/app-helper";
+import { Channel } from "../interfaces/channel";
+import Event from "../interfaces/event";
 import logger from "../logger";
 
 export default abstract class LambdaEventParser {
   public event: APIGatewayProxyEvent;
+  public defaultNamespace: string;
   public request: object;
   public queryParams: { [k: string]: string };
   public headers: object;
   public body: any;
 
-  constructor(public lambdaEvent: APIGatewayProxyEvent) {
+  constructor(public lambdaEvent: APIGatewayProxyEvent, defaultNamespace: string) {
     this.event = lambdaEvent;
+    this.defaultNamespace = defaultNamespace;
     this.request = get("requestContext")(lambdaEvent);
     this.queryParams = get("queryStringParameters")(lambdaEvent);
     this.headers = get("headers")(lambdaEvent);
     this.body = get("body")(lambdaEvent);
   }
 
-  public parse() {
+  public parse(): Event {
     logger.debug("Generating Nucleus event from Lambda: %j", this.lambdaEvent);
 
     return {
       content: this.interpretContent(),
       event: {
-        date: utcDate(get("requestTimeEpoch")(this.request)),
+        channel: this.channel(),
+        date: isoDate(get("requestTimeEpoch")(this.request)),
         format: this.format(),
+        namespace: this.namespace(),
         operation: get("httpMethod")(this.lambdaEvent),
         origin: `${get("Host")(this.headers)}${get("path")(this.request)}`,
         protocol: get("protocol")(this.request),
@@ -42,13 +48,23 @@ export default abstract class LambdaEventParser {
     };
   }
 
+  protected abstract channel(): Channel;
+
   protected abstract format(): string;
 
   protected abstract interpretContent(): any;
+
+  protected namespace() {
+    const eventNamespace = get("X-Nucleus-Namespace")(this.headers);
+    if (eventNamespace) {
+      return eventNamespace;
+    }
+    return this.defaultNamespace;
+  }
 
   protected abstract representation(): string;
 
   protected abstract resource(): string;
 
-  protected abstract resourceId(): string | number | undefined;
+  protected abstract resourceId(): string | undefined;
 }

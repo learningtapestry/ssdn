@@ -2,43 +2,41 @@ import { FormikActions, FormikProps, withFormik } from "formik";
 import isEmpty from "lodash/fp/isEmpty";
 import isString from "lodash/fp/isString";
 import omitBy from "lodash/fp/omitBy";
-import generate from "nanoid/generate";
-import React, { useCallback, useState } from "react";
+import React, { useCallback } from "react";
 import { Alert, Button, Col, Form, InputGroup, Row } from "react-bootstrap";
-import uuid from "uuid/v4";
 import { object, string } from "yup";
-import ConnectionRequest from "../../interfaces/connection-request";
+
+import { NewConnectionRequest } from "../../interfaces/connection-request";
 import AWSService from "../../services/aws-service";
-import ConsumerRequestService from "../../services/consumer-request-service";
 import ConfirmationModal from "../ui/ConfirmationModal";
 
 const schema = object({
   email: string()
     .required()
     .email(),
-  endpoint: string()
-    .required()
-    .url(),
   extension: string(),
   firstName: string().required(),
   lastName: string().required(),
   organization: string().required(),
   phoneNumber: string().required(),
+  providerEndpoint: string()
+    .required()
+    .url(),
   title: string().required(),
 });
 
 const onSubmit = async (
-  values: ConnectionRequest,
-  { setStatus, setSubmitting, resetForm }: FormikActions<ConnectionRequest>,
+  values: NewConnectionRequest,
+  { setStatus, setSubmitting, resetForm }: FormikActions<NewConnectionRequest>,
 ) => {
   try {
     const connectionRequest = omitBy((value) => isString(value) && isEmpty(value))(
       values,
-    ) as ConnectionRequest;
-    await ConsumerRequestService.register(connectionRequest.endpoint, connectionRequest);
-    await AWSService.saveConnectionRequest({ ...connectionRequest, id: uuid(), type: "provider" });
+    ) as NewConnectionRequest;
+    // await ConsumerRequestService.register(connectionRequest.providerEndpoint, connectionRequest);
+    const savedRequest = await AWSService.saveConnectionRequest(connectionRequest);
     resetForm();
-    setStatus({ success: true });
+    setStatus({ success: true, verificationCode: savedRequest.verificationCode });
   } catch (error) {
     setStatus({ success: false, message: error.message });
   } finally {
@@ -46,9 +44,8 @@ const onSubmit = async (
   }
 };
 
-function CreateConnectionRequestForm(props: FormikProps<ConnectionRequest>) {
+function CreateConnectionRequestForm(props: FormikProps<NewConnectionRequest>) {
   const { handleSubmit, handleChange, values, errors, status, setStatus } = props;
-  const [showVerificationCodeModal, setShowVerificationCodeModal] = useState(false);
 
   const displayAlert = () => {
     if (status && status.message) {
@@ -57,18 +54,11 @@ function CreateConnectionRequestForm(props: FormikProps<ConnectionRequest>) {
     }
   };
 
-  const handleOpenVerificationCodeModal = useCallback(() => {
-    // const title = `You have successfully submitted your request. Use this verification code to
-    //                validate your requests when you get in touch with the provider`;
-    // console.log((event.target as HTMLElement).dataset.verificationCode);
-
-    setShowVerificationCodeModal(true);
-  }, []);
-
   const handleCloseVerificationCodeModal = useCallback(() => {
-    setShowVerificationCodeModal(false);
     setStatus({ success: false });
   }, []);
+
+  const verificationCode = status && status.verificationCode ? status.verificationCode : "";
 
   return (
     <section id="admin-create-user">
@@ -77,17 +67,19 @@ function CreateConnectionRequestForm(props: FormikProps<ConnectionRequest>) {
         <Col md={12}>
           {displayAlert()}
           <Form noValidate={true} onSubmit={handleSubmit}>
-            <Form.Group controlId="endpoint">
+            <Form.Group controlId="providerEndpoint">
               <Form.Label>Endpoint URL</Form.Label>
               <Form.Control
                 type="text"
-                name="endpoint"
+                name="providerEndpoint"
                 placeholder="https://"
-                value={values.endpoint}
+                value={values.providerEndpoint}
                 onChange={handleChange}
-                isInvalid={!!errors.endpoint}
+                isInvalid={!!errors.providerEndpoint}
               />
-              <Form.Control.Feedback type="invalid">{errors.endpoint}</Form.Control.Feedback>
+              <Form.Control.Feedback type="invalid">
+                {errors.providerEndpoint}
+              </Form.Control.Feedback>
               <Form.Text className="text-muted">
                 This URL should be provided by the Nucleus instance that owns the data.
               </Form.Text>
@@ -181,15 +173,15 @@ function CreateConnectionRequestForm(props: FormikProps<ConnectionRequest>) {
           </Form>
           <ConfirmationModal
             title="Verification Code"
-            show={showVerificationCodeModal || (status && status.success)}
-            onClose={handleCloseVerificationCodeModal}
+            show={status && status.success}
+            onConfirm={handleCloseVerificationCodeModal}
           >
             <div>
               <p>
                 You have successfully submitted your request. Use this verification code to prove
                 that it is legit once you contact with the provider.
               </p>
-              <h1 className="text-info text-center">{values.verificationCode}</h1>
+              <h1 className="text-info text-center">{verificationCode}</h1>
             </div>
           </ConfirmationModal>
         </Col>
@@ -198,23 +190,18 @@ function CreateConnectionRequestForm(props: FormikProps<ConnectionRequest>) {
   );
 }
 
-const CreateConnectionRequest = withFormik<{}, ConnectionRequest>({
+const CreateConnectionRequest = withFormik<{}, NewConnectionRequest>({
   handleSubmit: onSubmit,
   mapPropsToValues: () => {
     return {
-      creationDate: new Date().toISOString(),
       email: "",
-      endpoint: "",
       extension: "",
       firstName: "",
-      id: uuid(),
       lastName: "",
       organization: "",
       phoneNumber: "",
-      status: "pending",
+      providerEndpoint: "",
       title: "",
-      type: "consumer",
-      verificationCode: generate("0123456789", 6),
     };
   },
   validateOnChange: false,

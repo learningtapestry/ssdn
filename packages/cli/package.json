@@ -24,6 +24,7 @@
     "npm": ">= 6.0.0"
   },
   "dependencies": {
+    "@sindresorhus/slugify": "^0.9.1",
     "commander": "^2.20.0",
     "execa": "^1.0.0",
     "inquirer": "^6.3.1",

@@ -1,5 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Dropdown, DropdownButton, Table } from "react-bootstrap";
+
+import { displayDate } from "../../app-helper";
 import LogEvent from "../../interfaces/log-event";
 import AWSService from "../../services/aws-service";
 
@@ -41,7 +43,7 @@ export default function Logs() {
   const renderLogEvents = () =>
     logEvents.map((event) => (
       <tr key={`${event.creationDate.getTime()}_${event.message}`}>
-        <td>{event.creationDate.toLocaleString("en-US")}</td>
+        <td>{displayDate(event.creationDate)}</td>
         <td>
           <code>{event.message}</code>
         </td>

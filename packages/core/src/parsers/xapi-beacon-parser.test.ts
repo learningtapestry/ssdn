@@ -9,6 +9,7 @@ describe("XAPIBeaconParser", () => {
     it("generates a nucleus event structured object", async () => {
       const nucleusEvent = new XAPIBeaconParser(
         (beaconEventInput as unknown) as APIGatewayProxyEvent,
+        "nucleus-test.learningtapestry.com",
       ).parse();
 
       expect(nucleusEvent).toEqual(beaconEventSample);
@@ -17,6 +18,7 @@ describe("XAPIBeaconParser", () => {
     it("generates an UUID when none is provided", async () => {
       const nucleusEvent = new XAPIBeaconParser(
         (beaconEventInput as unknown) as APIGatewayProxyEvent,
+        "nucleus-test.learningtapestry.com",
       ).parse();
 
       expect(nucleusEvent.content).toHaveProperty("id");

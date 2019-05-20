@@ -6,8 +6,8 @@ import trim from "lodash/fp/trim";
 
 import { readEnv } from "../../helpers/app-helper";
 import XAPIStatementParser from "../../parsers/xapi-statement-parser";
-import KinesisRepository from "../../repositories/kinesis-repository";
-import StatementService from "../../services/statement-service";
+import { getEventRepository } from "../../services";
+import XAPIStatementService from "../../services/xapi-statement-service";
 import XAPIValidator from "../../validators/xapi-validator";
 
 export const handler: APIGatewayProxyHandler = async (event) => {
@@ -22,10 +22,10 @@ export const handler: APIGatewayProxyHandler = async (event) => {
     );
   }
 
-  const results = await StatementService.process(
-    new XAPIStatementParser(event).parse(),
+  const results = await XAPIStatementService.process(
+    new XAPIStatementParser(event, readEnv("NUCLEUS_NAMESPACE")).parse(),
     new XAPIValidator(),
-    new KinesisRepository(readEnv("NUCLEUS_EVENT_PROCESSOR_STREAM_NAME")),
+    getEventRepository(),
   );
   const hasErrors = has("errors")(results);
 

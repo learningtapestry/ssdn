@@ -6,7 +6,7 @@ describe("List Logs", () => {
   it("greets with title and log groups dropdown", () => {
     cy.contains("h1", "Logs");
     cy.get("button.dropdown-toggle").click();
-    cy.contains("a.dropdown-item", "/aws/lambda/Nucleus");
+    cy.contains("a.dropdown-item", `/aws/lambda/${Cypress.env("REACT_APP_STACK_NAME")}`);
   });
 
   it("lists some log events in the group", () => {

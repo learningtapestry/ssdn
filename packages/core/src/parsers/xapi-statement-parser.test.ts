@@ -10,6 +10,7 @@ describe("XAPIStatementParser", () => {
     it("generates a nucleus event structured object", async () => {
       const nucleusEvent = new XAPIStatementParser(
         (processEventInput as unknown) as APIGatewayProxyEvent,
+        "nucleus-test.learningtapestry.com",
       ).parse();
 
       expect(nucleusEvent).toEqual(nucleusEventSample);
@@ -25,6 +26,7 @@ describe("XAPIStatementParser", () => {
 
       const nucleusEvent = new XAPIStatementParser(
         (unencodedEventInput as unknown) as APIGatewayProxyEvent,
+        "nucleus-test.learningtapestry.com",
       ).parse();
 
       expect(nucleusEvent.content).toHaveProperty("content", "My content");
@@ -40,6 +42,7 @@ describe("XAPIStatementParser", () => {
 
       const nucleusEvent = new XAPIStatementParser(
         (processEventInput as unknown) as APIGatewayProxyEvent,
+        "nucleus-test.learningtapestry.com",
       ).parse();
 
       expect(nucleusEvent.content).toHaveProperty("content", "My content");

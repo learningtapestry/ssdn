@@ -1,19 +1,24 @@
 import axios from "axios";
 
-import { getApiKey } from "../src/helpers/aws-helper";
-import { currentStack, getOutputValue } from "../test-support/aws";
+import { API, API_KEYS } from "../src/interfaces/aws-metadata-keys";
+import { getApiGatewayService, getMetadataService } from "../src/services";
 import xAPIStatement from "../test-support/data-samples/xapi-statement.json";
+
+const metadata = getMetadataService();
+const apigateway = getApiGatewayService();
 
 describe("Process xAPI Statement API", () => {
   let statementsEndpoint: string;
-  let apiKey: string | undefined;
+  let apiKey: string;
 
   beforeAll(async () => {
     jest.setTimeout(15000);
-    const apiKeyId = await getOutputValue("CollectionApiKeyId", currentStack());
-    statementsEndpoint = await getOutputValue("StatementsApi", currentStack());
-    const gatewayKey = await getApiKey(apiKeyId);
-    apiKey = gatewayKey.value;
+    const baseApi = await metadata.getMetadataValue(API.statements);
+    statementsEndpoint = `${baseApi.value}/xAPI/statements`;
+    const apiKeyDef = await apigateway.getApiKey(
+      await metadata.getMetadataValue(API_KEYS.collectionApiKeyId),
+    );
+    apiKey = apiKeyDef.value!;
   });
 
   beforeEach(async () => {

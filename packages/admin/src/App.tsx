@@ -1,3 +1,5 @@
+import "./App.css";
+
 import {
   ConfirmSignIn,
   ForgotPassword,
@@ -15,10 +17,8 @@ import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import { Route, Router } from "react-router-dom";
-import "./App.css";
-import Consumers from "./components/connection-requests/Consumers";
-import CreateConnectionRequest from "./components/connection-requests/CreateConnectionRequest";
-import Providers from "./components/connection-requests/Providers";
+
+import ConnectionsHome from "./components/connection-requests/ConnectionsHome";
 import Home from "./components/home/Home";
 import Logs from "./components/logs/Logs";
 import Settings from "./components/settings/Settings";
@@ -41,9 +41,7 @@ class App extends Component {
             <Row>
               <Col>
                 <Route exact={true} path="/" component={Home} />
-                <Route exact={true} path="/providers" component={Providers} />
-                <Route exact={true} path="/providers/create" component={CreateConnectionRequest} />
-                <Route exact={true} path="/consumers" component={Consumers} />
+                <Route path="/connections" component={ConnectionsHome} />
                 <Route exact={true} path="/logs" component={Logs} />
                 <Route exact={true} path="/users" component={Users} />
                 <Route exact={true} path="/users/create" component={CreateUser} />

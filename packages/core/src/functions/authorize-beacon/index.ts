@@ -1,6 +1,10 @@
 import { CustomAuthorizerHandler } from "aws-lambda";
+import APIGateway from "aws-sdk/clients/apigateway";
 
-import { getApiKey } from "../../helpers/aws-helper";
+import TtlCache from "../../helpers/ttl-cache";
+import { getApiGatewayService } from "../../services";
+
+const cache = new TtlCache<string, APIGateway.ApiKey>();
 
 export const handler: CustomAuthorizerHandler = async (event, _context, _callback) => {
   const aid = event.queryStringParameters!.aid;
@@ -12,7 +16,7 @@ export const handler: CustomAuthorizerHandler = async (event, _context, _callbac
   let apiGatewayKey;
 
   try {
-    apiGatewayKey = await getApiKey(aid);
+    apiGatewayKey = await cache.get(aid, () => getApiGatewayService().getApiKey({ value: aid }));
   } catch (error) {
     return deny("", event.methodArn);
   }

@@ -1,7 +1,6 @@
 /**
  * test-helper.ts: Support functions to be used in tests
  */
-
 import { createMemoryHistory } from "history";
 import React from "react";
 import { Router } from "react-router-dom";
@@ -18,7 +17,5 @@ export function renderWithRouter(
 }
 
 export function mockWithPromise(returnValue: any) {
-  return jest.fn().mockImplementation(() => {
-    return { promise: () => returnValue };
-  });
+  return jest.fn(() => ({ promise: async () => returnValue })) as jest.Mock<any>;
 }

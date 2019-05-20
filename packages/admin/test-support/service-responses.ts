@@ -1,3 +1,7 @@
+import { nullConnection, nullConnectionRequest } from "../src/app-helper";
+import { ConnectionRequestStatus } from "../src/interfaces/connection-request";
+import { StreamStatus } from "../src/interfaces/stream";
+
 /**
  * service-responses.ts: Collection of objects that mock the responses of external services
  */
@@ -65,8 +69,9 @@ export function cloudFormationStacks() {
           {
             Description: "Hello Nucleus Lambda Function ARN",
             OutputKey: "HelloNucleusFunction",
-            OutputValue: `arn:aws:lambda:us-east-1:111111111111:function:
-          Nucleus-HelloNucleusFunction-60K87QSYCYTJ`,
+            OutputValue:
+              `arn:aws:lambda:us-east-1:111111111111:function:` +
+              `Nucleus-HelloNucleusFunction-60K87QSYCYTJ`,
           },
         ],
         Parameters: [
@@ -161,38 +166,107 @@ export function cognitoUsers() {
   };
 }
 
+export const connectionRequestAdam = nullConnectionRequest({
+  acceptanceToken: "AcceptanceTokenAdam",
+  channels: ["S3"],
+  connection: {
+    awsAccountId: "AwsAccountIdAdam",
+    externalId: "ExternalIdAdam",
+    nucleusId: "NucleusIdAdam",
+  },
+  consumerEndpoint: "https://nucleus.adam.acme.org/",
+  creationDate: "2019-02-13T12:21:36.120Z",
+  email: "adam@example.org",
+  firstName: "Adam",
+  id: "ConnReqIdAdam",
+  lastName: "Mitchell",
+  organization: "Stoltenberg-Harvey",
+  phoneNumber: "+1555555555",
+  providerEndpoint: "https://nucleus.ajax.org",
+  status: ConnectionRequestStatus.Accepted,
+  title: "Developer",
+  verificationCode: "VerifyAdam",
+});
+
+export const connectionAdam = nullConnection({
+  endpoint: "https://nucleus.adam.acme.org/",
+  inputStreams: [{ channel: "XAPI", namespace: "nucleus.ajax.org", status: StreamStatus.Active }],
+  outputStreams: [
+    { channel: "XAPI", namespace: "nucleus.adam.acme.org", status: StreamStatus.Active },
+  ],
+});
+
+export const connectionRequestJonah = nullConnectionRequest({
+  acceptanceToken: "AcceptanceTokenJonah",
+  channels: ["XAPI"],
+  connection: {
+    awsAccountId: "AwsAccountIdJonah",
+    externalId: "ExternalIdJonah",
+    nucleusId: "NucleusIdJonah",
+  },
+  consumerEndpoint: "https://nucleus.jonah.acme.org/",
+  creationDate: "2019-04-14T15:31:55.120Z",
+  email: "jonah@example.org",
+  firstName: "Johah",
+  id: "ConnReqIdJonah",
+  lastName: "Johnson",
+  organization: "Disney",
+  phoneNumber: "+16667776666",
+  providerEndpoint: "https://nucleus.ajax.org",
+  status: ConnectionRequestStatus.Created,
+  title: "Manager",
+  verificationCode: "VerifyJonah",
+});
+
+export const connectionJonah = nullConnection({
+  endpoint: "https://nucleus.jonah.acme.org/",
+  inputStreams: [{ channel: "XAPI", namespace: "nucleus.ajax.org", status: StreamStatus.Paused }],
+  outputStreams: [
+    { channel: "XAPI", namespace: "nucleus.jonah.acme.org", status: StreamStatus.Paused },
+  ],
+});
+
+export const connectionRequestMickey = nullConnectionRequest({
+  acceptanceToken: "AcceptanceTokenMickey",
+  channels: ["XAPI", "S3"],
+  connection: {
+    awsAccountId: "AwsAccountIdMickey",
+    externalId: "ExternalIdMickey",
+    nucleusId: "NucleusIdMickey",
+  },
+  consumerEndpoint: "https://nucleus.mickey.acme.org/",
+  creationDate: "2019-04-14T11:31:55.120Z",
+  email: "mickey@example.org",
+  firstName: "Mickey",
+  id: "ConnReqIdMickey",
+  lastName: "Smith",
+  organization: "Heaney, Hackett and Jacobson",
+  phoneNumber: "+1666666666",
+  providerEndpoint: "https://nucleus.ajax.org",
+  status: ConnectionRequestStatus.Rejected,
+  title: "CEO",
+  verificationCode: "VerifyMickey",
+});
+
+export const connectionMickey = nullConnection({
+  endpoint: "https://nucleus.mickey.acme.org/",
+  inputStreams: [
+    { channel: "XAPI", namespace: "nucleus.ajax.org", status: StreamStatus.PausedExternal },
+  ],
+  outputStreams: [
+    { channel: "XAPI", namespace: "nucleus.mickey.acme.org", status: StreamStatus.PausedExternal },
+  ],
+});
+
 export function connectionRequestItems() {
   return {
-    Items: [
-      {
-        creationDate: "2019-02-13T12:21:36.120Z",
-        email: "test-user-1@example.org",
-        endpoint: "https://www.example.org/organization-1/register",
-        firstName: "Adam",
-        id: "fb20c8c8-6922-493f-8082-9b9962054a2a",
-        lastName: "Mitchell",
-        organization: "Stoltenberg-Harvey",
-        phoneNumber: "+1555555555",
-        status: "accepted",
-        title: "Developer",
-        type: "consumer",
-        verificationCode: "825150",
-      },
-      {
-        creationDate: "2019-04-14T11:31:55.120Z",
-        email: "test-user-2@example.org",
-        endpoint: "https://www.example.org/organization-2/register",
-        firstName: "Mickey",
-        id: "32b42b0e-80f7-4551-a0ea-b7e629b885f1",
-        lastName: "Smith",
-        organization: "Heaney, Hackett and Jacobson",
-        phoneNumber: "+1666666666",
-        status: "rejected",
-        title: "CEO",
-        type: "provider",
-        verificationCode: "825150",
-      },
-    ],
+    Items: [connectionRequestAdam, connectionRequestJonah, connectionRequestMickey],
+  };
+}
+
+export function connections() {
+  return {
+    Items: [connectionAdam, connectionJonah, connectionMickey],
   };
 }
 
@@ -200,16 +274,18 @@ export function logGroups() {
   return {
     logGroups: [
       {
-        arn: `arn:aws:logs:us-east-1:111111111111:log-group:/aws/lambda/Nucleus-
-                AuthorizeBeaconFunction-1P2GO4YF9VZA7:*`,
+        arn:
+          `arn:aws:logs:us-east-1:111111111111:log-group:/aws/lambda/Nucleus-` +
+          `AuthorizeBeaconFunction-1P2GO4YF9VZA7:*`,
         creationTime: 1555202318486,
         logGroupName: "/aws/lambda/Nucleus-AuthorizeBeaconFunction-1P2GO4YF9VZA7",
         metricFilterCount: 0,
         storedBytes: 0,
       },
       {
-        arn: `arn:aws:logs:us-east-1:111111111111:log-group:/aws/lambda/Nucleus-
-                ProcessXAPIStatementFunction-HCJE3P62QE5P:*`,
+        arn:
+          `arn:aws:logs:us-east-1:111111111111:log-group:/aws/lambda/Nucleus-` +
+          `ProcessXAPIStatementFunction-HCJE3P62QE5P:*`,
         creationTime: 1553517132468,
         logGroupName: "/aws/lambda/Nucleus-ProcessXAPIStatementFunction-HCJE3P62QE5P",
         metricFilterCount: 0,
@@ -223,9 +299,10 @@ export function logStreams() {
   return {
     logStreams: [
       {
-        arn: `arn:aws:logs:us-east-1:264441468378:log-group:/aws/lambda/Nucleus-Dev-
-              AuthorizeBeaconFunction-1P2GO4YF9VZA7:log-stream:2019/04/14/[$LATEST]
-              b9dbeb8808d54f398aed8a654c9ddf5c`,
+        arn:
+          `arn:aws:logs:us-east-1:264441468378:log-group:/aws/lambda/Nucleus-Dev-` +
+          `AuthorizeBeaconFunction-1P2GO4YF9VZA7:log-stream:2019/04/14/[$LATEST]` +
+          `b9dbeb8808d54f398aed8a654c9ddf5c`,
         creationTime: 1555255087383,
         firstEventTimestamp: 1555255315091,
         lastEventTimestamp: 1555255316099,
@@ -235,9 +312,10 @@ export function logStreams() {
         uploadSequenceToken: "49590950333862645815504765286593577355146551043222039426",
       },
       {
-        arn: `arn:aws:logs:us-east-1:264441468378:log-group:/aws/lambda/Nucleus-Dev-
-              AuthorizeBeaconFunction-1P2GO4YF9VZA7:log-stream:2019/04/14/[$LATEST]
-              10b6496f1bfc4428b05f51dfca0e40d4`,
+        arn:
+          `arn:aws:logs:us-east-1:264441468378:log-group:/aws/lambda/Nucleus-Dev-` +
+          `AuthorizeBeaconFunction-1P2GO4YF9VZA7:log-stream:2019/04/14/[$LATEST]` +
+          `10b6496f1bfc4428b05f51dfca0e40d4`,
         creationTime: 1555254475694,
         firstEventTimestamp: 1555254475840,
         lastEventTimestamp: 1555255015115,

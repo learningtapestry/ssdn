@@ -57,24 +57,8 @@ amplify env add     # Use 'test', 'cypress' or 'e2e' as the environment name whe
 amplify serve       # Provisions the resources in the cloud and starts the application locally
 ```
 
-- The actual IAM role that Amplify creates by default only has a limited set of permissions, so
-  we'll need to add additional ones to make sure that all the resources needed by the admin panel
-  are accessible. You can perform this step by taking a look at the default policy inside
-  `docs/admin-user-policy.json` and adding it from the AWS console, or executing these CLI commands
-  (remember to use your own AWS account identifier):
-
-```bash
-aws iam create-policy \
-    --policy-name NucleusAdminPanel \
-    --policy-document file://docs/admin-user-policy.json \
-    --description "Minimum set of permissions required to run the sections in the administration panel"
-```
-
-```bash
-aws iam attach-role-policy \
-    --policy-arn arn:aws:iam::264441468378:policy/NucleusAdminPanel \
-    --role-name nucleus-admin-20190425145802-authRole
-```
+- Make sure you have defined proper values for the current environment in the `.env` file, and that
+  it's pointing to the environment you want to run the e2e tests on.
 
 - Now, you'll need to create a default administrator user that will be used to sign in. Again, you can
   either go to the Cognito section in the AWS Console and create the user there, or run the
@@ -100,15 +84,15 @@ aws cognito-idp admin-create-user \
 
 ```bash
 export CYPRESS_DEFAULT_USERNAME=test-user
-export CYPRESS_DEFAULT_PASSWORD = @Mb94TQT5nqE
+export CYPRESS_DEFAULT_PASSWORD=@Mb94TQT5nqE
 export CYPRESS_REGISTER_ENDPOINT=https://z0krjz1z0l.execute-api.us-east-1.amazonaws.com/test/register
 ```
 
 As you can see, all variables must start with `CYPRESS_` in order to be properly recognized.
 Besides that, we're declaring the username and password we defined in the previous step, as well as
 the register endpoint for consumer requests. If you don't know where this value comes from, you can
-use your instance's own endpoint. Check API Gateway, or the CloudFormation stack, in your AWS
-account to get the endpoint's URL.
+use your instance's own endpoint. Check the home page in your Nucleus administration panel or the
+CloudFormation stack in your AWS account to get the endpoint's URL.
 
 - Lastly, you can launch the end-to-end tests with these two commands:
 

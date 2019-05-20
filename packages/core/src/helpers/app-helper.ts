@@ -1,35 +1,31 @@
 /**
  * app-helper.ts: General module containing utility functions
  */
-
 import get from "lodash/fp/get";
 import has from "lodash/fp/has";
 import isArray from "lodash/fp/isArray";
-import isEmpty from "lodash/fp/isEmpty";
-import isNil from "lodash/fp/isNil";
 import uuid from "uuid/v4";
-
-export function isBlank(text?: string | null) {
-  return isNil(text) || isEmpty(text);
-}
 
 export function decode64(content: string) {
   return Buffer.from(content, "base64").toString();
 }
 
-export function utcDate(timestamp: number) {
-  return new Date(timestamp).toUTCString();
+export function isoDate(timestamp?: number) {
+  return (timestamp ? new Date(timestamp) : new Date()).toISOString();
 }
 
 export function readEnv(name: string, defaultValue?: any) {
   const value = get(name)(process.env);
-  if (isBlank(value) && !isNil(defaultValue)) {
-    return defaultValue;
-  } else if (isBlank(value)) {
-    throw new Error(`Variable '${name}' has not been initialized`);
-  } else {
+
+  if (value) {
     return value;
   }
+
+  if (arguments.length === 2) {
+    return defaultValue;
+  }
+
+  throw new Error(`Variable '${name}' has not been initialized`);
 }
 
 export function calculateIdentifier(content: object) {
@@ -41,8 +37,5 @@ export function toArray(content: object | object[]) {
 }
 
 export function wrap(object: object, root: string = "") {
-  const wrappedObject: any = {};
-  wrappedObject[root] = object;
-
-  return isBlank(root) ? object : wrappedObject;
+  return root ? { [root]: object } : object;
 }
