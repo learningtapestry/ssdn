@@ -18,13 +18,7 @@ export interface ConnectionRequest {
   consumerEndpoint: string;
   providerEndpoint: string;
   namespace: string;
-  firstName: string;
-  lastName: string;
   organization: string;
-  title: string;
-  email: string;
-  phoneNumber: string;
-  extension?: string;
   type: string;
   verificationCode: string;
   acceptanceToken: string;
@@ -40,11 +34,5 @@ export interface ConnectionRequest {
 
 export interface NewConnectionRequest {
   providerEndpoint: string;
-  firstName: string;
-  lastName: string;
   organization: string;
-  title: string;
-  email: string;
-  phoneNumber: string;
-  extension?: string;
 }

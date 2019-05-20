@@ -58,26 +58,8 @@ export default function ConnectionRequestModal(props: ConnectionRequestModalProp
           <ConnectionAttribute name="Creation Date">
             {displayDate(props.connectionRequest.creationDate)}
           </ConnectionAttribute>
-          <ConnectionAttribute name="First Name">
-            {props.connectionRequest.firstName}
-          </ConnectionAttribute>
-          <ConnectionAttribute name="Last Name">
-            {props.connectionRequest.lastName}
-          </ConnectionAttribute>
           <ConnectionAttribute name="Organization">
             {props.connectionRequest.organization}
-          </ConnectionAttribute>
-          <ConnectionAttribute name="Title">{props.connectionRequest.title}</ConnectionAttribute>
-          <ConnectionAttribute name="Email">
-            <a href={`mailto:${props.connectionRequest.email}`}>{props.connectionRequest.email}</a>,
-          </ConnectionAttribute>
-          <ConnectionAttribute name="Phone Number">
-            <a href={`tel:${props.connectionRequest.phoneNumber}`}>
-              {props.connectionRequest.phoneNumber}
-            </a>
-          </ConnectionAttribute>
-          <ConnectionAttribute name="Extension">
-            {props.connectionRequest.extension}
           </ConnectionAttribute>
           {verificationCode()}
         </Container>

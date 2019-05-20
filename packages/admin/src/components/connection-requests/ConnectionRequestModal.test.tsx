@@ -1,6 +1,5 @@
 import "jest-dom/extend-expect";
 
-import omit from "lodash/fp/omit";
 import React from "react";
 import { fireEvent, render } from "react-testing-library";
 
@@ -32,15 +31,7 @@ describe("<ConnectionRequestModal />", () => {
 
     getByText("2/13/2019, 7:21:36 AM");
     getByText("Accepted");
-    getByText(props.connectionRequest.firstName);
-    getByText(props.connectionRequest.lastName);
     getByText(props.connectionRequest.organization);
-    getByText(props.connectionRequest.title);
-    getByText(props.connectionRequest.email);
-    getByText(props.connectionRequest.phoneNumber);
-    if (props.connectionRequest.extension) {
-      getByText(props.connectionRequest.extension);
-    }
   });
 
   it("shows the verification code when seeing a provider request", () => {

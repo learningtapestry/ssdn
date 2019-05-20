@@ -176,15 +176,10 @@ export const connectionRequestAdam = nullConnectionRequest({
   },
   consumerEndpoint: "https://nucleus.adam.acme.org/",
   creationDate: "2019-02-13T12:21:36.120Z",
-  email: "adam@example.org",
-  firstName: "Adam",
   id: "ConnReqIdAdam",
-  lastName: "Mitchell",
   organization: "Stoltenberg-Harvey",
-  phoneNumber: "+1555555555",
   providerEndpoint: "https://nucleus.ajax.org",
   status: ConnectionRequestStatus.Accepted,
-  title: "Developer",
   verificationCode: "VerifyAdam",
 });
 
@@ -206,15 +201,10 @@ export const connectionRequestJonah = nullConnectionRequest({
   },
   consumerEndpoint: "https://nucleus.jonah.acme.org/",
   creationDate: "2019-04-14T15:31:55.120Z",
-  email: "jonah@example.org",
-  firstName: "Johah",
   id: "ConnReqIdJonah",
-  lastName: "Johnson",
   organization: "Disney",
-  phoneNumber: "+16667776666",
   providerEndpoint: "https://nucleus.ajax.org",
   status: ConnectionRequestStatus.Created,
-  title: "Manager",
   verificationCode: "VerifyJonah",
 });
 
@@ -236,15 +226,10 @@ export const connectionRequestMickey = nullConnectionRequest({
   },
   consumerEndpoint: "https://nucleus.mickey.acme.org/",
   creationDate: "2019-04-14T11:31:55.120Z",
-  email: "mickey@example.org",
-  firstName: "Mickey",
   id: "ConnReqIdMickey",
-  lastName: "Smith",
   organization: "Heaney, Hackett and Jacobson",
-  phoneNumber: "+1666666666",
   providerEndpoint: "https://nucleus.ajax.org",
   status: ConnectionRequestStatus.Rejected,
-  title: "CEO",
   verificationCode: "VerifyMickey",
 });
 

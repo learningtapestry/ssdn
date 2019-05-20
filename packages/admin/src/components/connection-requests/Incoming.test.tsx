@@ -12,7 +12,7 @@ import {
 import * as factories from "../../../test-support/factories";
 import { nullConnectionRequest } from "../../app-helper";
 import AWSService from "../../services/aws-service";
-import Incoming from "./Incoming";
+import Incoming, { acceptTermsMessage } from "./Incoming";
 
 /* FIXME: The nasty warning about test not wrapped in act(...) should go away when this is resolved:
  *        https://github.com/facebook/react/issues/14769
@@ -37,19 +37,16 @@ describe("<Incoming />", () => {
       getByText("https://nucleus.adam.acme.org/");
       getByText("Stoltenberg-Harvey");
       queryByText("2/13/2019");
-      getByText("adam@example.org");
       getByText("Accepted");
 
       getByText("https://nucleus.jonah.acme.org/");
       getByText("Disney");
       queryByText("4/14/2019");
-      getByText("jonah@example.org");
       getByText("Created");
 
       getByText("https://nucleus.mickey.acme.org/");
       getByText("Heaney, Hackett and Jacobson");
       queryByText("4/14/2019");
-      getByText("mickey@example.org");
       getByText("Rejected");
     });
   });
@@ -65,13 +62,16 @@ describe("<Incoming />", () => {
   });
 
   it("handles the accept action", async () => {
-    const { getByText, getAllByText, getByRole, getByPlaceholderText } = render(<Incoming />);
+    const { getByText, getByLabelText, getAllByText, getByRole, getByPlaceholderText } = render(
+      <Incoming />,
+    );
     await waitForElement(() => getAllByText("Accept"));
     fireEvent.click(getAllByText("Accept")[0]);
     await waitForElement(() => getByRole("dialog"));
     fireEvent.change(getByPlaceholderText("Verification Code"), {
       target: { value: "VerifyJonah" },
     });
+    fireEvent.click(getByLabelText(acceptTermsMessage));
     fireEvent.click(getByText("Confirm"));
     await waitForElementToBeRemoved(() => getByRole("dialog"));
     expect(AWSService.acceptConnectionRequest).toHaveBeenCalledTimes(1);
@@ -80,6 +80,17 @@ describe("<Incoming />", () => {
       "ConnReqIdJonah",
       true,
     );
+  });
+
+  it("prevents submission if terms are not accepted", async () => {
+    const { getByText, getAllByText, getByRole } = render(<Incoming />);
+
+    await waitForElement(() => getAllByText("Accept"));
+    fireEvent.click(getAllByText("Accept")[0]);
+    await waitForElement(() => getByRole("dialog"));
+    fireEvent.click(getByText("Confirm"));
+
+    await waitForElement(() => getByText("You must agree before accepting this request."));
   });
 
   it("handles the reject action", async () => {
@@ -98,11 +109,10 @@ describe("<Incoming />", () => {
   });
 
   it("handles the view detail action", async () => {
-    const { getByText, getAllByText, getByRole } = render(<Incoming />);
+    const { getAllByText, getByRole } = render(<Incoming />);
     await waitForElement(() => getAllByText("View info"));
     fireEvent.click(getAllByText("View info")[0]);
     await waitForElement(() => getByRole("dialog"));
-    await waitForElement(() => getByText("+1555555555"));
     fireEvent.click(getAllByText("Close")[0]);
     await waitForElementToBeRemoved(() => getByRole("dialog"));
   });

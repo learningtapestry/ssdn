@@ -49,7 +49,6 @@ export default function Submitted() {
     <tr key={request.id}>
       <td>{request.providerEndpoint}</td>
       <td>{displayDate(request.creationDate)}</td>
-      <td>{request.email}</td>
       <td>
         <StatusLabel status={request.status} statusType="submitted" />
       </td>
@@ -82,7 +81,6 @@ export default function Submitted() {
           <tr>
             <th>Endpoint</th>
             <th>Creation Date</th>
-            <th>Email</th>
             <th>Status</th>
             <th />
           </tr>
