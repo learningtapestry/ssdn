@@ -8,6 +8,5 @@ if (fs.existsSync(pathToEnvFile)) {
 
 module.exports = {
   coverageDirectory: "coverage",
-  preset: "ts-jest",
   testEnvironment: "node",
 };
