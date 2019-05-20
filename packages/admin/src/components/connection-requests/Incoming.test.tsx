@@ -12,7 +12,7 @@ import {
 import * as factories from "../../../test-support/factories";
 import { nullConnectionRequest } from "../../app-helper";
 import AWSService from "../../services/aws-service";
-import Incoming from "./Incoming";
+import Incoming, { acceptTermsMessage } from "./Incoming";
 
 /* FIXME: The nasty warning about test not wrapped in act(...) should go away when this is resolved:
  *        https://github.com/facebook/react/issues/14769
@@ -62,13 +62,16 @@ describe("<Incoming />", () => {
   });
 
   it("handles the accept action", async () => {
-    const { getByText, getAllByText, getByRole, getByPlaceholderText } = render(<Incoming />);
+    const { getByText, getByLabelText, getAllByText, getByRole, getByPlaceholderText } = render(
+      <Incoming />,
+    );
     await waitForElement(() => getAllByText("Accept"));
     fireEvent.click(getAllByText("Accept")[0]);
     await waitForElement(() => getByRole("dialog"));
     fireEvent.change(getByPlaceholderText("Verification Code"), {
       target: { value: "VerifyJonah" },
     });
+    fireEvent.click(getByLabelText(acceptTermsMessage));
     fireEvent.click(getByText("Confirm"));
     await waitForElementToBeRemoved(() => getByRole("dialog"));
     expect(AWSService.acceptConnectionRequest).toHaveBeenCalledTimes(1);
@@ -77,6 +80,17 @@ describe("<Incoming />", () => {
       "ConnReqIdJonah",
       true,
     );
+  });
+
+  it("prevents submission if terms are not accepted", async () => {
+    const { getByText, getAllByText, getByRole } = render(<Incoming />);
+
+    await waitForElement(() => getAllByText("Accept"));
+    fireEvent.click(getAllByText("Accept")[0]);
+    await waitForElement(() => getByRole("dialog"));
+    fireEvent.click(getByText("Confirm"));
+
+    await waitForElement(() => getByText("You must agree before accepting this request."));
   });
 
   it("handles the reject action", async () => {

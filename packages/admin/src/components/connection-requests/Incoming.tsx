@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { ButtonGroup, Form } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
+import FormCheckLabel from "react-bootstrap/FormCheckLabel";
 import Table from "react-bootstrap/Table";
 
 import { displayDate, nullConnectionRequest } from "../../app-helper";
@@ -12,12 +13,16 @@ import useModal from "../ui/use-modal";
 import ConnectionRequestModal from "./ConnectionRequestModal";
 import { StatusLabel } from "./StatusLabel";
 
+export const acceptTermsMessage =
+  "I agree to the terms and conditions that may derive from sharing data with this organization.";
+
 export default function Incoming() {
   const [connectionRequests, setConnectionRequests] = useState<ConnectionRequest[]>([]);
   const [selectedConnectionRequest, setSelectedConnectionRequest] = useState<ConnectionRequest>(
     nullConnectionRequest(),
   );
   const [verificationCode, setVerificationCode] = useState("");
+  const [termsAgreement, setTermsAgreement] = useState(false);
   const [matchingCodes, setMatchingCodes] = useState(false);
   const [inputTouched, setInputTouched] = useState(false);
 
@@ -58,6 +63,10 @@ export default function Incoming() {
     fetchData();
   }, [triggerRefresh]);
 
+  useEffect(() => {
+    setMatchingCodes(selectedConnectionRequest.verificationCode === verificationCode);
+  }, [verificationCode]);
+
   const fetchData = async () => {
     const receivedRequests = await AWSService.retrieveConnectionRequests("incoming");
     setConnectionRequests(receivedRequests);
@@ -65,8 +74,7 @@ export default function Incoming() {
 
   const handleConfirmAccept = showOnError(async () => {
     setInputTouched(true);
-    if (selectedConnectionRequest.verificationCode === verificationCode) {
-      setMatchingCodes(true);
+    if (matchingCodes && termsAgreement) {
       await AWSService.acceptConnectionRequest(
         selectedConnectionRequest.consumerEndpoint,
         selectedConnectionRequest.id,
@@ -74,8 +82,6 @@ export default function Incoming() {
       );
       setShowConfirmAccept(false);
       setTriggerRefresh(!triggerRefresh);
-    } else {
-      setMatchingCodes(false);
     }
   });
 
@@ -89,8 +95,11 @@ export default function Incoming() {
     setTriggerRefresh(!triggerRefresh);
   });
 
-  const handleVerificationCodeChange = useCallback((event) => {
-    setVerificationCode(event.target.value);
+  const handleInputChange = useCallback((event) => {
+    const target = event.target;
+    target.type === "checkbox"
+      ? setTermsAgreement(target.checked)
+      : setVerificationCode(target.value);
   }, []);
 
   // tslint:disable: jsx-wrap-multiline
@@ -193,10 +202,21 @@ export default function Incoming() {
             name="verificationCode"
             placeholder="Verification Code"
             value={verificationCode}
-            onChange={handleVerificationCodeChange}
+            onChange={handleInputChange}
             isInvalid={inputTouched && !matchingCodes}
           />
           <Form.Control.Feedback type="invalid">Code does not seem correct</Form.Control.Feedback>
+          <br />
+          <Form.Check
+            required={true}
+            type="checkbox"
+            id="termsAgreement"
+            label={<FormCheckLabel htmlFor="termsAgreement">{acceptTermsMessage}</FormCheckLabel>}
+            checked={termsAgreement}
+            onChange={handleInputChange}
+            isInvalid={inputTouched && !termsAgreement}
+            feedback="You must agree before accepting this request."
+          />
         </div>
       </ConfirmationModal>
       <ConfirmationModal
