@@ -2,17 +2,20 @@ import { HeartbeatMessage } from "./heartbeatMessage";
 import { Message } from "./message";
 import { MessageEncoder } from "./messageEncoder";
 import { VideoMessage } from "./videoMessage";
-import { XApiContext, XApiMessage, XApiVerb } from "./xApiSpec";
+import { XApiActor, XApiContext, XApiMessage, XApiObject, XApiVerb } from "./xApiSpec";
 
-const xApiRepo = "https://xapi-learningtapestry.github.io/nucleus";
+const heartbeatVerb = "https://learningtapestry.github.io/xapi/nucleus/collection/verbs/heartbeat";
+const heartbeatExtensions: { [k: string]: string } = {
+  heartbeatId: "https://learningtapestry.github.io/xapi/nucleus/collection/extensions/heartbeatId",
+  pageTitle: "https://learningtapestry.github.io/xapi/nucleus/collection/extensions/pageTitle",
+  timeSpentOnPage:
+    "https://learningtapestry.github.io/xapi/nucleus/collection/extensions/timeSpentOnPage",
+};
 
-const xApiVerbs: { [verb: string]: XApiVerb } = {
-  heartbeat: {
-    id: `${xApiRepo}/verbs/heartbeat`,
-  },
-  played: {
-    id: `${xApiRepo}/verbs/played`,
-  },
+const videoVerbs: { [k: string]: string } = {
+  ended: "http://adlnet.gov/expapi/verbs/completed",
+  paused: "https://w3id.org/xapi/video/verbs/paused",
+  playing: "https://w3id.org/xapi/video/verbs/played",
 };
 
 /**
@@ -26,43 +29,72 @@ export class XApiEncoder implements MessageEncoder {
    * @returns An object representing an xAPI statement.
    */
   public encode(message: Message): XApiMessage {
-    let objectId = "";
-
-    if (message.type === "played") {
-      objectId = (message as VideoMessage).data.videoUrl;
+    if (message.type === "video") {
+      return this.parseVideoMessage(message as VideoMessage);
     } else if (message.type === "heartbeat") {
-      objectId = (message as HeartbeatMessage).data.pageUrl;
+      return this.parseHeartbeatMessage(message as HeartbeatMessage);
     }
+    throw new Error("Unknown messsage type.");
+  }
 
-    let account;
-
-    if (message.user) {
-      account = {
+  private parseHeartbeatMessage(message: HeartbeatMessage) {
+    const actor: XApiActor = {
+      account: {
         name: message.user.id,
         ...message.user.extensions,
-      };
-    }
-
-    const context: XApiContext = { extensions: {} };
-
-    for (const key in message.data) {
-      if (message.data.hasOwnProperty(key)) {
-        context.extensions[`${xApiRepo}/extensions/${message.type}/${key}`] = message.data[key];
+      },
+      objectType: "Agent",
+    };
+    const verb: XApiVerb = {
+      id: heartbeatVerb,
+    };
+    const object: XApiObject = {
+      definition: {
+        type: "https://learningtapestry.github.io/xapi/nucleus/collection/activities/page",
+      },
+      id: message.data.pageUrl,
+      objectType: "Activity",
+    };
+    const context: XApiContext = {
+      extensions: {},
+    };
+    if (message.data) {
+      for (const [k, v] of Object.entries(message.data)) {
+        if (heartbeatExtensions[k]) {
+          context.extensions[heartbeatExtensions[k]] = v;
+        }
       }
     }
-
     return {
-      actor: {
-        account,
-        objectType: "Agent",
-      },
+      actor,
       context,
-      object: {
-        id: objectId,
+      object,
+      verb,
+    };
+  }
 
-        objectType: "Activity",
+  private parseVideoMessage(message: VideoMessage) {
+    const actor: XApiActor = {
+      account: {
+        name: message.user.id,
+        ...message.user.extensions,
       },
-      verb: xApiVerbs[message.type],
+      objectType: "Agent",
+    };
+    const verb: XApiVerb = {
+      id: videoVerbs[message.data.state],
+    };
+    const object: XApiObject = {
+      definition: {
+        type: "https://w3id.org/xapi/video/activity-type/video",
+      },
+      id: message.data.videoUrl,
+      objectType: "Activity",
+    };
+    return {
+      actor,
+      object,
+      verb,
     };
   }
 }

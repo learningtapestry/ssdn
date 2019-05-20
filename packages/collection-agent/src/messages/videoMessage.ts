@@ -20,7 +20,7 @@ export interface VideoMessageData {
 }
 
 export class VideoMessage implements Message {
-  public type = "played";
+  public type = "video";
 
   public user: User;
 

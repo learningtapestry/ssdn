@@ -13,7 +13,7 @@ describe("VideoMessage", () => {
       },
     );
 
-    expect(message.type).toEqual("played");
+    expect(message.type).toEqual("video");
 
     expect(message.user).toEqual({
       extensions: { homePage: "https://www.test.com" },
