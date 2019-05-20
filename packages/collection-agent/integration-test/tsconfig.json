@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "module": "commonjs",
+    "declaration": true,
+    "noEmit": true,
+    "strict": true,
+    "pretty": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "types": ["@wdio/sync", "@wdio/jasmine-framework", "node"],
+    "typeRoots": ["node_modules/@types", "types"],
+    "baseUrl": "../",
+    "paths": {
+      "*": ["types/*", "integration-test/*"]
+    }
+  },
+  "include": ["**/*.ts"],
+  "exclude": [".git", "node_modules", "types"]
+}
