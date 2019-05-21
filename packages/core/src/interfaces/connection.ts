@@ -43,7 +43,7 @@ export interface Connection {
    */
   metadata: PublicNucleusMetadata;
   /**
-   * The endpoint to the otehr instance.
+   * The endpoint to the other instance.
    */
   endpoint: string;
   /**
