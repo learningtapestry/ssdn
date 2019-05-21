@@ -2,11 +2,23 @@ import { APIGatewayProxyEvent, APIGatewayProxyResult, Context } from "aws-lambda
 
 import { fakeImpl, mocked } from "../../../test-support/jest-helper";
 import xApiEvent from "../../../test-support/lambda-events/put-xapi-statement-event.json";
+import { AWS_NUCLEUS } from "../../interfaces/aws-metadata-keys";
 import { EventRepository } from "../../repositories/event-repository";
-import { getEventRepository } from "../../services";
+import { getEventRepository, getMetadataService } from "../../services";
+import AwsNucleusMetadataService from "../../services/aws-nucleus-metadata-service";
 import { handler } from "./index";
 
 jest.mock("../../services");
+
+const fakeMetadataService = fakeImpl<AwsNucleusMetadataService>({
+  getMetadataValue: jest.fn((k: string) =>
+    Promise.resolve(
+      ({
+        [AWS_NUCLEUS.namespace]: "Test",
+      } as any)[k],
+    ),
+  ),
+});
 
 const fakeEventRepository = fakeImpl<EventRepository>({
   store: jest.fn(() =>
@@ -19,6 +31,7 @@ const fakeEventRepository = fakeImpl<EventRepository>({
 });
 
 mocked(getEventRepository).mockImplementation(() => fakeEventRepository);
+mocked(getMetadataService).mockImplementation(() => fakeMetadataService);
 
 describe("ProcessXAPIStatementFunction", () => {
   it("stores an event for a well formed xAPI request", async () => {
