@@ -37,7 +37,7 @@ describe("LambdaService", () => {
         { value: "TestFunctionArn" },
         {},
       );
-      expect(result).resolves.toBeTruthy();
+      await expect(result).resolves.not.toThrow();
     });
   });
 });
