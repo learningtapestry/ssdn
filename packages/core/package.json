@@ -38,7 +38,7 @@
     "lint": "tslint -p tsconfig.json -c ../../tslint.json",
     "test": "jest --testPathIgnorePatterns integration-test --verbose",
     "test:watch": "jest --testPathIgnorePatterns integration-test --watch",
-    "test:integration": "NUCLEUS_ENV=integration jest integration.test.ts --runInBand"
+    "test:integration": "NODE_ENV=integration jest integration.test.ts --runInBand"
   },
   "devDependencies": {
     "@babel/core": "^7.4.0",
