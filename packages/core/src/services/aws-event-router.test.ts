@@ -39,12 +39,12 @@ const events = [
   buildEvent({
     content: "External should not be routed",
     event: buildEventMetadata({ format: "xAPI", namespace: "acme.org" }),
-    source: { nucleusId: "123456" },
+    source: { endpoint: "https://yellow.com" },
   }),
   buildEvent({
     content: "External should not be routed",
     event: buildEventMetadata({ format: "xAPI", namespace: "blue.org" }),
-    source: { nucleusId: "123456" },
+    source: { endpoint: "https://yellow.com" },
   }),
   buildEvent({
     content: "XAPI acme should be routed to both",

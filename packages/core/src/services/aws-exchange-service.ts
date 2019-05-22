@@ -85,11 +85,11 @@ export default class AwsExchangeService implements ExchangeService {
     const { arn, externalId } = connection.externalConnection;
     const credentials = await this.temporaryCredentialsFactory.getCredentials(arn, externalId);
     const externalRepository = this.kinesisEventRepoFactory([connection], [{ credentials }]);
-    const nucleusId = await this.metadata.getMetadataValue(AWS_NUCLEUS.nucleusId);
+    const endpoint = await this.metadata.getEndpoint();
     const annotatedEvents: Event[] = events.map((evt) => ({
       ...evt,
       source: {
-        nucleusId: nucleusId.value,
+        endpoint: endpoint.value,
       },
     }));
     await externalRepository.storeBatch(annotatedEvents);

@@ -20,6 +20,7 @@ jest.mock("axios", () => ({
 }));
 
 const fakeMetadata = fakeImpl<NucleusMetadataService>({
+  getEndpoint: jest.fn(() => Promise.resolve({ value: "https://red.com" })),
   getMetadataValue: jest.fn(() => Promise.resolve({ value: "RedNucleusId" })),
 });
 
@@ -123,7 +124,7 @@ describe("AwsExchangeService", () => {
       const pushedEvents = mocked(fakeEventRepo.storeBatch).mock.calls[0][0] as Event[];
       expect(pushedEvents.length).toEqual(3);
       for (const event of pushedEvents) {
-        expect(event.source).toEqual({ nucleusId: "RedNucleusId" });
+        expect(event.source).toEqual({ endpoint: "https://red.com" });
       }
     });
   });

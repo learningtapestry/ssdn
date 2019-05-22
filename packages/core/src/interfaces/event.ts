@@ -22,6 +22,6 @@ export default interface Event {
   content: any;
   event: EventMetadata;
   source?: {
-    nucleusId: string;
+    endpoint: string;
   };
 }
