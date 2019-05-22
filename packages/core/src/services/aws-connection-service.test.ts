@@ -58,6 +58,7 @@ const fakeMetadata = fakeImpl<NucleusMetadataService>({
   getPublicMetadata: jest.fn(() =>
     Promise.resolve({
       EventProcessorStream: "RedProcessorStream",
+      UploadS3Bucket: "RedUploadS3Bucket",
     }),
   ),
 });
@@ -109,6 +110,7 @@ describe("AwsConnectionService", () => {
         },
         metadata: {
           EventProcessorStream: "BlueStreamArn",
+          UploadS3Bucket: "BlueUploadS3Bucket",
         },
       };
       mocked(fakeConnectionRepository.get).mockRejectedValueOnce(new Error("Not found"));
@@ -142,6 +144,7 @@ describe("AwsConnectionService", () => {
       expect(newConnection.isProvider).toBeFalsy();
       expect(newConnection.metadata).toEqual({
         EventProcessorStream: "BlueStreamArn",
+        UploadS3Bucket: "BlueUploadS3Bucket",
       });
 
       // Side effects
@@ -160,7 +163,10 @@ describe("AwsConnectionService", () => {
         details: {
           connection: { awsAccountId: "RedAccountId", nucleusId: "RedNucleusId" },
           externalConnection: { arn: "RedBlueArn", externalId: "RedBlueExternalId" },
-          metadata: { EventProcessorStream: "RedProcessorStream" },
+          metadata: {
+            EventProcessorStream: "RedProcessorStream",
+            UploadS3Bucket: "RedUploadS3Bucket",
+          },
         },
       });
       expect(fakeConnectionRepository.put).toHaveBeenCalledWith(newConnection);
@@ -193,6 +199,7 @@ describe("AwsConnectionService", () => {
         isProvider: true,
         metadata: {
           EventProcessorStream: "123456",
+          UploadS3Bucket: "123456",
         },
         outputStreams: [
           { channel: "XAPI", namespace: "https://blue.com", status: StreamStatus.Paused },
@@ -215,6 +222,7 @@ describe("AwsConnectionService", () => {
         },
         metadata: {
           EventProcessorStream: "BlueStreamArn",
+          UploadS3Bucket: "BlueUploadS3Bucket",
         },
       };
       mocked(fakeConnectionRepository.get).mockResolvedValueOnce(existingConnection);
@@ -242,6 +250,7 @@ describe("AwsConnectionService", () => {
       });
       expect(newConnection.metadata).toEqual({
         EventProcessorStream: "BlueStreamArn",
+        UploadS3Bucket: "BlueUploadS3Bucket",
       });
 
       // Side effects
@@ -260,7 +269,10 @@ describe("AwsConnectionService", () => {
         details: {
           connection: { awsAccountId: "RedAccountId", nucleusId: "RedNucleusId" },
           externalConnection: { arn: "123456", externalId: "123456" },
-          metadata: { EventProcessorStream: "RedProcessorStream" },
+          metadata: {
+            EventProcessorStream: "RedProcessorStream",
+            UploadS3Bucket: "RedUploadS3Bucket",
+          },
         },
       });
       expect(fakeConnectionRepository.put).toHaveBeenCalledWith(newConnection);
@@ -282,7 +294,7 @@ describe("AwsConnectionService", () => {
       const result = service.createForProviderAcceptance(connectionRequest, {
         connection: { awsAccountId: "123456", nucleusId: "123456" },
         externalConnection: { arn: "123456", externalId: "123456" },
-        metadata: { EventProcessorStream: "123456" },
+        metadata: { EventProcessorStream: "123456", UploadS3Bucket: "123456" },
       });
       await expect(result).rejects.toHaveProperty("message", "Cannot be updated");
       expect(fakeConnectionRequestService.assertConnectionRequestUpdatable).toHaveBeenCalledWith(
@@ -308,6 +320,7 @@ describe("AwsConnectionService", () => {
         },
         metadata: {
           EventProcessorStream: "BlueStreamArn",
+          UploadS3Bucket: "BlueUploadS3Bucket",
         },
       };
       mocked(fakeConnectionRepository.get).mockRejectedValueOnce(new Error("Not found"));
@@ -340,6 +353,7 @@ describe("AwsConnectionService", () => {
       expect(newConnection.isProvider).toBeTruthy();
       expect(newConnection.metadata).toEqual({
         EventProcessorStream: "BlueStreamArn",
+        UploadS3Bucket: "BlueUploadS3Bucket",
       });
 
       // Side effects
@@ -382,6 +396,7 @@ describe("AwsConnectionService", () => {
         isProvider: false,
         metadata: {
           EventProcessorStream: "123456",
+          UploadS3Bucket: "123456",
         },
         outputStreams: [
           { channel: "XAPI", namespace: "https://blue.com", status: StreamStatus.Active },
@@ -407,6 +422,7 @@ describe("AwsConnectionService", () => {
         },
         metadata: {
           EventProcessorStream: "654321",
+          UploadS3Bucket: "TestS3Bucket",
         },
       });
 
@@ -429,6 +445,7 @@ describe("AwsConnectionService", () => {
       });
       expect(newConnection.metadata).toEqual({
         EventProcessorStream: "654321",
+        UploadS3Bucket: "TestS3Bucket",
       });
 
       // Side effects

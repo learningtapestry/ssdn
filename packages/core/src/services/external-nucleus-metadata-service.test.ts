@@ -21,6 +21,7 @@ const connection: Connection = {
   isProvider: false,
   metadata: {
     EventProcessorStream: "TestStream",
+    UploadS3Bucket: "TestUploadBucket",
   },
   outputStreams: [],
   updateDate: "",
@@ -48,6 +49,7 @@ describe("ExternalNucleusMetadataService", () => {
       const metadata = await new ExternalNucleusMetadataService(connection).getPublicMetadata();
       expect(metadata).toEqual({
         EventProcessorStream: "TestStream",
+        UploadS3Bucket: "TestUploadBucket",
       });
     });
   });

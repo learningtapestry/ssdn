@@ -15,6 +15,10 @@ const fakeCloudFormation = fakeAws<CloudFormation>({
               OutputValue: "TestValue",
             },
             {
+              OutputKey: "UploadS3Bucket",
+              OutputValue: "TestValue",
+            },
+            {
               OutputKey: "ExchangeApi",
               OutputValue: "TestValue",
             },
@@ -53,6 +57,7 @@ describe("AwsNucleusMetadataService", () => {
       const metadata = await buildMetadataService().getPublicMetadata();
       expect(metadata).toEqual({
         EventProcessorStream: "TestValue",
+        UploadS3Bucket: "TestValue",
       });
     });
   });

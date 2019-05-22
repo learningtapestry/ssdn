@@ -14,6 +14,11 @@ export enum AWS_NUCLEUS {
   nucleusId = "NucleusId",
 }
 
+export enum BUCKETS {
+  download = "DownloadS3Bucket",
+  upload = "UploadS3Bucket",
+}
+
 export enum LAMBDAS {
   authorizeBeacon = "AuthorizeBeaconFunction",
   connectionRequestAccept = "ConnectionRequestAcceptFunction",

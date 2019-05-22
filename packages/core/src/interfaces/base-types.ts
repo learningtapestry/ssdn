@@ -2,6 +2,7 @@ import {
   API,
   API_KEYS,
   AWS_NUCLEUS,
+  BUCKETS,
   LAMBDAS,
   POLICIES,
   PUBLIC_METADATA,
@@ -15,11 +16,12 @@ export type MetadataKey =
   | API
   | API_KEYS
   | AWS_NUCLEUS
-  | TABLES
-  | STREAMS
+  | BUCKETS
   | LAMBDAS
   | POLICIES
-  | PUBLIC_METADATA;
+  | PUBLIC_METADATA
+  | STREAMS
+  | TABLES;
 
 export interface MetadataValue<T extends MetadataKey> {
   value: string;

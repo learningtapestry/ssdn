@@ -58,6 +58,7 @@ const buildProviderAcceptance: () => ProviderIssuedAcceptance = () => ({
     },
     metadata: {
       EventProcessorStream: "test",
+      UploadS3Bucket: "test",
     },
   },
 });

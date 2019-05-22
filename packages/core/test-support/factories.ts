@@ -47,6 +47,7 @@ export function buildConnection(overrides?: Partial<Connection>): Connection {
     isProvider: false,
     metadata: {
       EventProcessorStream: "",
+      UploadS3Bucket: "",
     },
     outputStreams: [],
     updateDate: "",

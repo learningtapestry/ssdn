@@ -2,6 +2,7 @@ import { Stream } from "./stream";
 
 export interface PublicNucleusMetadata {
   EventProcessorStream: string;
+  UploadS3Bucket: string;
 }
 
 export interface ConnectionDetails {
