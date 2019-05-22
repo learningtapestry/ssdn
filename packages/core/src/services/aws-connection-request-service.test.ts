@@ -53,13 +53,13 @@ describe("AwsConnectionRequestService", () => {
       const connectionRequest = await buildConnectionRequestService().create(
         buildConnectionRequest({
           acceptanceToken: "",
-          channels: ["S3"],
           connection: {
             awsAccountId: "",
             nucleusId: "",
           },
           consumerEndpoint: "",
           creationDate: "",
+          formats: ["Caliper"],
           id: "",
           namespace: "",
           status: ConnectionRequestStatus.Accepted,
@@ -68,7 +68,7 @@ describe("AwsConnectionRequestService", () => {
       );
       expect(connectionRequest.id.split("-")).toHaveLength(5);
       expect(connectionRequest.acceptanceToken.split("-")).toHaveLength(5);
-      expect(connectionRequest.channels).toEqual(["XAPI"]);
+      expect(connectionRequest.formats).toEqual(["xAPI"]);
       expect(connectionRequest.connection).toEqual({
         awsAccountId: "nucleusaccountid",
         nucleusId: "nucleus-test",

@@ -60,14 +60,14 @@ export default class AWSService {
 
       return flatMap((e: Connection) =>
         e[filterAttr]!.map((ex) => ({
-          channel: ex.channel,
           endpoint: e.endpoint,
+          format: ex.format,
           namespace: ex.namespace,
           status: ex.status,
         })),
       )(items.Items as Connection[]).sort((a, b) =>
-        `${a.endpoint}.${a.namespace}.${a.channel}`.localeCompare(
-          `${a.endpoint}.${b.namespace}.${b.channel}`,
+        `${a.endpoint}.${a.namespace}.${a.format}`.localeCompare(
+          `${a.endpoint}.${b.namespace}.${b.format}`,
         ),
       );
     });
@@ -95,7 +95,7 @@ export default class AWSService {
 
   public static async updateStream(
     endpoint: string,
-    channel: string,
+    format: string,
     namespace: string,
     status: "active" | "paused",
     type: "input" | "output",
@@ -105,7 +105,7 @@ export default class AWSService {
         body: {
           endpoint,
           stream: {
-            channel,
+            format,
             namespace,
             status,
           },

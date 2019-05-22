@@ -91,8 +91,8 @@ export function inputStreams() {
   return flatMap((item: Connection) =>
     item.inputStreams
       ? item.inputStreams.map((stream) => ({
-          channel: stream.channel,
           endpoint: item.endpoint,
+          format: stream.format,
           namespace: stream.namespace,
           status: stream.status,
         }))
@@ -104,8 +104,8 @@ export function outputStreams() {
   return flatMap((item: Connection) =>
     item.outputStreams
       ? item.outputStreams.map((stream) => ({
-          channel: stream.channel,
           endpoint: item.endpoint,
+          format: stream.format,
           namespace: stream.namespace,
           status: stream.status,
         }))

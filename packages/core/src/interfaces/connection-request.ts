@@ -1,4 +1,4 @@
-import { Channel } from "./channel";
+import { Format } from "./format";
 
 export enum ConnectionRequestStatus {
   Created = "created",
@@ -23,7 +23,7 @@ export interface ConnectionRequest {
   verificationCode: string;
   acceptanceToken: string;
   creationDate: Date | string;
-  channels: Channel[];
+  formats: Format[];
   status: ConnectionRequestStatus | IncomingConnectionRequestStatus;
   connection: {
     awsAccountId: string;

@@ -168,7 +168,6 @@ export function cognitoUsers() {
 
 export const connectionRequestAdam = nullConnectionRequest({
   acceptanceToken: "AcceptanceTokenAdam",
-  channels: ["S3"],
   connection: {
     awsAccountId: "AwsAccountIdAdam",
     externalId: "ExternalIdAdam",
@@ -176,6 +175,7 @@ export const connectionRequestAdam = nullConnectionRequest({
   },
   consumerEndpoint: "https://nucleus.adam.acme.org/",
   creationDate: "2019-02-13T12:21:36.120Z",
+  formats: ["Caliper"],
   id: "ConnReqIdAdam",
   organization: "Stoltenberg-Harvey",
   providerEndpoint: "https://nucleus.ajax.org",
@@ -185,15 +185,14 @@ export const connectionRequestAdam = nullConnectionRequest({
 
 export const connectionAdam = nullConnection({
   endpoint: "https://nucleus.adam.acme.org/",
-  inputStreams: [{ channel: "XAPI", namespace: "nucleus.ajax.org", status: StreamStatus.Active }],
+  inputStreams: [{ format: "xAPI", namespace: "nucleus.ajax.org", status: StreamStatus.Active }],
   outputStreams: [
-    { channel: "XAPI", namespace: "nucleus.adam.acme.org", status: StreamStatus.Active },
+    { format: "xAPI", namespace: "nucleus.adam.acme.org", status: StreamStatus.Active },
   ],
 });
 
 export const connectionRequestJonah = nullConnectionRequest({
   acceptanceToken: "AcceptanceTokenJonah",
-  channels: ["XAPI"],
   connection: {
     awsAccountId: "AwsAccountIdJonah",
     externalId: "ExternalIdJonah",
@@ -201,6 +200,7 @@ export const connectionRequestJonah = nullConnectionRequest({
   },
   consumerEndpoint: "https://nucleus.jonah.acme.org/",
   creationDate: "2019-04-14T15:31:55.120Z",
+  formats: ["xAPI"],
   id: "ConnReqIdJonah",
   organization: "Disney",
   providerEndpoint: "https://nucleus.ajax.org",
@@ -210,15 +210,14 @@ export const connectionRequestJonah = nullConnectionRequest({
 
 export const connectionJonah = nullConnection({
   endpoint: "https://nucleus.jonah.acme.org/",
-  inputStreams: [{ channel: "XAPI", namespace: "nucleus.ajax.org", status: StreamStatus.Paused }],
+  inputStreams: [{ format: "xAPI", namespace: "nucleus.ajax.org", status: StreamStatus.Paused }],
   outputStreams: [
-    { channel: "XAPI", namespace: "nucleus.jonah.acme.org", status: StreamStatus.Paused },
+    { format: "xAPI", namespace: "nucleus.jonah.acme.org", status: StreamStatus.Paused },
   ],
 });
 
 export const connectionRequestMickey = nullConnectionRequest({
   acceptanceToken: "AcceptanceTokenMickey",
-  channels: ["XAPI", "S3"],
   connection: {
     awsAccountId: "AwsAccountIdMickey",
     externalId: "ExternalIdMickey",
@@ -226,6 +225,7 @@ export const connectionRequestMickey = nullConnectionRequest({
   },
   consumerEndpoint: "https://nucleus.mickey.acme.org/",
   creationDate: "2019-04-14T11:31:55.120Z",
+  formats: ["xAPI", "Caliper"],
   id: "ConnReqIdMickey",
   organization: "Heaney, Hackett and Jacobson",
   providerEndpoint: "https://nucleus.ajax.org",
@@ -236,10 +236,10 @@ export const connectionRequestMickey = nullConnectionRequest({
 export const connectionMickey = nullConnection({
   endpoint: "https://nucleus.mickey.acme.org/",
   inputStreams: [
-    { channel: "XAPI", namespace: "nucleus.ajax.org", status: StreamStatus.PausedExternal },
+    { format: "xAPI", namespace: "nucleus.ajax.org", status: StreamStatus.PausedExternal },
   ],
   outputStreams: [
-    { channel: "XAPI", namespace: "nucleus.mickey.acme.org", status: StreamStatus.PausedExternal },
+    { format: "xAPI", namespace: "nucleus.mickey.acme.org", status: StreamStatus.PausedExternal },
   ],
 });
 

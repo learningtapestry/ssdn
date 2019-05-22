@@ -151,7 +151,7 @@ describe("AwsExchangeService", () => {
         externalConnection: { arn: "123456", externalId: "123456" },
       });
       const streamUpdate: StreamUpdate = {
-        stream: { channel: "XAPI", namespace: "blue.com", status: StreamStatus.Paused },
+        stream: { format: "xAPI", namespace: "blue.com", status: StreamStatus.Paused },
         streamType: StreamType.Input,
       };
       await buildExchangeService().sendStreamUpdate(connection, streamUpdate);
@@ -159,12 +159,12 @@ describe("AwsExchangeService", () => {
       // tslint:disable: max-line-length
       expect(Axios.request).toHaveBeenCalledWith({
         body: JSON.stringify({
-          stream: { channel: "XAPI", namespace: "blue.com", status: "paused" },
+          stream: { format: "xAPI", namespace: "blue.com", status: "paused" },
           streamType: "input",
         }),
         data: {
           stream: {
-            channel: "XAPI",
+            format: "xAPI",
             namespace: "blue.com",
             status: "paused",
           },

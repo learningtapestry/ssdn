@@ -6,8 +6,8 @@ import { APIGatewayProxyEvent } from "aws-lambda";
 import get from "lodash/fp/get";
 
 import { isoDate } from "../helpers/app-helper";
-import { Channel } from "../interfaces/channel";
 import Event from "../interfaces/event";
+import { Format } from "../interfaces/format";
 import logger from "../logger";
 
 export default abstract class LambdaEventParser {
@@ -33,7 +33,6 @@ export default abstract class LambdaEventParser {
     return {
       content: this.interpretContent(),
       event: {
-        channel: this.channel(),
         date: isoDate(get("requestTimeEpoch")(this.request)),
         format: this.format(),
         namespace: this.namespace(),
@@ -48,9 +47,7 @@ export default abstract class LambdaEventParser {
     };
   }
 
-  protected abstract channel(): Channel;
-
-  protected abstract format(): string;
+  protected abstract format(): Format;
 
   protected abstract interpretContent(): any;
 

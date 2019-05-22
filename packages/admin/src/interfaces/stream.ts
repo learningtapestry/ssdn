@@ -6,7 +6,7 @@ export enum StreamStatus {
 
 export interface Stream {
   namespace: string;
-  channel: string;
+  format: string;
   status: StreamStatus;
 }
 

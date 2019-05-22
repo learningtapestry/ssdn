@@ -1,9 +1,8 @@
-import { Channel } from "./channel";
+import { Format } from "./format";
 
 export interface EventMetadata {
-  channel: Channel;
   date: string;
-  format: string;
+  format: Format;
   namespace: string;
   operation: any;
   origin: string;

@@ -94,12 +94,12 @@ describe("AwsConnectionService", () => {
 
     it("creates news connections, and sends an acceptance response", async () => {
       const connectionRequest = buildConnectionRequest({
-        channels: ["S3", "XAPI"],
         connection: {
           awsAccountId: "BlueAccountId",
           nucleusId: "BlueNucleusId",
         },
         consumerEndpoint: "https://blue.com",
+        formats: ["Caliper", "xAPI"],
         id: "123456",
         namespace: "https://blue.com",
       });
@@ -137,8 +137,8 @@ describe("AwsConnectionService", () => {
       });
       expect(newConnection.inputStreams).toEqual([]);
       expect(newConnection.outputStreams).toEqual([
-        { channel: "S3", namespace: "https://blue.com", status: StreamStatus.Active },
-        { channel: "XAPI", namespace: "https://blue.com", status: StreamStatus.Active },
+        { format: "Caliper", namespace: "https://blue.com", status: StreamStatus.Active },
+        { format: "xAPI", namespace: "https://blue.com", status: StreamStatus.Active },
       ]);
       expect(newConnection.isConsumer).toBeTruthy();
       expect(newConnection.isProvider).toBeFalsy();
@@ -193,7 +193,7 @@ describe("AwsConnectionService", () => {
           externalId: "123456",
         },
         inputStreams: [
-          { channel: "XAPI", namespace: "https://red.com", status: StreamStatus.Paused },
+          { format: "xAPI", namespace: "https://red.com", status: StreamStatus.Paused },
         ],
         isConsumer: false,
         isProvider: true,
@@ -202,16 +202,16 @@ describe("AwsConnectionService", () => {
           UploadS3Bucket: "123456",
         },
         outputStreams: [
-          { channel: "XAPI", namespace: "https://blue.com", status: StreamStatus.Paused },
+          { format: "xAPI", namespace: "https://blue.com", status: StreamStatus.Paused },
         ],
       });
       const connectionRequest = buildConnectionRequest({
-        channels: ["S3", "XAPI"],
         connection: {
           awsAccountId: "BlueAccountId",
           nucleusId: "BlueNucleusId",
         },
         consumerEndpoint: "https://blue.com",
+        formats: ["Caliper", "xAPI"],
         id: "123456",
         namespace: "https://blue.com",
       });
@@ -240,8 +240,8 @@ describe("AwsConnectionService", () => {
 
       // A new stream is added, previous one is preserved
       expect(newConnection.outputStreams).toEqual([
-        { channel: "XAPI", namespace: "https://blue.com", status: StreamStatus.Paused },
-        { channel: "S3", namespace: "https://blue.com", status: StreamStatus.Active },
+        { format: "xAPI", namespace: "https://blue.com", status: StreamStatus.Paused },
+        { format: "Caliper", namespace: "https://blue.com", status: StreamStatus.Active },
       ]);
       expect(newConnection.isConsumer).toBeTruthy();
       expect(newConnection.externalConnection).toEqual({
@@ -304,7 +304,7 @@ describe("AwsConnectionService", () => {
 
     it("creates new connections", async () => {
       const connectionRequest = buildConnectionRequest({
-        channels: ["S3", "XAPI"],
+        formats: ["Caliper", "xAPI"],
         id: "123456",
         namespace: "https://red.com",
         providerEndpoint: "https://blue.com",
@@ -346,8 +346,8 @@ describe("AwsConnectionService", () => {
       });
       expect(newConnection.outputStreams).toEqual([]);
       expect(newConnection.inputStreams).toEqual([
-        { channel: "S3", namespace: "https://red.com", status: StreamStatus.Active },
-        { channel: "XAPI", namespace: "https://red.com", status: StreamStatus.Active },
+        { format: "Caliper", namespace: "https://red.com", status: StreamStatus.Active },
+        { format: "xAPI", namespace: "https://red.com", status: StreamStatus.Active },
       ]);
       expect(newConnection.isConsumer).toBeFalsy();
       expect(newConnection.isProvider).toBeTruthy();
@@ -390,7 +390,7 @@ describe("AwsConnectionService", () => {
           externalId: "123456",
         },
         inputStreams: [
-          { channel: "XAPI", namespace: "https://red.com", status: StreamStatus.Paused },
+          { format: "xAPI", namespace: "https://red.com", status: StreamStatus.Paused },
         ],
         isConsumer: true,
         isProvider: false,
@@ -399,11 +399,11 @@ describe("AwsConnectionService", () => {
           UploadS3Bucket: "123456",
         },
         outputStreams: [
-          { channel: "XAPI", namespace: "https://blue.com", status: StreamStatus.Active },
+          { format: "xAPI", namespace: "https://blue.com", status: StreamStatus.Active },
         ],
       });
       const connectionRequest = buildConnectionRequest({
-        channels: ["S3", "XAPI"],
+        formats: ["Caliper", "xAPI"],
         id: "123456",
         namespace: "https://red.com",
         providerEndpoint: "https://blue.com",
@@ -435,8 +435,8 @@ describe("AwsConnectionService", () => {
 
       // A new stream is added, previous one is preserved
       expect(newConnection.inputStreams).toEqual([
-        { channel: "XAPI", namespace: "https://red.com", status: StreamStatus.Paused },
-        { channel: "S3", namespace: "https://red.com", status: StreamStatus.Active },
+        { format: "xAPI", namespace: "https://red.com", status: StreamStatus.Paused },
+        { format: "Caliper", namespace: "https://red.com", status: StreamStatus.Active },
       ]);
       expect(newConnection.isProvider).toBeTruthy();
       expect(newConnection.externalConnection).toEqual({
@@ -516,12 +516,12 @@ describe("AwsConnectionService", () => {
         endpoint: "https://blue.com",
         inputStreams: [
           {
-            channel: "XAPI",
+            format: "xAPI",
             namespace: "https://red.com",
             status: StreamStatus.Active,
           },
           {
-            channel: "S3",
+            format: "Caliper",
             namespace: "https://red.com",
             status: StreamStatus.Active,
           },
@@ -529,7 +529,7 @@ describe("AwsConnectionService", () => {
       });
 
       const stream: Stream = {
-        channel: "XAPI",
+        format: "xAPI",
         namespace: "https://red.com",
         status: StreamStatus.Paused,
       };
@@ -542,16 +542,16 @@ describe("AwsConnectionService", () => {
         true,
       );
 
-      const sorted = sortBy<Stream>((s) => s.channel);
+      const sorted = sortBy<Stream>((s) => s.format);
       expect(sorted(newConnection.inputStreams)).toEqual(
         sorted([
           {
-            channel: "XAPI",
+            format: "xAPI",
             namespace: "https://red.com",
             status: StreamStatus.Paused,
           },
           {
-            channel: "S3",
+            format: "Caliper",
             namespace: "https://red.com",
             status: StreamStatus.Active,
           },
@@ -561,7 +561,7 @@ describe("AwsConnectionService", () => {
       expect(fakeConnectionRepository.put).toHaveBeenCalledWith(newConnection);
       expect(fakeExchangeService.sendStreamUpdate).toHaveBeenCalledWith(newConnection, {
         stream: {
-          channel: "XAPI",
+          format: "xAPI",
           namespace: "https://red.com",
           status: StreamStatus.Paused,
         },
@@ -574,14 +574,14 @@ describe("AwsConnectionService", () => {
         endpoint: "https://blue.com",
         inputStreams: [
           {
-            channel: "XAPI",
+            format: "xAPI",
             namespace: "https://red.com",
             status: StreamStatus.Active,
           },
         ],
       });
       const stream: Stream = {
-        channel: "S3",
+        format: "Caliper",
         namespace: "https://red.com",
         status: StreamStatus.Active,
       };
@@ -603,14 +603,14 @@ describe("AwsConnectionService", () => {
         endpoint: "https://blue.com",
         inputStreams: [
           {
-            channel: "XAPI",
+            format: "xAPI",
             namespace: "https://red.com",
             status: StreamStatus.PausedExternal,
           },
         ],
       });
       const stream: Stream = {
-        channel: "XAPI",
+        format: "xAPI",
         namespace: "https://red.com",
         status: StreamStatus.Active,
       };
@@ -632,14 +632,14 @@ describe("AwsConnectionService", () => {
         endpoint: "https://blue.com",
         inputStreams: [
           {
-            channel: "XAPI",
+            format: "xAPI",
             namespace: "https://red.com",
             status: StreamStatus.Paused,
           },
         ],
       });
       const stream: Stream = {
-        channel: "XAPI",
+        format: "xAPI",
         namespace: "https://red.com",
         status: StreamStatus.Paused,
       };
@@ -663,12 +663,12 @@ describe("AwsConnectionService", () => {
         endpoint: "https://blue.com",
         inputStreams: [
           {
-            channel: "XAPI",
+            format: "xAPI",
             namespace: "https://red.com",
             status: StreamStatus.Active,
           },
           {
-            channel: "S3",
+            format: "Caliper",
             namespace: "https://red.com",
             status: StreamStatus.Active,
           },
@@ -676,7 +676,7 @@ describe("AwsConnectionService", () => {
       });
 
       const stream: Stream = {
-        channel: "XAPI",
+        format: "xAPI",
         namespace: "https://red.com",
         status: StreamStatus.Paused,
       };
@@ -689,16 +689,16 @@ describe("AwsConnectionService", () => {
         false,
       );
 
-      const sorted = sortBy<Stream>((s) => s.channel);
+      const sorted = sortBy<Stream>((s) => s.format);
       expect(sorted(newConnection.inputStreams)).toEqual(
         sorted([
           {
-            channel: "XAPI",
+            format: "xAPI",
             namespace: "https://red.com",
             status: StreamStatus.PausedExternal,
           },
           {
-            channel: "S3",
+            format: "Caliper",
             namespace: "https://red.com",
             status: StreamStatus.Active,
           },
@@ -714,14 +714,14 @@ describe("AwsConnectionService", () => {
         endpoint: "https://blue.com",
         inputStreams: [
           {
-            channel: "XAPI",
+            format: "xAPI",
             namespace: "https://red.com",
             status: StreamStatus.Paused,
           },
         ],
       });
       const stream: Stream = {
-        channel: "XAPI",
+        format: "xAPI",
         namespace: "https://red.com",
         status: StreamStatus.Active,
       };

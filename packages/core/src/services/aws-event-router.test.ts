@@ -12,19 +12,19 @@ const fakeConnectionRepository = fakeImpl<ConnectionRepository>({
       buildConnection({
         endpoint: "https://acme.org",
         outputStreams: [
-          { channel: "XAPI", namespace: "acme.org", status: StreamStatus.Active },
-          { channel: "XAPI", namespace: "blue.org", status: StreamStatus.Active },
-          { channel: "S3", namespace: "acme.org", status: StreamStatus.Active },
-          { channel: "S3", namespace: "blue.org", status: StreamStatus.Paused },
+          { format: "xAPI", namespace: "acme.org", status: StreamStatus.Active },
+          { format: "xAPI", namespace: "blue.org", status: StreamStatus.Active },
+          { format: "Caliper", namespace: "acme.org", status: StreamStatus.Active },
+          { format: "Caliper", namespace: "blue.org", status: StreamStatus.Paused },
         ],
       }),
       buildConnection({
         endpoint: "https://blue.org",
         outputStreams: [
-          { channel: "XAPI", namespace: "blue.org", status: StreamStatus.Active },
-          { channel: "XAPI", namespace: "acme.org", status: StreamStatus.Active },
-          { channel: "S3", namespace: "blue.org", status: StreamStatus.Active },
-          { channel: "S3", namespace: "acme.org", status: StreamStatus.PausedExternal },
+          { format: "xAPI", namespace: "blue.org", status: StreamStatus.Active },
+          { format: "xAPI", namespace: "acme.org", status: StreamStatus.Active },
+          { format: "Caliper", namespace: "blue.org", status: StreamStatus.Active },
+          { format: "Caliper", namespace: "acme.org", status: StreamStatus.PausedExternal },
         ],
       }),
     ],
@@ -38,29 +38,29 @@ const fakeExchangeService = fakeImpl<ExchangeService>({
 const events = [
   buildEvent({
     content: "External should not be routed",
-    event: buildEventMetadata({ channel: "XAPI", namespace: "acme.org" }),
+    event: buildEventMetadata({ format: "xAPI", namespace: "acme.org" }),
     source: { nucleusId: "123456" },
   }),
   buildEvent({
     content: "External should not be routed",
-    event: buildEventMetadata({ channel: "XAPI", namespace: "blue.org" }),
+    event: buildEventMetadata({ format: "xAPI", namespace: "blue.org" }),
     source: { nucleusId: "123456" },
   }),
   buildEvent({
     content: "XAPI acme should be routed to both",
-    event: buildEventMetadata({ channel: "XAPI", namespace: "acme.org" }),
+    event: buildEventMetadata({ format: "xAPI", namespace: "acme.org" }),
   }),
   buildEvent({
     content: "XAPI blue should be routed to both",
-    event: buildEventMetadata({ channel: "XAPI", namespace: "acme.org" }),
+    event: buildEventMetadata({ format: "xAPI", namespace: "acme.org" }),
   }),
   buildEvent({
     content: "S3 acme should be routed to acme",
-    event: buildEventMetadata({ channel: "S3", namespace: "acme.org" }),
+    event: buildEventMetadata({ format: "Caliper", namespace: "acme.org" }),
   }),
   buildEvent({
     content: "S3 blue should be routed to blue",
-    event: buildEventMetadata({ channel: "S3", namespace: "blue.org" }),
+    event: buildEventMetadata({ format: "Caliper", namespace: "blue.org" }),
   }),
 ];
 
@@ -77,15 +77,15 @@ describe("AwsEventRouter", () => {
       expect(routedEvents).toEqual([
         buildEvent({
           content: "XAPI acme should be routed to both",
-          event: buildEventMetadata({ channel: "XAPI", namespace: "acme.org" }),
+          event: buildEventMetadata({ format: "xAPI", namespace: "acme.org" }),
         }),
         buildEvent({
           content: "XAPI blue should be routed to both",
-          event: buildEventMetadata({ channel: "XAPI", namespace: "acme.org" }),
+          event: buildEventMetadata({ format: "xAPI", namespace: "acme.org" }),
         }),
         buildEvent({
           content: "S3 acme should be routed to acme",
-          event: buildEventMetadata({ channel: "S3", namespace: "acme.org" }),
+          event: buildEventMetadata({ format: "Caliper", namespace: "acme.org" }),
         }),
       ]);
 
@@ -94,15 +94,15 @@ describe("AwsEventRouter", () => {
       expect(routedEvents).toEqual([
         buildEvent({
           content: "XAPI acme should be routed to both",
-          event: buildEventMetadata({ channel: "XAPI", namespace: "acme.org" }),
+          event: buildEventMetadata({ format: "xAPI", namespace: "acme.org" }),
         }),
         buildEvent({
           content: "XAPI blue should be routed to both",
-          event: buildEventMetadata({ channel: "XAPI", namespace: "acme.org" }),
+          event: buildEventMetadata({ format: "xAPI", namespace: "acme.org" }),
         }),
         buildEvent({
           content: "S3 blue should be routed to blue",
-          event: buildEventMetadata({ channel: "S3", namespace: "blue.org" }),
+          event: buildEventMetadata({ format: "Caliper", namespace: "blue.org" }),
         }),
       ]);
     });

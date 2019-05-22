@@ -5,13 +5,13 @@ import Event, { EventMetadata } from "../src/interfaces/event";
 export function buildConnectionRequest(overrides?: Partial<ConnectionRequest>): ConnectionRequest {
   const defaults = {
     acceptanceToken: "",
-    channels: [],
     connection: {
       awsAccountId: "",
       nucleusId: "",
     },
     consumerEndpoint: "",
     creationDate: "",
+    formats: [],
     id: "",
     namespace: "",
     organization: "",
@@ -61,9 +61,8 @@ export function buildConnection(overrides?: Partial<Connection>): Connection {
 
 export function buildEventMetadata(overrides?: Partial<EventMetadata>) {
   const eventMetadata = {
-    channel: "XAPI",
     date: "",
-    format: "",
+    format: "xAPI",
     namespace: "",
     operation: "",
     origin: "",

@@ -22,10 +22,10 @@ describe("ConnectionRequestCreateFunction", () => {
     await expect(response).resolves.toEqual({
       body: JSON.stringify({
         acceptanceToken: "",
-        channels: [],
         connection: { awsAccountId: "", nucleusId: "" },
         consumerEndpoint: "https://test.com",
         creationDate: "",
+        formats: [],
         id: "",
         namespace: "",
         organization: "",

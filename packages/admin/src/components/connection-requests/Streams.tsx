@@ -13,8 +13,8 @@ import { StatusLabel } from "./StatusLabel";
 
 function nullStream(): EndpointStream {
   return {
-    channel: "XAPI",
     endpoint: "learningtapestry.com",
+    format: "xAPI",
     namespace: "learningtapestry.com",
     status: StreamStatus.Active,
   };
@@ -31,7 +31,7 @@ export default function Streams(props: StreamsProps) {
 
   const selectStream = (event: React.MouseEvent<HTMLElement>) => {
     const data = (event.target as HTMLElement).dataset;
-    const ex = find({ endpoint: data.endpoint, namespace: data.namespace, channel: data.channel })(
+    const ex = find({ endpoint: data.endpoint, namespace: data.namespace, format: data.format })(
       streams,
     ) as EndpointStream;
     setSelectedStream(ex);
@@ -63,7 +63,7 @@ export default function Streams(props: StreamsProps) {
   const handleResumeStream = showOnError(async () => {
     await AWSService.updateStream(
       selectedStream.endpoint,
-      selectedStream.channel,
+      selectedStream.format,
       selectedStream.namespace,
       "active",
       props.streamType,
@@ -75,7 +75,7 @@ export default function Streams(props: StreamsProps) {
   const handlePauseStream = showOnError(async () => {
     await AWSService.updateStream(
       selectedStream.endpoint,
-      selectedStream.channel,
+      selectedStream.format,
       selectedStream.namespace,
       "paused",
       props.streamType,
@@ -93,7 +93,7 @@ export default function Streams(props: StreamsProps) {
             variant="outline-success"
             size="sm"
             data-endpoint={ex.endpoint}
-            data-channel={ex.channel}
+            data-format={ex.format}
             data-namespace={ex.namespace}
             onClick={openResumeStream}
           >
@@ -108,7 +108,7 @@ export default function Streams(props: StreamsProps) {
             variant="outline-success"
             size="sm"
             data-endpoint={ex.endpoint}
-            data-channel={ex.channel}
+            data-format={ex.format}
             data-namespace={ex.namespace}
             onClick={openPauseStream}
           >
@@ -120,10 +120,10 @@ export default function Streams(props: StreamsProps) {
   };
 
   const renderedStreams = streams.map((ex) => (
-    <tr key={`${ex.endpoint}.${ex.namespace}.${ex.channel}`}>
+    <tr key={`${ex.endpoint}.${ex.namespace}.${ex.format}`}>
       <td>{ex.endpoint}</td>
       <td>{ex.namespace}</td>
-      <td>{ex.channel}</td>
+      <td>{ex.format}</td>
       <td>
         <StatusLabel status={ex.status} statusType="stream" />
       </td>
@@ -158,7 +158,7 @@ export default function Streams(props: StreamsProps) {
           <tr>
             <th>Endpoint</th>
             <th>Namespace</th>
-            <th>Channel</th>
+            <th>Format</th>
             <th>Status</th>
             <th />
           </tr>

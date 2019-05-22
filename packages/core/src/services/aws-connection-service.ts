@@ -91,8 +91,8 @@ export default class AwsConnectionService implements ConnectionService {
       metadata: acceptanceResponse.metadata,
       outputStreams: this.mergeStreams(
         connection.outputStreams,
-        connectionRequest.channels.map((c) => ({
-          channel: c,
+        connectionRequest.formats.map((c) => ({
+          format: c,
           namespace: connectionRequest.namespace,
           status: StreamStatus.Active,
         })),
@@ -167,8 +167,8 @@ export default class AwsConnectionService implements ConnectionService {
       },
       inputStreams: this.mergeStreams(
         connection.inputStreams,
-        connectionRequest.channels.map((c) => ({
-          channel: c,
+        connectionRequest.formats.map((c) => ({
+          format: c,
           namespace: connectionRequest.namespace,
           status: StreamStatus.Active,
         })),
@@ -281,12 +281,12 @@ export default class AwsConnectionService implements ConnectionService {
     type: string,
     isInternalUpdate: boolean,
   ) {
-    const { namespace, channel } = stream;
+    const { namespace, format } = stream;
     let status = stream.status;
     const streamAccessor = type === "input" ? "inputStreams" : "outputStreams";
 
     const oldStream = connection[streamAccessor].find(
-      (e) => e.namespace === namespace && e.channel === channel,
+      (e) => e.namespace === namespace && e.format === format,
     );
 
     if (!oldStream) {
@@ -315,7 +315,7 @@ export default class AwsConnectionService implements ConnectionService {
     const updatedStreams = connection[streamAccessor].filter((s) => s !== oldStream);
 
     const newStream: Stream = {
-      channel,
+      format,
       namespace,
       status,
     };
@@ -334,7 +334,7 @@ export default class AwsConnectionService implements ConnectionService {
     if (a && b) {
       const merged = [...a];
       for (const e of b) {
-        const existsInA = a.find((ae) => ae.channel === e.channel && ae.namespace === e.namespace);
+        const existsInA = a.find((ae) => ae.format === e.format && ae.namespace === e.namespace);
         if (!existsInA) {
           merged.push(e);
         }

@@ -48,36 +48,36 @@ describe(AWSService, () => {
   });
 
   describe("retrieveStreams", () => {
-    const mockChannels = [
+    const mockFormats = [
       {
-        channel: "XAPI",
         endpoint: "https://nucleus.adam.acme.org/",
+        format: "xAPI",
         namespace: "nucleus.ajax.org",
         status: "active",
       },
       {
-        channel: "XAPI",
         endpoint: "https://nucleus.jonah.acme.org/",
+        format: "xAPI",
         namespace: "nucleus.ajax.org",
         status: "paused",
       },
       {
-        channel: "XAPI",
         endpoint: "https://nucleus.mickey.acme.org/",
+        format: "xAPI",
         namespace: "nucleus.ajax.org",
         status: "paused_external",
       },
     ];
-    const mockOutputChannels = [
-      { ...mockChannels[0], namespace: "nucleus.adam.acme.org" },
-      { ...mockChannels[1], namespace: "nucleus.jonah.acme.org" },
-      { ...mockChannels[2], namespace: "nucleus.mickey.acme.org" },
+    const mockOutputFormats = [
+      { ...mockFormats[0], namespace: "nucleus.adam.acme.org" },
+      { ...mockFormats[1], namespace: "nucleus.jonah.acme.org" },
+      { ...mockFormats[2], namespace: "nucleus.mickey.acme.org" },
     ];
 
     it("finds inputs", async () => {
       DynamoDB.DocumentClient.prototype.scan = mockWithPromise(responses.connections());
       const streams = await AWSService.retrieveStreams("input");
-      expect(streams).toEqual(mockChannels);
+      expect(streams).toEqual(mockFormats);
       expect(DynamoDB.DocumentClient.prototype.scan).toHaveBeenCalledWith({
         FilterExpression: "attribute_exists(inputStreams[0])",
         TableName: awsconfiguration.Storage.nucleusConnections,
@@ -87,7 +87,7 @@ describe(AWSService, () => {
     it("finds outputs", async () => {
       DynamoDB.DocumentClient.prototype.scan = mockWithPromise(responses.connections());
       const streams = await AWSService.retrieveStreams("output");
-      expect(streams).toEqual(mockOutputChannels);
+      expect(streams).toEqual(mockOutputFormats);
       expect(DynamoDB.DocumentClient.prototype.scan).toHaveBeenCalledWith({
         FilterExpression: "attribute_exists(outputStreams[0])",
         TableName: awsconfiguration.Storage.nucleusConnections,
@@ -177,11 +177,11 @@ describe(AWSService, () => {
     it("updates a stream with sigv4", async () => {
       const request = nullConnectionRequest();
       API.post = jest.fn(async () => request);
-      await AWSService.updateStream("https://test.com", "XAPI", "test.com", "active", "input");
+      await AWSService.updateStream("https://test.com", "xAPI", "test.com", "active", "input");
       expect(API.post).toHaveBeenCalledWith("ExchangeApiSigv4", "/connections/streams/update", {
         body: {
           endpoint: "https://test.com",
-          stream: { channel: "XAPI", namespace: "test.com", status: "active" },
+          stream: { format: "xAPI", namespace: "test.com", status: "active" },
           streamType: "input",
         },
       });

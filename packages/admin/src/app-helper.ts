@@ -35,7 +35,6 @@ export function nullConnectionRequest(
 ): ConnectionRequest {
   return {
     acceptanceToken: uuid(),
-    channels: ["S3"],
     connection: {
       awsAccountId: uuid(),
       externalId: uuid(),
@@ -43,6 +42,7 @@ export function nullConnectionRequest(
     },
     consumerEndpoint: "https://example.org/register",
     creationDate: new Date(),
+    formats: ["Caliper"],
     id: uuid(),
     namespace: "example.org",
     organization: "Organization 1",
@@ -58,10 +58,10 @@ export function nullConnection(overrideProps?: Partial<Connection>): Connection 
   return {
     creationDate: "",
     endpoint: "https://example.org/register",
-    inputStreams: [{ namespace: "acme.org", channel: "XAPI", status: StreamStatus.Active }],
+    inputStreams: [{ namespace: "acme.org", format: "xAPI", status: StreamStatus.Active }],
     isConsumer: true,
     isProvider: true,
-    outputStreams: [{ namespace: "acme.org", channel: "XAPI", status: StreamStatus.Active }],
+    outputStreams: [{ namespace: "acme.org", format: "xAPI", status: StreamStatus.Active }],
     updateDate: "",
     ...overrideProps,
   };
