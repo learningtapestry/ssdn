@@ -11,6 +11,7 @@ import KinesisEventRepository from "../repositories/kinesis-event-repository";
 import AwsExchangeService from "./aws-exchange-service";
 import ExternalNucleusMetadataService from "./external-nucleus-metadata-service";
 import NucleusMetadataService from "./nucleus-metadata-service";
+import TemporaryCredentialsFactory from "./temporary-credentials-factory";
 
 jest.mock("axios", () => ({
   get: jest.fn(),
@@ -33,7 +34,9 @@ const fakeTempCredentials = ({
   sessionToken: "1234",
 } as unknown) as TemporaryCredentials;
 
-const fakeTempCredentialsFactory = jest.fn(() => fakeTempCredentials);
+const fakeTempCredentialsFactory = fakeImpl<TemporaryCredentialsFactory>({
+  getCredentials: jest.fn(() => Promise.resolve(fakeTempCredentials)),
+});
 
 const fakeEventRepoFactory = jest.fn(
   (
@@ -111,11 +114,7 @@ describe("AwsExchangeService", () => {
       });
       const events = [buildEvent(), buildEvent(), buildEvent()];
       await buildExchangeService().sendEvents(connection, events);
-      expect(fakeTempCredentialsFactory).toHaveBeenCalledWith({
-        ExternalId: "123456",
-        RoleArn: "123456",
-        RoleSessionName: expect.stringContaining("Nucleus-"),
-      });
+      expect(fakeTempCredentialsFactory.getCredentials).toHaveBeenCalledWith("123456", "123456");
       expect(fakeEventRepoFactory).toHaveBeenCalledWith(
         [connection],
         [{ credentials: fakeTempCredentials }],

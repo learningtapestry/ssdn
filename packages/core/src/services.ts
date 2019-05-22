@@ -23,6 +23,7 @@ import AwsNucleusMetadataService from "./services/aws-nucleus-metadata-service";
 import ExternalNucleusMetadataService from "./services/external-nucleus-metadata-service";
 import IamService from "./services/iam-service";
 import LambdaService from "./services/lambda-service";
+import TemporaryCredentialsFactory from "./services/temporary-credentials-factory";
 
 const CONTAINER_CACHE: { [k: string]: any } = {};
 
@@ -74,7 +75,7 @@ export function getExchangeService() {
     () =>
       new AwsExchangeService(
         getMetadataService(),
-        getTemporaryCredentials,
+        getTemporaryCredentialsFactory(),
         getExternalEventRepository,
       ),
   );
@@ -129,13 +130,12 @@ export function getExternalEventRepository(
   );
 }
 
-export function getTemporaryCredentials(params: TemporaryCredentials.TemporaryCredentialsOptions) {
-  return new TemporaryCredentials({
-    ...params,
+export function getTemporaryCredentialsFactory() {
+  return new TemporaryCredentialsFactory({
     // This is not specified in the type annotations, but looking at the source code,
     // client options are passed along.
     endpoint: readEnv("NUCLEUS_STS_ENDPOINT", undefined),
-  } as any);
+  });
 }
 
 export function getExternalMetadataService(connection: Connection) {
