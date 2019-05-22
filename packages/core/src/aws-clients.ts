@@ -4,6 +4,7 @@ import DynamoDB from "aws-sdk/clients/dynamodb";
 import IAM from "aws-sdk/clients/iam";
 import Kinesis from "aws-sdk/clients/kinesis";
 import Lambda from "aws-sdk/clients/lambda";
+import S3 from "aws-sdk/clients/s3";
 
 import { readEnv } from "./helpers/app-helper";
 
@@ -73,6 +74,18 @@ export function getLambda(clientSettings = {}) {
       {
         apiVersion: "2015-03-31",
         endpoint: readEnv("NUCLEUS_LAMBDA_ENDPOINT", undefined),
+      },
+      clientSettings,
+    ),
+  );
+}
+
+export function getS3(clientSettings = {}) {
+  return new S3(
+    Object.assign(
+      {
+        apiVersion: "2006-03-01",
+        endpoint: readEnv("NUCLEUS_S3_ENDPOINT", undefined),
       },
       clientSettings,
     ),

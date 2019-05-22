@@ -943,6 +943,22 @@ Resources:
       DeadLetterQueue:
         Type: SNS
         TargetArn: !Ref LambdaDeadLetterQueueTopic
+  TransferObjectFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./dist/transfer-object
+      Events:
+        TransferObject:
+          Type: Kinesis
+          Properties:
+            Stream: !GetAtt EventProcessorStream.Arn
+            StartingPosition: TRIM_HORIZON
+            Enabled: true
+      Policies:
+        - !Ref ExchangeAdminFunctionPolicy
+      DeadLetterQueue:
+        Type: SNS
+        TargetArn: !Ref LambdaDeadLetterQueueTopic
   ExchangeAdminFunctionPolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
@@ -1136,6 +1152,9 @@ Outputs:
   RouteEventsFunction:
     Description: RouteEventsFunction
     Value: !GetAtt RouteEventsFunction.Arn
+  TransferObjectFunction:
+    Description: TransferObjectFunction
+    Value: !GetAtt TransferObjectFunction.Arn
   ExchangeConsumerPolicy:
     Description: Consumer policy for Nucleus instances
     Value: !Ref ExchangeConsumerPolicy
