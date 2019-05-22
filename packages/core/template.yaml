@@ -1011,6 +1011,43 @@ Resources:
               - kinesis:PutRecord
               - kinesis:PutRecords
             Resource: !GetAtt EventProcessorStream.Arn
+  #
+  # Raw File Transfer
+  #
+  UploadS3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      VersioningConfiguration:
+        Status: Enabled
+      AccessControl: Private
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        IgnorePublicAcls: true
+        BlockPublicPolicy: true
+        RestrictPublicBuckets: true
+      LifecycleConfiguration:
+        Rules:
+          - ExpirationInDays: 7
+            Status: Enabled
+  DownloadS3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      VersioningConfiguration:
+        Status: Enabled
+      AccessControl: Private
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        IgnorePublicAcls: true
+        BlockPublicPolicy: true
+        RestrictPublicBuckets: true
 Outputs:
   CognitoUserPoolId:
     Description: CognitoUserPool
@@ -1042,6 +1079,12 @@ Outputs:
   DeliveryS3Bucket:
     Description: DeliveryS3Bucket
     Value: !Ref DeliveryS3Bucket
+  UploadS3Bucket:
+    Description: Bucket used to upload files that are going to be transferred
+    Value: !Ref UploadS3Bucket
+  DownloadS3Bucket:
+    Description: Bucket that stores files received from other instances
+    Value: !Ref DownloadS3Bucket
   AuthorizeBeaconFunction:
     Description: AuthorizeBeaconFunction
     Value: !GetAtt AuthorizeBeaconFunction.Arn
