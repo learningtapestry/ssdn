@@ -18,7 +18,7 @@ Parameters:
 Globals:
   Function:
     Timeout: 30
-    Runtime: nodejs8.10
+    Runtime: nodejs10.x
     Handler: index.handler
     Environment:
       Variables:

@@ -29,7 +29,7 @@ In order to invoke lambda functions in your local environment, the AWS SAM CLI u
 [Docker](https://www.docker.com/community-edition), so make sure you've got a recent version 
 installed on your system.
 
-After that, you'll need [Node.js](https://nodejs.org/en/download/) version 8.10 or higher, as well 
+After that, you'll need [Node.js](https://nodejs.org/en/download/) version 10.15 or higher, as well 
 as [Yarn](https://yarnpkg.com/en/).
 
 ## Project layout
