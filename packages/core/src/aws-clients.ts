@@ -5,6 +5,7 @@ import IAM from "aws-sdk/clients/iam";
 import Kinesis from "aws-sdk/clients/kinesis";
 import Lambda from "aws-sdk/clients/lambda";
 import S3 from "aws-sdk/clients/s3";
+import STS from "aws-sdk/clients/sts";
 
 import { readEnv } from "./helpers/app-helper";
 
@@ -78,6 +79,14 @@ export function getLambda(clientSettings = {}) {
       clientSettings,
     ),
   );
+}
+
+export function getSts(clientSettings = {}) {
+  return new STS({
+    apiVersion: "2011-06-15",
+    endpoint: readEnv("NUCLEUS_STS_ENDPOINT", undefined),
+    ...clientSettings,
+  });
 }
 
 export function getS3(clientSettings = {}) {

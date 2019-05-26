@@ -34,6 +34,11 @@ export enum LAMBDAS {
   processXAPIStatement = "ProcessXAPIStatementFunction",
   routeEvents = "RouteEventsFunction",
   streamUpdate = "StreamUpdate",
+  generateUploadCredentials = "GenerateUploadCredentialsFunction",
+}
+
+export enum ROLES {
+  uploadFile = "UploadFileRole",
 }
 
 export enum POLICIES {

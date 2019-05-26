@@ -9,6 +9,7 @@ import {
   getKinesis,
   getLambda,
   getS3,
+  getSts,
 } from "./aws-clients";
 import { readEnv } from "./helpers/app-helper";
 import { Connection } from "./interfaces/connection";
@@ -26,6 +27,7 @@ import IamService from "./services/iam-service";
 import LambdaService from "./services/lambda-service";
 import S3TransferService from "./services/s3-transfer-service";
 import TemporaryCredentialsFactory from "./services/temporary-credentials-factory";
+import UploadCredentialsService from "./services/upload-credentials-service";
 
 const CONTAINER_CACHE: { [k: string]: any } = {};
 
@@ -146,4 +148,8 @@ export function getExternalMetadataService(connection: Connection) {
 
 export function getS3TransferService() {
   return new S3TransferService(getMetadataService(), getS3, getTemporaryCredentialsFactory());
+}
+
+export function getUploadCredentialsService() {
+  return new UploadCredentialsService(getMetadataService(), getSts(), getS3());
 }

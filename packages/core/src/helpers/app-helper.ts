@@ -4,6 +4,7 @@
 import get from "lodash/fp/get";
 import has from "lodash/fp/has";
 import isArray from "lodash/fp/isArray";
+import moment from "moment";
 import uuid from "uuid/v4";
 
 export function decode64(content: string) {
@@ -38,4 +39,8 @@ export function toArray(content: object | object[]) {
 
 export function wrap(object: object, root: string = "") {
   return root ? { [root]: object } : object;
+}
+
+export function timeIdentifier() {
+  return moment().format("YYYYMMDDHHmmss");
 }

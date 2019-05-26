@@ -1064,6 +1064,101 @@ Resources:
         IgnorePublicAcls: true
         BlockPublicPolicy: true
         RestrictPublicBuckets: true
+  UploadFileRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub Nucleus-${NucleusId}-UploadFileRole
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              AWS:
+                - !GetAtt GenerateUploadCredentialsFunctionRole.Arn
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: !Sub Nucleus-${NucleusId}-UploadFilePolicy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Action:
+                  - s3:ListBucket
+                  - s3:PutObject
+                Resource:
+                  - !GetAtt UploadS3Bucket.Arn
+                  - !Sub ${UploadS3Bucket.Arn}/*
+                Effect: Allow
+  GenerateUploadCredentialsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./dist/generate-upload-credentials
+      Events:
+        UploadCredentials:
+          Type: Api
+          Properties:
+            Path: /upload-credentials/{client}/{format}
+            Method: get
+            RestApiId: GenerateUploadCredentialsApi
+      Policies:
+        - !Ref GenerateUploadCredentialsFunctionPolicy
+      DeadLetterQueue:
+        Type: SNS
+        TargetArn: !Ref LambdaDeadLetterQueueTopic
+  GenerateUploadCredentialsFunctionPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: !Sub Nucleus-${NucleusId}-GenerateUploadCredentialsFunctionPolicy
+      Description: Permissions needed to generate temporary upload credentials
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - cloudformation:DescribeStacks
+            Resource: !Sub arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/Nucleus-*
+          - Effect: Allow
+            Action:
+              - s3:ListBucket
+              - s3:GetObject
+              - s3:PutObject
+            Resource:
+              - !GetAtt UploadS3Bucket.Arn
+              - !Sub ${UploadS3Bucket.Arn}/*
+  GenerateUploadCredentialsApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: !Ref Environment
+      DefinitionBody:
+        openapi: 3.0.1
+        info:
+          title: !Sub Nucleus-${NucleusId}-GenerateUploadCredentialsApi
+          version: 1.0
+        x-amazon-apigateway-request-validators:
+          parameters-only:
+            validateRequestParameters: true
+            validateRequestBody: false
+        x-amazon-apigateway-request-validator: parameters-only
+        paths:
+          /upload-credentials/{client}/{format}:
+            parameters:
+              - in: path
+                name: client
+                description: The client you want to share the uploaded file with
+                required: true
+                schema:
+                  type: string
+              - in: path
+                name: format
+                description: The format/channel that the data belongs to
+                required: true
+                schema:
+                  type: string
+            get:
+              x-amazon-apigateway-integration:
+                uri: !Sub arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${GenerateUploadCredentialsFunction.Arn}/invocations
+                passthroughBehavior: when_no_match
+                httpMethod: POST
+                type: aws_proxy
 Outputs:
   CognitoUserPoolId:
     Description: CognitoUserPool
@@ -1101,6 +1196,9 @@ Outputs:
   DownloadS3Bucket:
     Description: Bucket that stores files received from other instances
     Value: !Ref DownloadS3Bucket
+  UploadFileRole:
+    Description: IAM role that determines the generic permissions over the upload bucket
+    Value: !GetAtt UploadFileRole.Arn
   AuthorizeBeaconFunction:
     Description: AuthorizeBeaconFunction
     Value: !GetAtt AuthorizeBeaconFunction.Arn
@@ -1116,6 +1214,9 @@ Outputs:
   ProcessXAPIBeaconApi:
     Description: ProcessXAPIBeaconApi
     Value: !Sub https://${ProcessXAPIBeaconApi}.execute-api.${AWS::Region}.amazonaws.com/${Environment}
+  GenerateUploadCredentialsApi:
+    Description: Endpoint that generates temporary upload credentials to specific folders
+    Value: !Sub https://${GenerateUploadCredentialsApi}.execute-api.${AWS::Region}.amazonaws.com/${Environment}
   NucleusConnectionRequestsTable:
     Description: NucleusConnectionRequestsTable
     Value: !Ref NucleusConnectionRequestsTable
@@ -1152,6 +1253,9 @@ Outputs:
   RouteEventsFunction:
     Description: RouteEventsFunction
     Value: !GetAtt RouteEventsFunction.Arn
+  GenerateUploadCredentialsFunction:
+    Description: Generates temporary upload credentials for a specific bucket and folder
+    Value: !GetAtt GenerateUploadCredentialsFunction.Arn
   TransferObjectFunction:
     Description: TransferObjectFunction
     Value: !GetAtt TransferObjectFunction.Arn
@@ -1161,6 +1265,9 @@ Outputs:
   ExchangeProviderPolicy:
     Description: Provider policy for Nucleus instances
     Value: !Ref ExchangeProviderPolicy
+  GenerateUploadCredentialsFunctionPolicy:
+    Description: Upload credentials generation policy
+    Value: !Ref GenerateUploadCredentialsFunctionPolicy
   AwsAccountId:
     Description: The AWS account ID
     Value: !Ref AWS::AccountId

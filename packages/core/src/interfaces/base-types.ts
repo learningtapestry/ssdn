@@ -6,6 +6,7 @@ import {
   LAMBDAS,
   POLICIES,
   PUBLIC_METADATA,
+  ROLES,
   STREAMS,
   TABLES,
 } from "./aws-metadata-keys";
@@ -20,6 +21,7 @@ export type MetadataKey =
   | LAMBDAS
   | POLICIES
   | PUBLIC_METADATA
+  | ROLES
   | STREAMS
   | TABLES;
 

@@ -1,6 +1,7 @@
 import { Connection } from "../src/interfaces/connection";
 import { ConnectionRequest, ConnectionRequestStatus } from "../src/interfaces/connection-request";
 import Event, { EventMetadata } from "../src/interfaces/event";
+import { UploadCredentials } from "../src/interfaces/upload-credentials";
 
 export function buildConnectionRequest(overrides?: Partial<ConnectionRequest>): ConnectionRequest {
   const defaults = {
@@ -89,5 +90,20 @@ export function buildEvent(overrides?: Partial<Event>) {
   return {
     ...event,
     ...(overrides as any),
+  };
+}
+
+export function buildUploadCredentials(overrides?: Partial<UploadCredentials>) {
+  return {
+    credentials: {
+      accessKeyId: "AKIAIOSFODNN7EXAMPLE",
+      secretAccessKey: "wJalrXUtnFEMI/K7MDENG/bPxRfiCYzEXAMPLEKEY",
+      sessionToken: `AQoDYXdzEPT//////////wEXAMPLEtc764bNrC9SAPBSM22wDOk4x4HIZ8j4FZTwdQWLWsKWHGBuFq
+wAeMicRXmxfpSPfIeoIYRqTflfKD8YUuwthAx7mSEI/qkPpKPi/kMcGdQrmGdeehM4IC1NtBmUpp2wUE8phUZampKsburEDy0KPk
+yQDYwT7WZ0wq5VSXDvp75YU9HFvlRd8Tx6q6fE8YQcHNVXAkiY9q6d+xo0rKwT38xVqr7ZD0u0iPPkUL64lIZbqBAz+scqKmlzm8
+FDrypNC9Yjc8fPOLn9FX9KSYvKTr4rvx3iSIlTJabIQwj2ICCR/oLxBA==`,
+    },
+    instructions: "These are the test instructions...",
+    ...overrides,
   };
 }
