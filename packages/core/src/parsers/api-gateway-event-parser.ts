@@ -1,5 +1,5 @@
 /**
- * lambda-statement-parser.ts: Parses an API Gateway event as obtained from the lambda function and
+ * api-gateway-event-parser.ts: Parses an API Gateway event as obtained from the lambda function and
  * returns an internal Nucleus event representation
  */
 import { APIGatewayProxyEvent } from "aws-lambda";
@@ -10,7 +10,7 @@ import Event from "../interfaces/event";
 import { Format } from "../interfaces/format";
 import logger from "../logger";
 
-export default abstract class LambdaEventParser {
+export default abstract class ApiGatewayEventParser {
   public event: APIGatewayProxyEvent;
   public defaultNamespace: string;
   public request: object;

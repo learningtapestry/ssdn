@@ -3,9 +3,9 @@ import get from "lodash/fp/get";
 
 import { calculateIdentifier } from "../helpers/app-helper";
 import { Format } from "../interfaces/format";
-import LambdaEventParser from "./lambda-event-parser";
+import ApiGatewayEventParser from "./api-gateway-event-parser";
 
-export default class XAPIBeaconParser extends LambdaEventParser {
+export default class XAPIBeaconParser extends ApiGatewayEventParser {
   private content: any;
 
   constructor(public lambdaEvent: APIGatewayProxyEvent, defaultNamespace: string) {
