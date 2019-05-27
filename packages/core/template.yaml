@@ -1115,7 +1115,8 @@ Resources:
           - Effect: Allow
             Action:
               - cloudformation:DescribeStacks
-            Resource: !Sub arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/Nucleus-*
+            Resource:
+              - !Sub arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/${AWS::StackName}/*
           - Effect: Allow
             Action:
               - s3:ListBucket
