@@ -1160,6 +1160,32 @@ Resources:
                 passthroughBehavior: when_no_match
                 httpMethod: POST
                 type: aws_proxy
+  ProcessUploadFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./dist/process-upload
+      Events:
+        FileUpload:
+          Type: S3
+          Properties:
+            Bucket: !Ref UploadS3Bucket
+            Events: s3:ObjectCreated:*
+      Policies:
+        - Version: 2012-10-17
+          Statement:
+            - Effect: Allow
+              Action:
+                - kinesis:PutRecord
+                - kinesis:PutRecords
+              Resource: !GetAtt EventProcessorStream.Arn
+            - Effect: Allow
+              Action:
+                - cloudformation:DescribeStacks
+              Resource:
+                - !Sub arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/${AWS::StackName}/*
+      DeadLetterQueue:
+        Type: SNS
+        TargetArn: !Ref LambdaDeadLetterQueueTopic
 Outputs:
   CognitoUserPoolId:
     Description: CognitoUserPool
@@ -1257,6 +1283,9 @@ Outputs:
   GenerateUploadCredentialsFunction:
     Description: Generates temporary upload credentials for a specific bucket and folder
     Value: !GetAtt GenerateUploadCredentialsFunction.Arn
+  ProcessUploadFunction:
+    Description: Triggers when a file is stored in the upload S3 bucket
+    Value: !GetAtt ProcessUploadFunction.Arn
   TransferObjectFunction:
     Description: TransferObjectFunction
     Value: !GetAtt TransferObjectFunction.Arn

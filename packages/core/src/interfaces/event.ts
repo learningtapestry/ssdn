@@ -9,10 +9,15 @@ export interface EventMetadata {
   protocol: any;
   representation: string;
   request: {
-    headers: object;
-    queryStringParameters: {
+    // API Gateway specific elements
+    headers?: object;
+    queryStringParameters?: {
       [k: string]: string;
     };
+    // S3 specific elements
+    requestParameters?: object;
+    responseElements?: object;
+    userIdentity?: object;
   };
   resource: string;
   resourceId?: string;
