@@ -1,4 +1,5 @@
 import nucleusEvent from "../../test-support/data-samples/nucleus-event.json";
+import Event from "../interfaces/event";
 import XAPIStatementService from "./xapi-statement-service";
 
 describe("XAPIStatementService", () => {
@@ -16,7 +17,7 @@ describe("XAPIStatementService", () => {
 
     it("stores the content when validation passes", async () => {
       const results = await XAPIStatementService.process(
-        nucleusEvent,
+        nucleusEvent as Event,
         validator,
         inMemoryRepository,
       );
@@ -30,7 +31,7 @@ describe("XAPIStatementService", () => {
       validator.errors.mockReturnValue(["1st error", "2nd error"]);
 
       const results = await XAPIStatementService.process(
-        nucleusEvent,
+        nucleusEvent as Event,
         validator,
         inMemoryRepository,
       );
@@ -45,7 +46,7 @@ describe("XAPIStatementService", () => {
       });
 
       const results = await XAPIStatementService.process(
-        nucleusEvent,
+        nucleusEvent as Event,
         validator,
         inMemoryRepository,
       );
