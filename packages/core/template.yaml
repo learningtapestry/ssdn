@@ -1321,6 +1321,14 @@ Resources:
                 passthroughBehavior: when_no_match
                 httpMethod: POST
                 type: aws_proxy
+  GenerateUploadCredentialsFunctionPermission:
+    Type: AWS::Lambda::Permission
+    DependsOn:
+      - GenerateUploadCredentialsFunction
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref GenerateUploadCredentialsFunction
+      Principal: apigateway.amazonaws.com
   ProcessUploadFunction:
     Type: AWS::Serverless::Function
     Properties:
