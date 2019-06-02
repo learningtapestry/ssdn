@@ -1255,8 +1255,8 @@ Resources:
         UploadCredentials:
           Type: Api
           Properties:
-            Path: /upload-credentials/{client}/{format}
-            Method: get
+            Path: /upload-credentials
+            Method: post
             RestApiId: GenerateUploadCredentialsApi
       Policies:
         - !Ref GenerateUploadCredentialsFunctionPolicy
@@ -1299,21 +1299,23 @@ Resources:
             validateRequestBody: false
         x-amazon-apigateway-request-validator: parameters-only
         paths:
-          /upload-credentials/{client}/{format}:
+          /upload-credentials:
+            consumes:
+              - application/x-www-form-urlencoded
             parameters:
-              - in: path
+              - in: formData
                 name: client
                 description: The client you want to share the uploaded file with
                 required: true
                 schema:
                   type: string
-              - in: path
+              - in: formData
                 name: format
                 description: The format/channel that the data belongs to
                 required: true
                 schema:
                   type: string
-            get:
+            post:
               x-amazon-apigateway-integration:
                 uri: !Sub arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${GenerateUploadCredentialsFunction.Arn}/invocations
                 passthroughBehavior: when_no_match

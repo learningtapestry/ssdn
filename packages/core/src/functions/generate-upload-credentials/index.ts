@@ -1,26 +1,32 @@
 import slugify from "@sindresorhus/slugify";
 import { APIGatewayProxyHandler } from "aws-lambda";
-import get from "lodash/fp/get";
+import querystring, { ParsedUrlQuery } from "querystring";
 import { Format } from "../../interfaces/format";
 import { getUploadCredentialsService } from "../../services";
 
 export const handler: APIGatewayProxyHandler = async (event) => {
-  const format = parseFormat(get("pathParameters.format")(event));
-  if (!format) {
-    return buildResponse(
-      {
-        message: `Format '${get("pathParameters.format")(event)}' is not recognized as valid`,
-      },
-      400,
-    );
+  const params = querystring.parse(event.body!);
+  const validationError = validateParams(params);
+  if (validationError) {
+    return buildResponse({ message: validationError }, 400);
   }
 
   const credentials = await getUploadCredentialsService().generate(
-    slugify(get("pathParameters.client")(event)),
-    format,
+    slugify(params.client as string),
+    parseFormat(params.format as string),
   );
 
   return buildResponse(credentials, 200);
+};
+
+const validateParams = (params: ParsedUrlQuery) => {
+  if (!params.client || !params.format) {
+    return "Both client and format need to be set";
+  }
+
+  if (!parseFormat(params.format as string)) {
+    return `Format '${params.format}' is not recognized as valid`;
+  }
 };
 
 const parseFormat = (format: string): Format => {

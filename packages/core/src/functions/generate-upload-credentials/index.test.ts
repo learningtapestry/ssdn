@@ -26,10 +26,28 @@ describe("GenerateUploadCredentialsFunction", () => {
     expect(result.body).toEqual(JSON.stringify(buildUploadCredentials()));
   });
 
+  it("returns error when client or format are not set", async () => {
+    const invalidFormatEvent = {
+      ...uploadCredentialsEvent,
+      body: "format=xAPI",
+    };
+
+    const result = (await handler(
+      (invalidFormatEvent as unknown) as APIGatewayProxyEvent,
+      {} as Context,
+      () => {},
+    )) as APIGatewayProxyResult;
+
+    expect(result.statusCode).toEqual(400);
+    expect(result.body).toEqual(
+      JSON.stringify({ message: "Both client and format need to be set" }),
+    );
+  });
+
   it("returns error when format is not valid", async () => {
     const invalidFormatEvent = {
       ...uploadCredentialsEvent,
-      pathParameters: { client: "learning-tapestry-as25vydn3ekjn2e", format: "Invalid" },
+      body: "client=learning-tapestry-as25vydn3ekjn2e&format=Invalid",
     };
 
     const result = (await handler(
