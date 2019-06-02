@@ -19,6 +19,7 @@ import Row from "react-bootstrap/Row";
 import { Route, Router } from "react-router-dom";
 
 import ConnectionsHome from "./components/connection-requests/ConnectionsHome";
+import FileTransfersHome from "./components/file-transfers/FileTransfersHome";
 import CreateFormat from "./components/formats/CreateFormat";
 import EditFormat from "./components/formats/EditFormat";
 import Formats from "./components/formats/Formats";
@@ -52,6 +53,7 @@ class App extends Component {
                 <Route exact={true} path="/users" component={Users} />
                 <Route exact={true} path="/users/create" component={CreateUser} />
                 <Route exact={true} path="/settings" component={Settings} />
+                <Route path="/file-transfers" component={FileTransfersHome} />
               </Col>
             </Row>
           </Container>

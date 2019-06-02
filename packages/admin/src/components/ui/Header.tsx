@@ -39,6 +39,9 @@ const Header = () => (
         <LinkContainer to="/settings">
           <Nav.Link>Settings</Nav.Link>
         </LinkContainer>
+        <LinkContainer to="/file-transfers">
+          <Nav.Link>File Transfers</Nav.Link>
+        </LinkContainer>
       </Nav>
     </Navbar>
   </header>

@@ -14,5 +14,6 @@ describe("<Header />", () => {
     expect(getByText(/logs/i)).toHaveAttribute("href", "/logs");
     expect(getByText(/users/i)).toHaveAttribute("href", "/users");
     expect(getByText(/settings/i)).toHaveAttribute("href", "/settings");
+    expect(getByText(/file transfers/i)).toHaveAttribute("href", "/file-transfers");
   });
 });

@@ -23,6 +23,11 @@ export const nucleusDevStack = {
         `arn:aws:lambda:us-east-1:111111111111:function:` +
         `Nucleus-Dev-HelloNucleusFunction-HCJE3P62QE5P`,
     },
+    {
+      description: "Endpoint that generates temporary upload credentials to specific folders",
+      key: "GenerateUploadCredentialsApi",
+      value: "https://nucleus.example.org/Development",
+    },
   ],
 };
 
@@ -33,6 +38,11 @@ export const nucleusStack = {
       description: "Name of the Event Processor Kinesis Data Stream",
       key: "EventProcessorStreamName",
       value: "Nucleus-Production-EventProcessor",
+    },
+    {
+      description: "Endpoint that generates temporary upload credentials to specific folders",
+      key: "GenerateUploadCredentialsApi",
+      value: "https://nucleus.example.org/Production",
     },
     {
       description: "Hello Nucleus Lambda Function ARN",
@@ -142,4 +152,18 @@ export function logEvents() {
       message: "END RequestId: df528d1a-6049-4430-8835-38e7ef58b800\n",
     },
   ];
+}
+
+export function uploadCredentials() {
+  return {
+    credentials: {
+      accessKeyId: "AKIAIOSFODNN7EXAMPLE",
+      secretAccessKey: "wJalrXUtnFEMI/K7MDENG/bPxRfiCYzEXAMPLEKEY",
+      sessionToken: `AQoDYXdzEPT//////////wEXAMPLEtc764bNrC9SAPBSM22wDOk4x4HIZ8j4FZTwdQWLWsKWHGBuFq
+wAeMicRXmxfpSPfIeoIYRqTflfKD8YUuwthAx7mSEI/qkPpKPi/kMcGdQrmGdeehM4IC1NtBmUpp2wUE8phUZampKsburEDy0KPk
+yQDYwT7WZ0wq5VSXDvp75YU9HFvlRd8Tx6q6fE8YQcHNVXAkiY9q6d+xo0rKwT38xVqr7ZD0u0iPPkUL64lIZbqBAz+scqKmlzm8
+FDrypNC9Yjc8fPOLn9FX9KSYvKTr4rvx3iSIlTJabIQwj2ICCR/oLxBA==`,
+    },
+    instructions: "These are the test instructions...",
+  };
 }

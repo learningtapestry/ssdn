@@ -31,6 +31,11 @@ export function cloudFormationStacks() {
             OutputValue: `arn:aws:lambda:us-east-1:111111111111:function:
           Nucleus-Dev-HelloNucleusFunction-HCJE3P62QE5P`,
           },
+          {
+            Description: "Endpoint that generates temporary upload credentials to specific folders",
+            OutputKey: "GenerateUploadCredentialsApi",
+            OutputValue: "https://nucleus.example.org/Development",
+          },
         ],
         Parameters: [
           {
@@ -72,6 +77,11 @@ export function cloudFormationStacks() {
             OutputValue:
               `arn:aws:lambda:us-east-1:111111111111:function:` +
               `Nucleus-HelloNucleusFunction-60K87QSYCYTJ`,
+          },
+          {
+            Description: "Endpoint that generates temporary upload credentials to specific folders",
+            OutputKey: "GenerateUploadCredentialsApi",
+            OutputValue: "https://nucleus.example.org/Production",
           },
         ],
         Parameters: [
