@@ -1288,8 +1288,13 @@ Resources:
     Type: AWS::Serverless::Api
     Properties:
       StageName: !Ref Environment
+      Cors:
+        AllowOrigin: "'*'"
+        AllowHeaders: "'Content-Type'"
       DefinitionBody:
-        openapi: 3.0.1
+        # FIXME: Need to use previous spec instead of "openapi: 3.0.1" because of this:
+        # https://github.com/awslabs/serverless-application-model/issues/627
+        swagger: 2.0
         info:
           title: !Sub Nucleus-${NucleusId}-GenerateUploadCredentialsApi
           version: 1.0

@@ -38,6 +38,9 @@ const parseFormat = (format: string): Format => {
 const buildResponse = (results: object, statusCode: number) => {
   return {
     body: JSON.stringify(results),
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+    },
     statusCode,
   };
 };
