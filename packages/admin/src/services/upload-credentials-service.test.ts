@@ -24,6 +24,9 @@ describe("UploadCredentialsService", () => {
   describe("generate", () => {
     beforeEach(() => {
       AWSService.retrieveStack = jest.fn().mockResolvedValue(nucleusStack);
+      AWSService.retrieveApiKey = jest
+        .fn()
+        .mockResolvedValue("K4I8vkxjRz3OUZ8HBPKdS9Y8hCIh4fjY5F4JPFfn");
       mock
         .onPost(
           "https://nucleus.example.org/Production/upload-credentials",

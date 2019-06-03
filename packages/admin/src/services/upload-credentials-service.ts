@@ -14,6 +14,7 @@ import AWSService from "./aws-service";
 class UploadCredentialsService {
   public static FORMATS = ["xAPI", "Caliper"];
   private instance: AxiosInstance;
+  private settings?: Setting[];
 
   constructor() {
     this.instance = axios.create({
@@ -24,14 +25,34 @@ class UploadCredentialsService {
   }
 
   public async generate(client: string, format: Format) {
-    const stackOutputs = ((await AWSService.retrieveStack()) as Instance).settings;
-    const credentialsEndpoint = find<Setting>(["key", "GenerateUploadCredentialsApi"])(
-      stackOutputs,
-    );
-    const url = `${credentialsEndpoint!.value}/upload-credentials`;
-    const response = await this.instance.post(url, querystring.stringify({ client, format }));
+    const endpoint = await this.outputValue("GenerateUploadCredentialsApi");
+    const url = `${endpoint}/upload-credentials`;
+    const response = await this.instance.post(url, querystring.stringify({ client, format }), {
+      headers: { "x-api-key": await this.apiKey() },
+    });
 
     return response.data.credentials;
+  }
+
+  public async apiKey() {
+    const apiKeyId = await this.outputValue("GenerateUploadCredentialsApiKeyId");
+
+    return AWSService.retrieveApiKey(apiKeyId);
+  }
+
+  private async stackOutputs() {
+    if (!this.settings) {
+      this.settings = ((await AWSService.retrieveStack()) as Instance).settings;
+    }
+
+    return this.settings;
+  }
+
+  private async outputValue(key: string) {
+    const outputs = await this.stackOutputs();
+    const setting = await find<Setting>(["key", key])(outputs);
+
+    return setting!.value;
   }
 }
 

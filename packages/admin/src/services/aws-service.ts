@@ -1,6 +1,7 @@
 /**
  * aws-service.ts: Main service that interacts with the AWS APIs and SDKs
  */
+import ApiGateway from "aws-sdk/clients/apigateway";
 import CloudFormation from "aws-sdk/clients/cloudformation";
 import CloudWatchLogs from "aws-sdk/clients/cloudwatchlogs";
 import CognitoIdentityServiceProvider from "aws-sdk/clients/cognitoidentityserviceprovider";
@@ -30,6 +31,7 @@ export default class AWSService {
     });
     await AWSService.updateCredentials();
     config.apiVersions = {
+      apigateway: "2015-07-09",
       cloudformation: "2010-05-15",
       cloudwatchlogs: "2014-03-28",
       cognitoidentityserviceprovider: "2016-04-18",
@@ -266,6 +268,12 @@ export default class AWSService {
         })
         .promise();
     });
+  }
+
+  public static async retrieveApiKey(keyId: string) {
+    const key = await new ApiGateway().getApiKey({ apiKey: keyId, includeValue: true }).promise();
+
+    return key.value;
   }
 
   private static async withCredentials(request: () => Promise<any>) {

@@ -36,6 +36,11 @@ export function cloudFormationStacks() {
             OutputKey: "GenerateUploadCredentialsApi",
             OutputValue: "https://nucleus.example.org/Development",
           },
+          {
+            Description: "Default API Key to access the upload credentials endpoint",
+            OutputKey: "GenerateUploadCredentialsApiKeyId",
+            OutputValue: "okothmfzma",
+          },
         ],
         Parameters: [
           {
@@ -82,6 +87,11 @@ export function cloudFormationStacks() {
             Description: "Endpoint that generates temporary upload credentials to specific folders",
             OutputKey: "GenerateUploadCredentialsApi",
             OutputValue: "https://nucleus.example.org/Production",
+          },
+          {
+            Description: "Default API Key to access the upload credentials endpoint",
+            OutputKey: "GenerateUploadCredentialsApiKeyId",
+            OutputValue: "okothmfzma",
           },
         ],
         Parameters: [
@@ -336,5 +346,18 @@ export function logEvents() {
         timestamp: 1555255316099,
       },
     ],
+  };
+}
+
+export function apiKey() {
+  return {
+    createdDate: "2019-06-02T19:10:11.000Z",
+    description: "Default API Key to access the upload credentials endpoint",
+    enabled: true,
+    id: "okothmfzma",
+    lastUpdatedDate: "2019-06-02T19:10:11.000Z",
+    name: "Nucleus-learning-tapestry-as25vydn3ekjn2e-GenerateUploadCredentialsApiKey",
+    stageKeys: [],
+    value: "K4I8vkxjRz3OUZ8HBPKdS9Y8hCIh4fjY5F4JPFfn",
   };
 }

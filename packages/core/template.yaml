@@ -162,6 +162,9 @@ Resources:
               - Effect: Allow
                 Action: execute-api:Invoke
                 Resource: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ExchangeApi}/${Environment}/*
+              - Effect: Allow
+                Action: apigateway:GET
+                Resource: !Sub arn:aws:apigateway:${AWS::Region}::/apikeys/*
   UnauthRole:
     Type: AWS::IAM::Role
     Properties:
@@ -214,7 +217,7 @@ Resources:
       Name: !Sub Nucleus-${NucleusId}-CollectionApiKey
       Description: Default API Key to access the Nucleus collection endpoint
       Enabled: true
-  ApiUsagePlan:
+  CollectionApiUsagePlan:
     Type: AWS::ApiGateway::UsagePlan
     DependsOn:
       - ProcessXAPIStatementApiStage
@@ -228,16 +231,16 @@ Resources:
           Stage: !Ref Environment
         - ApiId: !Ref ExchangeApi
           Stage: !Ref Environment
-      UsagePlanName: !Sub Nucleus-${NucleusId}-UsagePlan
-  ApiUsagePlanKey:
+      UsagePlanName: !Sub Nucleus-${NucleusId}-CollectionApiUsagePlan
+  CollectionApiUsagePlanKey:
     Type: AWS::ApiGateway::UsagePlanKey
     DependsOn:
       - CollectionApiKey
-      - ApiUsagePlan
+      - CollectionApiUsagePlan
     Properties:
       KeyId: !Ref CollectionApiKey
       KeyType: API_KEY
-      UsagePlanId: !Ref ApiUsagePlan
+      UsagePlanId: !Ref CollectionApiUsagePlan
   #
   # Event Collection
   #
@@ -1290,7 +1293,7 @@ Resources:
       StageName: !Ref Environment
       Cors:
         AllowOrigin: "'*'"
-        AllowHeaders: "'Content-Type'"
+        AllowHeaders: "'Content-Type,X-Api-Key'"
       DefinitionBody:
         # FIXME: Need to use previous spec instead of "openapi: 3.0.1" because of this:
         # https://github.com/awslabs/serverless-application-model/issues/627
@@ -1303,6 +1306,11 @@ Resources:
             validateRequestParameters: true
             validateRequestBody: false
         x-amazon-apigateway-request-validator: parameters-only
+        securityDefinitions:
+          api_key:
+            type: apiKey
+            name: x-api-key
+            in: header
         paths:
           /upload-credentials:
             consumes:
@@ -1326,6 +1334,8 @@ Resources:
                 passthroughBehavior: when_no_match
                 httpMethod: POST
                 type: aws_proxy
+              security:
+                - api_key: []
   GenerateUploadCredentialsFunctionPermission:
     Type: AWS::Lambda::Permission
     DependsOn:
@@ -1334,6 +1344,30 @@ Resources:
       Action: lambda:InvokeFunction
       FunctionName: !Ref GenerateUploadCredentialsFunction
       Principal: apigateway.amazonaws.com
+  GenerateUploadCredentialsApiKey:
+    Type: AWS::ApiGateway::ApiKey
+    Properties:
+      Name: !Sub Nucleus-${NucleusId}-GenerateUploadCredentialsApiKey
+      Description: Default API Key to access the upload credentials endpoint
+      Enabled: true
+  GenerateUploadCredentialsApiUsagePlan:
+    Type: AWS::ApiGateway::UsagePlan
+    DependsOn:
+      - GenerateUploadCredentialsApiStage
+    Properties:
+      ApiStages:
+        - ApiId: !Ref GenerateUploadCredentialsApi
+          Stage: !Ref Environment
+      UsagePlanName: !Sub Nucleus-${NucleusId}-GenerateUploadCredentialsApiUsagePlan
+  GenerateUploadCredentialsApiUsagePlanKey:
+    Type: AWS::ApiGateway::UsagePlanKey
+    DependsOn:
+      - GenerateUploadCredentialsApiKey
+      - GenerateUploadCredentialsApiUsagePlan
+    Properties:
+      KeyId: !Ref GenerateUploadCredentialsApiKey
+      KeyType: API_KEY
+      UsagePlanId: !Ref GenerateUploadCredentialsApiUsagePlan
   ProcessUploadFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -1380,8 +1414,11 @@ Outputs:
     Description: UnauthRole
     Value: !GetAtt UnauthRole.Arn
   CollectionApiKeyId:
-    Description: CollectionApiKey
+    Description: Default API Key to access the Nucleus collection endpoint
     Value: !Ref CollectionApiKey
+  GenerateUploadCredentialsApiKeyId:
+    Description: Default API Key to access the upload credentials endpoint
+    Value: !Ref GenerateUploadCredentialsApiKey
   EventProcessorStream:
     Description: EventProcessorStream
     Value: !Ref EventProcessorStream

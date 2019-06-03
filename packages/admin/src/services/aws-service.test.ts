@@ -1,3 +1,4 @@
+import ApiGateway from "aws-sdk/clients/apigateway";
 import CloudFormation from "aws-sdk/clients/cloudformation";
 import CloudWatchLogs from "aws-sdk/clients/cloudwatchlogs";
 import CognitoIdentityServiceProvider from "aws-sdk/clients/cognitoidentityserviceprovider";
@@ -231,6 +232,15 @@ describe("AWSService", () => {
       API.del = jest.fn();
       await AWSService.deleteFormat("test");
       expect(API.del).toHaveBeenCalledWith("EntitiesApi", "/formats/test", {});
+    });
+  });
+
+  describe("retrieveApiKey", () => {
+    it("retrieves the api key by its id", async () => {
+      ApiGateway.prototype.getApiKey = mockWithPromise(responses.apiKey());
+      const apiKey = await AWSService.retrieveApiKey("okothmfzma");
+
+      expect(apiKey).toEqual("K4I8vkxjRz3OUZ8HBPKdS9Y8hCIh4fjY5F4JPFfn");
     });
   });
 });

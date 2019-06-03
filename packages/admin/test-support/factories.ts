@@ -17,16 +17,21 @@ export const nucleusDevStack = {
       value: "Nucleus-Development-EventProcessor",
     },
     {
+      description: "Endpoint that generates temporary upload credentials to specific folders",
+      key: "GenerateUploadCredentialsApi",
+      value: "https://nucleus.example.org/Development",
+    },
+    {
+      description: "Default API Key to access the upload credentials endpoint",
+      key: "GenerateUploadCredentialsApiKeyId",
+      value: "okothmfzma",
+    },
+    {
       description: "Hello Nucleus Lambda Function ARN",
       key: "HelloNucleusFunction",
       value:
         `arn:aws:lambda:us-east-1:111111111111:function:` +
         `Nucleus-Dev-HelloNucleusFunction-HCJE3P62QE5P`,
-    },
-    {
-      description: "Endpoint that generates temporary upload credentials to specific folders",
-      key: "GenerateUploadCredentialsApi",
-      value: "https://nucleus.example.org/Development",
     },
   ],
 };
@@ -43,6 +48,11 @@ export const nucleusStack = {
       description: "Endpoint that generates temporary upload credentials to specific folders",
       key: "GenerateUploadCredentialsApi",
       value: "https://nucleus.example.org/Production",
+    },
+    {
+      description: "Default API Key to access the upload credentials endpoint",
+      key: "GenerateUploadCredentialsApiKeyId",
+      value: "okothmfzma",
     },
     {
       description: "Hello Nucleus Lambda Function ARN",
