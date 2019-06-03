@@ -43,7 +43,7 @@ describe("UploadCredentialsService", () => {
         Effect: "Allow",
         Resource: [
           "arn:aws:s3:::nucleus-test-uploads3bucket-g38l0vvghtff/" +
-            "learning-tapestry-as25vydn3ekjn2e/xAPI/*",
+            "nucleus.learningtapestry.com/xAPI/*",
         ],
       },
     ],
@@ -54,10 +54,7 @@ describe("UploadCredentialsService", () => {
 
   describe("generate", () => {
     it("returns temporary permissions and instructions", async () => {
-      const response = await uploadCredentials.generate(
-        "learning-tapestry-as25vydn3ekjn2e",
-        "xAPI",
-      );
+      const response = await uploadCredentials.generate("nucleus.learningtapestry.com", "xAPI");
       expect(response.credentials).toHaveProperty("accessKeyId", "AKIAIOSFODNN7EXAMPLE");
       expect(response.credentials).toHaveProperty(
         "secretAccessKey",
@@ -73,7 +70,7 @@ describe("UploadCredentialsService", () => {
     it("builds the assumed role with the right values", async () => {
       jest.spyOn(appHelper, "timeIdentifier").mockReturnValue("20190524123456");
 
-      await uploadCredentials.generate("learning-tapestry-as25vydn3ekjn2e", "xAPI");
+      await uploadCredentials.generate("nucleus.learningtapestry.com", "xAPI");
 
       await expect(stsMock.assumeRole).toHaveBeenCalledWith({
         DurationSeconds: 3600,
@@ -93,11 +90,11 @@ describe("UploadCredentialsService", () => {
         },
       });
 
-      await uploadCredentials.generate("learning-tapestry-as25vydn3ekjn2e", "xAPI");
+      await uploadCredentials.generate("nucleus.learningtapestry.com", "xAPI");
 
       await expect(s3Mock.putObject).toHaveBeenCalledWith({
         Bucket: "nucleus-test-uploads3bucket-g38l0vvghtff",
-        Key: "learning-tapestry-as25vydn3ekjn2e/xAPI/",
+        Key: "nucleus.learningtapestry.com/xAPI/",
       });
     });
   });

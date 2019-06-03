@@ -1,5 +1,6 @@
 import slugify from "@sindresorhus/slugify";
 import { APIGatewayProxyHandler } from "aws-lambda";
+import filenamify from "filenamify";
 import querystring, { ParsedUrlQuery } from "querystring";
 import { Format } from "../../interfaces/format";
 import { getUploadCredentialsService } from "../../services";
@@ -12,7 +13,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
   }
 
   const credentials = await getUploadCredentialsService().generate(
-    slugify(params.client as string),
+    filenamify(params.client as string, { replacement: "__" }),
     parseFormat(params.format as string),
   );
 

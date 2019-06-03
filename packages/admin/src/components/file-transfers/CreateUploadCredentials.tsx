@@ -1,3 +1,4 @@
+import filenamify from "filenamify";
 import { FormikActions, FormikProps, withFormik } from "formik";
 import has from "lodash/fp/has";
 import React from "react";
@@ -48,7 +49,7 @@ function CreateUploadCredentialsForm(props: FormikProps<UploadCredentialsForm>) 
           <p>
             Keep in mind they are only valid to upload files inside the{" "}
             <strong>
-              '{values.client}/{values.format}'
+              '{filenamify(values.client, { replacement: "__" })}/{values.format}'
             </strong>{" "}
             folder, and that they will expire in <strong>1 hour</strong>.
           </p>

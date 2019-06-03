@@ -1,25 +1,9 @@
 import { Context, S3Event } from "aws-lambda";
-import { fakeImpl, mocked } from "../../../test-support/jest-helper";
 import processUploadEvent from "../../../test-support/lambda-events/process-upload-event.json";
-import { AWS_NUCLEUS } from "../../interfaces/aws-metadata-keys";
-import { getMetadataService } from "../../services";
 import FileUploadService from "../../services/file-upload-service";
-import NucleusMetadataService from "../../services/nucleus-metadata-service";
 import { handler } from "./index";
 
 jest.mock("../../services");
-
-const nucleusMetadataService = fakeImpl<NucleusMetadataService>({
-  getMetadataValue: jest.fn((key: string) =>
-    Promise.resolve({
-      value: ({
-        [AWS_NUCLEUS.namespace]: "nucleus-test.learningtapestry.com",
-      } as any)[key],
-    }),
-  ),
-});
-
-mocked(getMetadataService).mockImplementation(() => nucleusMetadataService);
 
 const validResult = {
   SequenceNumber: "49596017907567168170237281574035826623024849082516504578",

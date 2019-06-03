@@ -27,7 +27,7 @@
           "arn": "arn:aws:s3:::example-bucket"
         },
         "object": {
-          "key": "learning-tapestry-as25vydn3ekjn2e/xAPI/test.txt",
+          "key": "nucleus-test.learningtapestry.com/xAPI/test.txt",
           "size": 1024,
           "eTag": "0123456789abcdef0123456789abcdef",
           "sequencer": "0A1B2C3D4E5F678901"

@@ -47,7 +47,7 @@ describe("GenerateUploadCredentialsFunction", () => {
   it("returns error when format is not valid", async () => {
     const invalidFormatEvent = {
       ...uploadCredentialsEvent,
-      body: "client=learning-tapestry-as25vydn3ekjn2e&format=Invalid",
+      body: "client=nucleus.learning-tapestry.com&format=Invalid",
     };
 
     const result = (await handler(

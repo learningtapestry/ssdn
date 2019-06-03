@@ -14,7 +14,7 @@ import logger from "../logger";
 export default class S3EventParser {
   public object: object;
 
-  constructor(public event: S3EventRecord, public namespace: string) {
+  constructor(public event: S3EventRecord) {
     this.object = get("s3.object")(event);
   }
 
@@ -26,7 +26,7 @@ export default class S3EventParser {
       event: {
         date: isoDate(get("eventTime")(this.event)),
         format: this.format(),
-        namespace: this.namespace,
+        namespace: this.namespace(),
         operation: "update",
         origin: get("s3.bucket.arn")(this.event),
         protocol: "S3",
@@ -41,12 +41,16 @@ export default class S3EventParser {
     return this.key()[1] as Format;
   }
 
+  protected namespace() {
+    return this.key()[0];
+  }
+
   protected representation() {
     return get("eventName")(this.event);
   }
 
   protected resource() {
-    return this.key()[0];
+    return get("s3.bucket.name")(this.event);
   }
 
   private buildRequest() {

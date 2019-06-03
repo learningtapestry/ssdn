@@ -21,9 +21,9 @@ export default class UploadCredentialsService {
     private s3Client: S3,
   ) {}
 
-  public async generate(nucleusId: string, format: Format) {
+  public async generate(namespace: string, format: Format) {
     this.uploadBucket = (await this.metadata.getMetadataValue(BUCKETS.upload)).value;
-    this.folder = [nucleusId, format].join("/");
+    this.folder = [namespace, format].join("/");
     const uploadFileRole = (await this.metadata.getMetadataValue(ROLES.uploadFile)).value;
 
     await this.createFolder();

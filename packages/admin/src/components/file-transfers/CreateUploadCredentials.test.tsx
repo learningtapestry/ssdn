@@ -35,13 +35,13 @@ describe("<CreateConnectionRequest/>", () => {
     const { getByText, getByLabelText } = render(<CreateUploadCredentials />);
 
     fireEvent.change(getByLabelText("Client"), {
-      target: { value: "learning-tapestry-test" },
+      target: { value: "nucleus-test.learningtapestry.com/foo/bar" },
     });
     fireEvent.click(getByText("Generate"));
 
     await wait(() => {
       getByText("Your temporary S3 credentials have been generated successfully!");
-      getByText("'learning-tapestry-test/xAPI'");
+      getByText("'nucleus-test.learningtapestry.com__foo__bar/xAPI'");
       getByText("Access Key ID");
       getByText("Secret Access Key");
       getByText("Session Token");

@@ -30,13 +30,16 @@ describe("UploadCredentialsService", () => {
       mock
         .onPost(
           "https://nucleus.example.org/Production/upload-credentials",
-          "client=learning-tapestry-test&format=Caliper",
+          "client=nucleus-test.learningtapestry.com%2Ffoo%2Fbar&format=Caliper",
         )
         .reply(200, uploadCredentials());
     });
 
     it("generates upload credentials for the bucket", async () => {
-      const credentials = await service.generate("learning-tapestry-test", "Caliper");
+      const credentials = await service.generate(
+        "nucleus-test.learningtapestry.com/foo/bar",
+        "Caliper",
+      );
 
       expect(credentials).toEqual(uploadCredentials().credentials);
     });
