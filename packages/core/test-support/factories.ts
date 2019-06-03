@@ -1,6 +1,7 @@
 import { Connection } from "../src/interfaces/connection";
 import { ConnectionRequest, ConnectionRequestStatus } from "../src/interfaces/connection-request";
 import Event, { EventMetadata } from "../src/interfaces/event";
+import { DbFormat } from "../src/interfaces/format";
 import { UploadCredentials } from "../src/interfaces/upload-credentials";
 
 export function buildConnectionRequest(overrides?: Partial<ConnectionRequest>): ConnectionRequest {
@@ -56,6 +57,16 @@ export function buildConnection(overrides?: Partial<Connection>): Connection {
 
   return {
     ...defaults,
+    ...overrides,
+  };
+}
+
+export function buildFormat(overrides?: Partial<DbFormat>): DbFormat {
+  return {
+    creationDate: "",
+    description: "",
+    name: "",
+    updateDate: "",
     ...overrides,
   };
 }

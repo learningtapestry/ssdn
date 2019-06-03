@@ -2,6 +2,7 @@ export enum API {
   beacon = "ProcessXAPIBeaconApi",
   exchange = "ExchangeApi",
   statements = "ProcessXAPIStatementApi",
+  entities = "EntitiesApi",
 }
 
 export enum API_KEYS {
@@ -26,6 +27,7 @@ export enum LAMBDAS {
   connectionRequestCreate = "ConnectionRequestCreateFunction",
   connectionRequestSend = "ConnectionRequestSendFunction",
   connectionRequestVerify = "ConnectionRequestVerifyFunction",
+  entities = "EntitiesApiFunction",
   incomingConnectionRequestAccept = "IncomingConnectionRequestAcceptFunction",
   incomingConnectionRequestCancel = "IncomingConnectionRequestCancelFunction",
   incomingConnectionRequestCreate = "IncomingConnectionRequestCreateFunction",
@@ -58,4 +60,5 @@ export enum TABLES {
   nucleusConnectionRequests = "NucleusConnectionRequestsTable",
   nucleusConnections = "NucleusConnectionsTable",
   nucleusIncomingConnectionRequests = "NucleusIncomingConnectionRequestsTable",
+  nucleusFormats = "NucleusFormatsTable",
 }

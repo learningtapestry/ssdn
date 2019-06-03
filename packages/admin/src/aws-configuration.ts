@@ -30,6 +30,16 @@ const awsapi = {
       endpoint: ensure("REACT_APP_ENDPOINT"),
       name: "ExchangeApiSigv4",
     },
+    {
+      custom_header: async () => {
+        return {
+          Authorization: (await Auth.currentSession()).getIdToken().getJwtToken(),
+          "Content-Type": "application/json",
+        };
+      },
+      endpoint: ensure("REACT_APP_ENTITIES_ENDPOINT"),
+      name: "EntitiesApi",
+    },
   ],
 };
 
@@ -48,6 +58,7 @@ const awsconfiguration = {
   Storage: {
     nucleusConnectionRequests: `Nucleus-${ensure("REACT_APP_NUCLEUS_ID")}-ConnectionRequests`,
     nucleusConnections: `Nucleus-${ensure("REACT_APP_NUCLEUS_ID")}-Connections`,
+    nucleusFormats: `Nucleus-${ensure("REACT_APP_NUCLEUS_ID")}-Formats`,
     nucleusIncomingConnectionRequests: `Nucleus-${ensure(
       "REACT_APP_NUCLEUS_ID",
     )}-IncomingConnectionRequests`,

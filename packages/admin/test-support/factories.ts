@@ -1,6 +1,7 @@
 import flatMap from "lodash/fp/flatMap";
 
 import { Connection } from "../src/interfaces/connection";
+import { DbFormat } from "../src/interfaces/format";
 /**
  * factories.ts: Utility functions that create domain objects, useful for testing.
  */
@@ -76,6 +77,16 @@ export function userForm(userParams: UserForm) {
     phoneNumber: "+1555555555",
     username: "cypress-user",
     ...userParams,
+  };
+}
+
+export function buildFormat(overrides?: Partial<DbFormat>): DbFormat {
+  return {
+    creationDate: "",
+    description: "",
+    name: "",
+    updateDate: "",
+    ...overrides,
   };
 }
 

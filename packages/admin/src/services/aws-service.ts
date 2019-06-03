@@ -17,6 +17,7 @@ import awsconfiguration from "../aws-configuration";
 import awsmobile from "../aws-exports";
 import { Connection } from "../interfaces/connection";
 import { ConnectionRequest, NewConnectionRequest } from "../interfaces/connection-request";
+import { DbFormat, NewDbFormat } from "../interfaces/format";
 import UserForm from "../interfaces/user-form";
 import AWSAdapter from "./aws-adapter";
 
@@ -40,6 +41,44 @@ export default class AWSService {
     config.update({
       credentials: await Auth.currentCredentials(),
       region: awsmobile.aws_project_region,
+    });
+  }
+
+  public static async retrieveFormats(): Promise<DbFormat[]> {
+    return AWSService.withCredentials(async () => {
+      const response = await API.get("EntitiesApi", "/formats", {});
+      return response as DbFormat[];
+    });
+  }
+
+  public static async retrieveFormat(name: string): Promise<DbFormat> {
+    return AWSService.withCredentials(async () => {
+      const response = await API.get("EntitiesApi", `/formats/${name}`, {});
+      return response as DbFormat;
+    });
+  }
+
+  public static async updateFormat(format: NewDbFormat): Promise<DbFormat> {
+    return AWSService.withCredentials(async () => {
+      const response = await API.patch("EntitiesApi", `/formats/${format.name}`, {
+        body: format,
+      });
+      return response as DbFormat;
+    });
+  }
+
+  public static async createFormat(format: NewDbFormat): Promise<DbFormat> {
+    return AWSService.withCredentials(async () => {
+      const response = await API.post("EntitiesApi", "/formats", {
+        body: format,
+      });
+      return response as DbFormat;
+    });
+  }
+
+  public static async deleteFormat(name: string): Promise<void> {
+    return AWSService.withCredentials(async () => {
+      await API.del("EntitiesApi", `/formats/${name}`, {});
     });
   }
 

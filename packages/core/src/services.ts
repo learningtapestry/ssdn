@@ -1,5 +1,4 @@
 import Kinesis from "aws-sdk/clients/kinesis";
-import { TemporaryCredentials } from "aws-sdk/lib/core";
 
 import {
   getApiGateway,
@@ -15,6 +14,8 @@ import { readEnv } from "./helpers/app-helper";
 import { Connection } from "./interfaces/connection";
 import DynamoConnectionRepository from "./repositories/dynamo-connection-repository";
 import DynamoConnectionRequestRepository from "./repositories/dynamo-connection-request-repository";
+import DynamoFormatRepository from "./repositories/dynamo-format-repository";
+import FormatRepository from "./repositories/format-repository";
 import KinesisEventRepository from "./repositories/kinesis-event-repository";
 import ApiGatewayService from "./services/api-gateway-service";
 import AwsConnectionRequestService from "./services/aws-connection-request-service";
@@ -152,4 +153,8 @@ export function getS3TransferService() {
 
 export function getUploadCredentialsService() {
   return new UploadCredentialsService(getMetadataService(), getSts(), getS3());
+}
+
+export function getFormatRepository() {
+  return new DynamoFormatRepository(getMetadataService(), getDocumentClient());
 }

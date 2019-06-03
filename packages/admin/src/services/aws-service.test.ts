@@ -12,7 +12,7 @@ import { nullConnectionRequest } from "../app-helper";
 import awsconfiguration from "../aws-configuration";
 import AWSService from "./aws-service";
 
-describe(AWSService, () => {
+describe("AWSService", () => {
   describe("retrieveConnectionRequests", () => {
     it("retrieves incoming requests from the DynamoDB table", async () => {
       DynamoDB.DocumentClient.prototype.scan = mockWithPromise(responses.connectionRequestItems());
@@ -185,6 +185,52 @@ describe(AWSService, () => {
           streamType: "input",
         },
       });
+    });
+  });
+
+  describe("retrieveFormats", () => {
+    it("retrieves formats from the API", async () => {
+      API.get = jest.fn();
+      await AWSService.retrieveFormats();
+      expect(API.get).toHaveBeenCalledWith("EntitiesApi", "/formats", {});
+    });
+  });
+
+  describe("retrieveFormat", () => {
+    it("retrieves a format from the API", async () => {
+      API.get = jest.fn();
+      await AWSService.retrieveFormat("test");
+      expect(API.get).toHaveBeenCalledWith("EntitiesApi", "/formats/test", {});
+    });
+  });
+
+  describe("updateFormat", () => {
+    it("updates a format with the API", async () => {
+      API.patch = jest.fn(() => Promise.resolve({ name: "test" }));
+      const format = await AWSService.updateFormat({ name: "test", description: "test" });
+      expect(format.name).toEqual("test");
+      expect(API.patch).toHaveBeenCalledWith("EntitiesApi", "/formats/test", {
+        body: { description: "test", name: "test" },
+      });
+    });
+  });
+
+  describe("createFormat", () => {
+    it("creates a format with the API", async () => {
+      API.post = jest.fn(() => Promise.resolve({ name: "test" }));
+      const format = await AWSService.createFormat({ name: "test", description: "test" });
+      expect(format.name).toEqual("test");
+      expect(API.post).toHaveBeenCalledWith("EntitiesApi", "/formats", {
+        body: { description: "test", name: "test" },
+      });
+    });
+  });
+
+  describe("deleteFormat", () => {
+    it("deletes a format with the API", async () => {
+      API.del = jest.fn();
+      await AWSService.deleteFormat("test");
+      expect(API.del).toHaveBeenCalledWith("EntitiesApi", "/formats/test", {});
     });
   });
 });

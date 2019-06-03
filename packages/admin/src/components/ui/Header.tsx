@@ -1,9 +1,11 @@
+import "./Header.css";
+
 import React from "react";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import { LinkContainer } from "react-router-bootstrap";
+
 import logo from "../../logo.svg";
-import "./Header.css";
 
 const Header = () => (
   <header className="App-header">
@@ -21,6 +23,9 @@ const Header = () => (
       <Nav className="mr-auto">
         <LinkContainer to="/" exact={true}>
           <Nav.Link>Home</Nav.Link>
+        </LinkContainer>
+        <LinkContainer to="/formats">
+          <Nav.Link>Formats</Nav.Link>
         </LinkContainer>
         <LinkContainer to="/connections">
           <Nav.Link>Connections</Nav.Link>
