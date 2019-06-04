@@ -61,4 +61,5 @@ export enum TABLES {
   nucleusConnections = "NucleusConnectionsTable",
   nucleusIncomingConnectionRequests = "NucleusIncomingConnectionRequestsTable",
   nucleusFormats = "NucleusFormatsTable",
+  nucleusFileTransferNotifications = "NucleusFileTransferNotificationsTable",
 }

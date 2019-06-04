@@ -1,0 +1,39 @@
+{
+  "Records": [
+    {
+      "EventSource": "aws:sns",
+      "EventVersion": "1.0",
+      "EventSubscriptionArn": "arn:aws:sns:us-east-1::FileTransferNotificationsTopic",
+      "Sns": {
+        "Type": "Notification",
+        "MessageId": "95df01b4-ee98-5cb9-9903-4c221d41eb5e",
+        "TopicArn": "arn:aws:sns:us-east-1:123456789012:FileTransferNotificationsTopic",
+        "Subject": "An error occurred while transferring a file",
+        "Message": "The file test.txt could not be transferred. Cause: Network Error",
+        "Timestamp": "1970-01-01T00:00:00.000Z",
+        "SignatureVersion": "1",
+        "Signature": "EXAMPLE",
+        "SigningCertUrl": "EXAMPLE",
+        "UnsubscribeUrl": "EXAMPLE",
+        "MessageAttributes": {
+          "Type": {
+            "Type": "String",
+            "Value": "error"
+          },
+          "File": {
+            "Type": "String",
+            "Value": "nucleus-test.learningtapestry.com/xAPI/test.txt"
+          },
+          "Bucket": {
+            "Type": "String",
+            "Value": "example-bucket"
+          },
+          "Details": {
+            "Type": "String",
+            "Value": "aws-service.ts:295 Uncaught (in promise) Error: An unexpected error occurred: Network Error at _callee36$ (aws-service.ts:295)"
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1413,6 +1413,54 @@ Resources:
       DeadLetterQueue:
         Type: SNS
         TargetArn: !Ref LambdaDeadLetterQueueTopic
+  NucleusFileTransferNotificationsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub Nucleus-${NucleusId}-FileTransferNotificationsTable
+      ProvisionedThroughput:
+        ReadCapacityUnits: 2
+        WriteCapacityUnits: 2
+      SSESpecification:
+        SSEEnabled: true
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+  FileTransferNotificationsTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      DisplayName: !Sub Nucleus-${NucleusId}-FileTransferNotificationsTopic
+      KmsMasterKeyId: alias/aws/sns
+      Subscription:
+        - Endpoint: !Ref NotificationEmail
+          Protocol: email
+  StoreFileTransferNotificationFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./dist/store-file-transfer-notification
+      Events:
+        FileTransferError:
+          Type: SNS
+          Properties:
+            Topic: !Ref FileTransferNotificationsTopic
+      Policies:
+        - Version: 2012-10-17
+          Statement:
+            - Effect: Allow
+              Action:
+                - cloudformation:DescribeStacks
+              Resource:
+                - !Sub arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/${AWS::StackName}/*
+            - Effect: Allow
+              Action:
+                - dynamodb:PutItem
+              Resource:
+                - !GetAtt NucleusFileTransferNotificationsTable.Arn
+      DeadLetterQueue:
+        Type: SNS
+        TargetArn: !Ref LambdaDeadLetterQueueTopic
 Outputs:
   CognitoUserPoolId:
     Description: CognitoUserPool
@@ -1486,6 +1534,9 @@ Outputs:
   NucleusConnectionsTable:
     Description: NucleusConnectionsTable
     Value: !Ref NucleusConnectionsTable
+  NucleusFileTransferNotificationsTable:
+    Description: NucleusFileTransferNotificationsTable
+    Value: !Ref NucleusFileTransferNotificationsTable
   ExchangeApi:
     Description: ExchangeApi
     Value: !Sub https://${ExchangeApi}.execute-api.${AWS::Region}.amazonaws.com/${Environment}
@@ -1528,6 +1579,9 @@ Outputs:
   TransferObjectFunction:
     Description: TransferObjectFunction
     Value: !GetAtt TransferObjectFunction.Arn
+  StoreFileTransferNotificationFunction:
+    Description: Stores an SNS event triggered by the raw file transfer component
+    Value: !GetAtt StoreFileTransferNotificationFunction.Arn
   ExchangeConsumerPolicy:
     Description: Consumer policy for Nucleus instances
     Value: !Ref ExchangeConsumerPolicy

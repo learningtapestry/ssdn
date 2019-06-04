@@ -1,5 +1,5 @@
 /**
- * repository.ts: General interface to describe repository access
+ * event-repository.ts: General interface to describe repository access
  */
 
 export type Content = string | object;

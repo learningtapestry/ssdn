@@ -14,6 +14,7 @@ import { readEnv } from "./helpers/app-helper";
 import { Connection } from "./interfaces/connection";
 import DynamoConnectionRepository from "./repositories/dynamo-connection-repository";
 import DynamoConnectionRequestRepository from "./repositories/dynamo-connection-request-repository";
+import DynamoFileTransferNotificationRepository from "./repositories/dynamo-file-transfer-notification-repository";
 import DynamoFormatRepository from "./repositories/dynamo-format-repository";
 import KinesisEventRepository from "./repositories/kinesis-event-repository";
 import ApiGatewayService from "./services/api-gateway-service";
@@ -58,6 +59,13 @@ export function getEventRepository() {
   return singleton(
     "KinesisEventRepository",
     () => new KinesisEventRepository(getMetadataService(), getKinesis()),
+  );
+}
+
+export function getFileTransferNotificationRepository() {
+  return singleton(
+    "FileTransferNotificationRepository",
+    () => new DynamoFileTransferNotificationRepository(getMetadataService(), getDocumentClient()),
   );
 }
 
