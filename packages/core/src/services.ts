@@ -15,7 +15,6 @@ import { Connection } from "./interfaces/connection";
 import DynamoConnectionRepository from "./repositories/dynamo-connection-repository";
 import DynamoConnectionRequestRepository from "./repositories/dynamo-connection-request-repository";
 import DynamoFormatRepository from "./repositories/dynamo-format-repository";
-import FormatRepository from "./repositories/format-repository";
 import KinesisEventRepository from "./repositories/kinesis-event-repository";
 import ApiGatewayService from "./services/api-gateway-service";
 import AwsConnectionRequestService from "./services/aws-connection-request-service";
@@ -136,11 +135,7 @@ export function getExternalEventRepository(
 }
 
 export function getTemporaryCredentialsFactory() {
-  return new TemporaryCredentialsFactory({
-    // This is not specified in the type annotations, but looking at the source code,
-    // client options are passed along.
-    endpoint: readEnv("NUCLEUS_STS_ENDPOINT", undefined),
-  });
+  return new TemporaryCredentialsFactory();
 }
 
 export function getExternalMetadataService(connection: Connection) {

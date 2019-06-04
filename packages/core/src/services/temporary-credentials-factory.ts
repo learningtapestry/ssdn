@@ -1,29 +1,22 @@
-import { TemporaryCredentials } from "aws-sdk/lib/core";
-import { ServiceConfigurationOptions } from "aws-sdk/lib/service";
+import { ChainableTemporaryCredentials, EnvironmentCredentials } from "aws-sdk/lib/core";
 
 import TtlCache from "../helpers/ttl-cache";
 
-type TemporaryCredentialsConstructorOptions = TemporaryCredentials.TemporaryCredentialsOptions &
-  ServiceConfigurationOptions;
-
-export default class TemporaryCredentialsFactory {
-  private cache = new TtlCache<string, TemporaryCredentials>(24 * 60 * 60 * 1000);
-  private tempCredentialsOptions: TemporaryCredentialsConstructorOptions;
-
-  constructor(tempCredentialsOptions: TemporaryCredentialsConstructorOptions) {
-    this.tempCredentialsOptions = tempCredentialsOptions;
-  }
+export default class ChainableTemporaryCredentialsFactory {
+  private cache = new TtlCache<string, ChainableTemporaryCredentials>(24 * 60 * 60 * 1000);
 
   public async getCredentials(roleArn: string, externalId: string) {
     const key = `${roleArn}.${externalId}`;
     return await this.cache.get(
       key,
       async () =>
-        new TemporaryCredentials({
-          ...this.tempCredentialsOptions,
-          ExternalId: externalId,
-          RoleArn: roleArn,
-          RoleSessionName: `Nucleus-${new Date().getTime()}`,
+        new ChainableTemporaryCredentials({
+          masterCredentials: new EnvironmentCredentials("AWS"),
+          params: {
+            ExternalId: externalId,
+            RoleArn: roleArn,
+            RoleSessionName: `Nucleus-${new Date().getTime()}`,
+          },
         }),
     );
   }
