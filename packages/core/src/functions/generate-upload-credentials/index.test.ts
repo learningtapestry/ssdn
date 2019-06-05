@@ -1,8 +1,10 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult, Context } from "aws-lambda";
+
 import { buildUploadCredentials } from "../../../test-support/factories";
 import { fakeImpl, mocked } from "../../../test-support/jest-helper";
 import uploadCredentialsEvent from "../../../test-support/lambda-events/get-upload-credentials-event.json";
-import { getUploadCredentialsService } from "../../services";
+import DynamoFormatRepository from "../../repositories/dynamo-format-repository";
+import { getFormatRepository, getUploadCredentialsService } from "../../services";
 import UploadCredentialsService from "../../services/upload-credentials-service";
 import { handler } from "./index";
 
@@ -12,7 +14,14 @@ const uploadCredentialsService = fakeImpl<UploadCredentialsService>({
   generate: jest.fn().mockResolvedValue(buildUploadCredentials()),
 });
 
+const fakeFormatRepo = fakeImpl<DynamoFormatRepository>({
+  get: jest.fn((name) =>
+    name === "xAPI" ? Promise.resolve({ name: "xAPI" }) : Promise.reject("Error"),
+  ),
+});
+
 mocked(getUploadCredentialsService).mockReturnValue(uploadCredentialsService);
+mocked(getFormatRepository).mockReturnValue(fakeFormatRepo);
 
 describe("GenerateUploadCredentialsFunction", () => {
   it("generates temporary credentials when receives valid parameters", async () => {

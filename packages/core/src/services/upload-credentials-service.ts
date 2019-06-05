@@ -5,9 +5,9 @@
 
 import S3 from "aws-sdk/clients/s3";
 import STS from "aws-sdk/clients/sts";
+
 import { timeIdentifier } from "../helpers/app-helper";
 import { BUCKETS, ROLES } from "../interfaces/aws-metadata-keys";
-import { Format } from "../interfaces/format";
 import logger from "../logger";
 import NucleusMetadataService from "./nucleus-metadata-service";
 
@@ -21,7 +21,7 @@ export default class UploadCredentialsService {
     private s3Client: S3,
   ) {}
 
-  public async generate(namespace: string, format: Format) {
+  public async generate(namespace: string, format: string) {
     this.uploadBucket = (await this.metadata.getMetadataValue(BUCKETS.upload)).value;
     this.folder = [namespace, format].join("/");
     const uploadFileRole = (await this.metadata.getMetadataValue(ROLES.uploadFile)).value;
