@@ -1,7 +1,10 @@
 import "jest-dom/extend-expect";
+
 import React from "react";
 import { fireEvent, render, wait } from "react-testing-library";
-import { uploadCredentials } from "../../../test-support/factories";
+
+import { buildFormat, uploadCredentials } from "../../../test-support/factories";
+import AWSService from "../../services/aws-service";
 import UploadCredentialsService from "../../services/upload-credentials-service";
 import CreateUploadCredentials from "./CreateUploadCredentials";
 
@@ -10,6 +13,10 @@ describe("<CreateConnectionRequest/>", () => {
     UploadCredentialsService.prototype.generate = jest
       .fn()
       .mockResolvedValue(uploadCredentials().credentials);
+
+    AWSService.retrieveFormats = jest
+      .fn()
+      .mockResolvedValue([buildFormat({ name: "Caliper" }), buildFormat({ name: "S3" })]);
   });
 
   it("renders title and upload credentials form", () => {
@@ -21,7 +28,9 @@ describe("<CreateConnectionRequest/>", () => {
   });
 
   it("validates the entered values and displays error messages", async () => {
-    const { getByText } = render(<CreateUploadCredentials />);
+    const { getByText, getByDisplayValue } = render(<CreateUploadCredentials />);
+
+    await wait(() => getByDisplayValue("Caliper"));
 
     fireEvent.click(getByText("Caliper"));
     fireEvent.click(getByText("Generate"));
@@ -32,7 +41,9 @@ describe("<CreateConnectionRequest/>", () => {
   });
 
   it("submits a valid form and displays generated credentials", async () => {
-    const { getByText, getByLabelText } = render(<CreateUploadCredentials />);
+    const { getByText, getByLabelText, getByDisplayValue } = render(<CreateUploadCredentials />);
+
+    await wait(() => getByDisplayValue("Caliper"));
 
     fireEvent.change(getByLabelText("Client"), {
       target: { value: "nucleus-test.learningtapestry.com/foo/bar" },

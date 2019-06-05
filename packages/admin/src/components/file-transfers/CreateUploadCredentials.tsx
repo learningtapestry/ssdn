@@ -1,18 +1,18 @@
 import filenamify from "filenamify";
 import { FormikActions, FormikProps, withFormik } from "formik";
 import has from "lodash/fp/has";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Alert, Button, Form } from "react-bootstrap";
 import { object, string } from "yup";
-import { Format } from "../../interfaces/format";
+
+import { DbFormat, Format } from "../../interfaces/format";
 import UploadCredentialsForm from "../../interfaces/upload-credentials-form";
+import AWSService from "../../services/aws-service";
 import UploadCredentialsService from "../../services/upload-credentials-service";
 
 const schema = object({
   client: string().required(),
-  format: string()
-    .required()
-    .oneOf(UploadCredentialsService.FORMATS),
+  format: string().required(),
 });
 
 const onSubmit = async (
@@ -34,6 +34,15 @@ const onSubmit = async (
 
 function CreateUploadCredentialsForm(props: FormikProps<UploadCredentialsForm>) {
   const { handleSubmit, handleChange, values, errors, status } = props;
+  const [formats, setFormats] = useState<DbFormat[]>([]);
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    setFormats(await AWSService.retrieveFormats());
+  };
 
   const renderCredentials = () => {
     if (!status) {
@@ -88,7 +97,7 @@ function CreateUploadCredentialsForm(props: FormikProps<UploadCredentialsForm>) 
   };
 
   const formatOptions = () =>
-    UploadCredentialsService.FORMATS.map((format) => <option key={format}>{format}</option>);
+    formats.map((format) => <option key={format.name}>{format.name}</option>);
 
   const renderForm = () => (
     <Form noValidate={true} onSubmit={handleSubmit}>
