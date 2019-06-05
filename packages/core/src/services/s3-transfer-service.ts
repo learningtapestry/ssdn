@@ -5,6 +5,7 @@ import { BUCKETS } from "../interfaces/aws-metadata-keys";
 import { Factory } from "../interfaces/base-types";
 import { Connection } from "../interfaces/connection";
 import Event from "../interfaces/event";
+import logger from "../logger";
 import NucleusMetadataService from "./nucleus-metadata-service";
 import TemporaryCredentialsFactory from "./temporary-credentials-factory";
 
@@ -24,6 +25,8 @@ export default class S3TransferService {
   }
 
   public async transferObject(connection: Connection, event: Event) {
+    logger.info(`Received event ${JSON.stringify(event)}`);
+
     const externalS3 = this.s3ClientFactory({
       credentials: await this.tempCredentialsFactory.getCredentials(
         connection.externalConnection.arn,
@@ -31,21 +34,24 @@ export default class S3TransferService {
       ),
     });
 
+    logger.info(`Fetching object ${event.content.key} from external upload bucket.`);
     const object = await externalS3
       .getObject({
         Bucket: connection.metadata.UploadS3Bucket,
-        Key: event.content,
+        Key: event.content.key,
       })
       .promise();
 
     const internalS3 = this.s3ClientFactory();
     const downloadBucket = await this.metadata.getMetadataValue(BUCKETS.download);
     const endpointHostname = parse(connection.endpoint).hostname;
+
+    logger.info(`Storing object ${event.content.key} into download bucket.`);
     await internalS3
       .putObject({
         Body: object.Body,
         Bucket: downloadBucket.value,
-        Key: `${endpointHostname}/${event.content}`,
+        Key: `${endpointHostname}/${event.content.key}`,
       })
       .promise();
   }

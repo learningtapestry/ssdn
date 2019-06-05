@@ -50,7 +50,7 @@ describe("S3TransferService", () => {
         },
       });
       const event = buildEvent({
-        content: "red.com/Caliper/test.csv",
+        content: { key: "red.com/Caliper/test.csv" },
       });
       mocked((fakeS3.getObject as any).impl).mockResolvedValueOnce({
         Body: "TestBody",

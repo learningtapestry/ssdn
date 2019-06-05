@@ -62,7 +62,7 @@ export function getEventRepository() {
 }
 
 export function getIamService() {
-  return singleton("IamService", () => new IamService(getIam()));
+  return singleton("IamService", () => new IamService(getIam(), getMetadataService()));
 }
 
 export function getApiGatewayService() {

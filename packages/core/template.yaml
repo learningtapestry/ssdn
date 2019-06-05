@@ -1118,6 +1118,16 @@ Resources:
             Enabled: true
       Policies:
         - !Ref ExchangeAdminFunctionPolicy
+        - Version: 2012-10-17
+          Statement:
+            - Action:
+                - s3:ListBucket
+                - s3:GetObject
+                - s3:PutObject
+              Resource:
+                - !GetAtt DownloadS3Bucket.Arn
+                - !Sub ${DownloadS3Bucket.Arn}/*
+              Effect: Allow
       DeadLetterQueue:
         Type: SNS
         TargetArn: !Ref LambdaDeadLetterQueueTopic
@@ -1138,7 +1148,9 @@ Resources:
             Action:
               - iam:GetRole
               - iam:CreateRole
+              - iam:ListRoles
               - iam:AttachRolePolicy
+              - iam:PutRolePolicy
             Resource:
               - arn:aws:iam::*:role/nucleus*
               - arn:aws:iam::*:policy/*
@@ -1146,7 +1158,7 @@ Resources:
             Action:
               - sts:AssumeRole
             Resource:
-              - arn:aws:iam::*:role/nucleus_ex_*
+              - arn:aws:iam::*:role/nucleus*
           - Effect: Allow
             Action:
               - dynamodb:GetItem

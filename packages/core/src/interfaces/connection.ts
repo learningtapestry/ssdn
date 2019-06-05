@@ -48,11 +48,11 @@ export interface Connection {
    */
   endpoint: string;
   /**
-   * Whether the other instance is a consumer to this one.
+   * Whether the other instance consumes data from this one.
    */
   isConsumer: boolean;
   /**
-   * Whether the other instance is a provider for this one.
+   * Whether the other instance provides data for this one.
    */
   isProvider: boolean;
   /**

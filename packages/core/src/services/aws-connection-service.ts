@@ -16,6 +16,7 @@ import { ConnectionRequestRepository } from "../repositories/connection-request-
 import ConnectionRequestService from "./connection-request-service";
 import ConnectionService from "./connection-service";
 import ExchangeService from "./exchange-service";
+import GenerateInlinePolicy from "./generate-inline-policy";
 import IamService from "./iam-service";
 import NucleusMetadataService from "./nucleus-metadata-service";
 
@@ -73,13 +74,6 @@ export default class AwsConnectionService implements ConnectionService {
       },
     });
 
-    await this.iamService.attachEndpointRolePolicy(
-      await this.metadata.getMetadataValue(POLICIES.consumerPolicy),
-      await this.metadata.getEndpoint(),
-      connectionRequest.consumerEndpoint,
-      connectionRequest.connection.awsAccountId,
-    );
-
     connection = {
       ...connection,
       externalConnection: {
@@ -98,6 +92,16 @@ export default class AwsConnectionService implements ConnectionService {
         })),
       ),
     };
+
+    await this.iamService.attachEndpointRolePolicy(
+      await this.metadata.getMetadataValue(POLICIES.consumerPolicy),
+      connection.endpoint,
+    );
+
+    await this.iamService.updateEndpointRoleInlinePolicy(
+      GenerateInlinePolicy.generate(await this.metadata.getPublicMetadata(), connection),
+      connection.endpoint,
+    );
 
     await this.repository.put(connection);
 
@@ -144,7 +148,7 @@ export default class AwsConnectionService implements ConnectionService {
       },
     );
 
-    if (isNew && !isEqual(connection.externalConnection, connectionDetails.externalConnection)) {
+    if (!isNew && !isEqual(connection.externalConnection, connectionDetails.externalConnection)) {
       logger.info(
         `The external connection details for ${
           connection.endpoint
@@ -152,7 +156,7 @@ export default class AwsConnectionService implements ConnectionService {
       );
     }
 
-    if (isNew && !isEqual(connection.metadata, connectionDetails.metadata)) {
+    if (!isNew && !isEqual(connection.metadata, connectionDetails.metadata)) {
       logger.info(
         `The metadata for ${connection.endpoint} has been updated and are being reassigned.`,
       );
@@ -179,9 +183,12 @@ export default class AwsConnectionService implements ConnectionService {
 
     await this.iamService.attachEndpointRolePolicy(
       await this.metadata.getMetadataValue(POLICIES.providerPolicy),
-      await this.metadata.getEndpoint(),
-      connectionRequest.providerEndpoint,
-      connection.connection.awsAccountId,
+      connection.endpoint,
+    );
+
+    await this.iamService.updateEndpointRoleInlinePolicy(
+      GenerateInlinePolicy.generate(await this.metadata.getPublicMetadata(), connection),
+      connection.endpoint,
     );
 
     await this.repository.put(connection);
@@ -259,7 +266,6 @@ export default class AwsConnectionService implements ConnectionService {
 
     if (isNew) {
       const role = await this.iamService.findOrCreateEndpointRole(
-        await this.metadata.getEndpoint(),
         connection.endpoint,
         connectionOptions.awsAccountId,
       );

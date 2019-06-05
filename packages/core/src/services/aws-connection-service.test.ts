@@ -41,6 +41,7 @@ const fakeExchangeService = fakeImpl<ExchangeService>({
 const fakeIamService = fakeImpl<IamService>({
   attachEndpointRolePolicy: jest.fn(),
   findOrCreateEndpointRole: jest.fn(),
+  updateEndpointRoleInlinePolicy: jest.fn(),
 });
 
 const fakeMetadata = fakeImpl<NucleusMetadataService>({
@@ -152,11 +153,30 @@ describe("AwsConnectionService", () => {
         {
           value: "ConsumerPolicyArn",
         },
+        "https://blue.com",
+      );
+      expect(fakeIamService.updateEndpointRoleInlinePolicy).toHaveBeenCalledWith(
         {
-          value: "https://red.com",
+          Statement: [
+            {
+              Action: ["s3:listBucket"],
+              Effect: "Allow",
+              Resource: ["arn:aws:s3:::RedUploadS3Bucket"],
+            },
+            {
+              Action: ["s3:GetObject"],
+              Effect: "Allow",
+              Resource: ["arn:aws:s3:::RedUploadS3Bucket/https://blue.com/Caliper/*"],
+            },
+            {
+              Action: ["s3:GetObject"],
+              Effect: "Allow",
+              Resource: ["arn:aws:s3:::RedUploadS3Bucket/https://blue.com/xAPI/*"],
+            },
+          ],
+          Version: "2012-10-17",
         },
         "https://blue.com",
-        "BlueAccountId",
       );
       expect(fakeExchangeService.sendAcceptance).toHaveBeenCalledWith(connectionRequest, {
         accepted: true,
@@ -258,11 +278,7 @@ describe("AwsConnectionService", () => {
         {
           value: "ConsumerPolicyArn",
         },
-        {
-          value: "https://red.com",
-        },
         "https://blue.com",
-        "BlueAccountId",
       );
       expect(fakeExchangeService.sendAcceptance).toHaveBeenCalledWith(connectionRequest, {
         accepted: true,
@@ -361,11 +377,14 @@ describe("AwsConnectionService", () => {
         {
           value: "ProviderPolicyArn",
         },
+        "https://blue.com",
+      );
+      expect(fakeIamService.updateEndpointRoleInlinePolicy).toHaveBeenCalledWith(
         {
-          value: "https://red.com",
+          Statement: [],
+          Version: "2012-10-17",
         },
         "https://blue.com",
-        "BlueAccountId",
       );
       expect(fakeConnectionRepository.put).toHaveBeenCalledWith(newConnection);
       expect(fakeConnectionRequestRepository.updateStatus).toHaveBeenCalledWith(
@@ -453,11 +472,7 @@ describe("AwsConnectionService", () => {
         {
           value: "ProviderPolicyArn",
         },
-        {
-          value: "https://red.com",
-        },
         existingConnection.endpoint,
-        existingConnection.connection.awsAccountId,
       );
       expect(fakeConnectionRepository.put).toHaveBeenCalledWith(newConnection);
       expect(fakeConnectionRequestRepository.updateStatus).toHaveBeenCalledWith(

@@ -1,6 +1,7 @@
 import { S3Handler } from "aws-lambda";
 import filter from "lodash/fp/filter";
 import isEmpty from "lodash/fp/isEmpty";
+
 import S3EventParser from "../../parsers/s3-event-parser";
 import { getEventRepository } from "../../services";
 import FileUploadService from "../../services/file-upload-service";
