@@ -102,7 +102,7 @@ function CreateUploadCredentialsForm(props: FormikProps<UploadCredentialsForm>) 
   const renderForm = () => (
     <Form noValidate={true} onSubmit={handleSubmit}>
       <Form.Group controlId="client">
-        <Form.Label>Client</Form.Label>
+        <Form.Label>Namespace</Form.Label>
         <Form.Control
           type="text"
           name="client"
@@ -112,7 +112,11 @@ function CreateUploadCredentialsForm(props: FormikProps<UploadCredentialsForm>) 
         />
         <Form.Control.Feedback type="invalid">{errors.client}</Form.Control.Feedback>
         <Form.Text className="text-muted">
-          This value corresponds to the Nucleus ID of the instance you want to share the file with
+          This value corresponds to the namespace identified with the data you will be sharing.
+        </Form.Text>
+        <Form.Text className="text-muted">
+          For example, it could be an organizational namespace in the format of
+          "mydatatype.myorganization.com".
         </Form.Text>
       </Form.Group>
       <Form.Group controlId="format">

@@ -23,7 +23,7 @@ describe("<CreateConnectionRequest/>", () => {
     const { getByText, getByLabelText } = render(<CreateUploadCredentials />);
 
     getByText("Generate Upload Credentials");
-    getByLabelText("Client");
+    getByLabelText("Namespace");
     getByLabelText("Format");
   });
 
@@ -45,7 +45,7 @@ describe("<CreateConnectionRequest/>", () => {
 
     await wait(() => getByDisplayValue("Caliper"));
 
-    fireEvent.change(getByLabelText("Client"), {
+    fireEvent.change(getByLabelText("Namespace"), {
       target: { value: "nucleus-test.learningtapestry.com/foo/bar" },
     });
     fireEvent.click(getByText("Generate"));
