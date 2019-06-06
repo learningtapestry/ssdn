@@ -5,20 +5,25 @@ import { fireEvent, render, wait, waitForElement } from "react-testing-library";
 
 import * as factories from "../../../test-support/factories";
 import { nullConnectionRequest } from "../../app-helper";
+import { DbFormat } from "../../interfaces/format";
 import AWSService from "../../services/aws-service";
 import CreateConnectionRequest from "./CreateConnectionRequest";
 
 describe("<CreateConnectionRequest/>", () => {
   beforeAll(() => {
     AWSService.saveConnectionRequest = jest.fn(async () => nullConnectionRequest());
+    AWSService.retrieveFormats = jest.fn(async () => [{ name: "xAPI" } as DbFormat]);
   });
 
-  it("renders title and connection request form", () => {
+  it("renders title and connection request form", async () => {
     const { getByText, getByLabelText } = render(<CreateConnectionRequest />);
 
+    await wait(() => getByText("xAPI"));
     getByText("Data Provider Request Form");
     getByLabelText("Endpoint URL");
     getByLabelText("Organization");
+    getByLabelText("Namespace");
+    getByLabelText("Formats");
   });
 
   it("validates the entered values and displays error messages", async () => {
@@ -29,6 +34,7 @@ describe("<CreateConnectionRequest/>", () => {
     await wait(() => {
       getByText("providerEndpoint is a required field");
       getByText("organization is a required field");
+      getByText("formats field must have at least 1 items");
     });
   });
 
@@ -40,6 +46,8 @@ describe("<CreateConnectionRequest/>", () => {
       target: { value: request.providerEndpoint },
     });
     fireEvent.change(getByLabelText("Organization"), { target: { value: request.organization } });
+    await wait(() => getByText("xAPI"));
+    fireEvent.click(getByText("xAPI"));
     fireEvent.click(getByText("Send"));
 
     await waitForElement(() => getByRole("dialog"));

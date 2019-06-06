@@ -35,4 +35,6 @@ export interface ConnectionRequest {
 export interface NewConnectionRequest {
   providerEndpoint: string;
   organization: string;
+  namespace: string;
+  formats: string[];
 }

@@ -68,7 +68,7 @@ describe("AwsConnectionRequestService", () => {
       );
       expect(connectionRequest.id.split("-")).toHaveLength(5);
       expect(connectionRequest.acceptanceToken.split("-")).toHaveLength(5);
-      expect(connectionRequest.formats).toEqual(["xAPI"]);
+      expect(connectionRequest.formats).toEqual(["Caliper"]);
       expect(connectionRequest.connection).toEqual({
         awsAccountId: "nucleusaccountid",
         nucleusId: "nucleus-test",

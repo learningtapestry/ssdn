@@ -48,7 +48,6 @@ export default class AwsConnectionRequestService implements ConnectionRequestSer
     const endpoint = await this.metadata.getEndpoint();
     connectionRequest.consumerEndpoint = endpoint.value;
     connectionRequest.namespace = connectionRequest.namespace || namespace.value;
-    connectionRequest.formats = ["xAPI"];
     connectionRequest.status = ConnectionRequestStatus.Created;
     connectionRequest.creationDate = isoDate();
     await this.validateConnectionRequest(connectionRequest);
