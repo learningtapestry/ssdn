@@ -1299,6 +1299,13 @@ Resources:
             Resource:
               - !GetAtt UploadS3Bucket.Arn
               - !Sub ${UploadS3Bucket.Arn}/*
+          - Effect: Allow
+            Action:
+              - dynamodb:GetItem
+              - dynamodb:Query
+              - dynamodb:Scan
+            Resource:
+              - !Sub ${NucleusFormatsTable.Arn}*
   GenerateUploadCredentialsApi:
     Type: AWS::Serverless::Api
     Properties:
