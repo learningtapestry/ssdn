@@ -7,6 +7,8 @@ interface ConfirmationModalProps {
   children?: ReactElement;
   title: string;
   show: boolean;
+  closeLabel?: string;
+  confirmLabel?: string;
   onConfirm?: () => void;
   onClose?: () => void;
 }
@@ -16,7 +18,7 @@ function ConfirmationModal(props: ConfirmationModalProps) {
     if (props.onClose) {
       return (
         <Button variant="secondary" onClick={props.onClose}>
-          Cancel
+          {props.closeLabel || "Cancel"}
         </Button>
       );
     }
@@ -26,7 +28,7 @@ function ConfirmationModal(props: ConfirmationModalProps) {
     if (props.onConfirm) {
       return (
         <Button variant="danger" onClick={props.onConfirm}>
-          Confirm
+          {props.confirmLabel || "Confirm"}
         </Button>
       );
     }
