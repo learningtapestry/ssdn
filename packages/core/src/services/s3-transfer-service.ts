@@ -52,6 +52,7 @@ export default class S3TransferService {
         Body: object.Body,
         Bucket: downloadBucket.value,
         Key: `${endpointHostname}/${event.content.key}`,
+        Metadata: object.Metadata,
       })
       .promise();
   }

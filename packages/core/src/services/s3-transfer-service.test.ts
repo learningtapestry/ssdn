@@ -54,6 +54,9 @@ describe("S3TransferService", () => {
       });
       mocked((fakeS3.getObject as any).impl).mockResolvedValueOnce({
         Body: "TestBody",
+        Metadata: {
+          test: "value",
+        },
       });
 
       await service.transferObject(connection, event);
@@ -70,6 +73,9 @@ describe("S3TransferService", () => {
         Body: "TestBody",
         Bucket: "RedBucket",
         Key: "blue.com/red.com/Caliper/test.csv",
+        Metadata: {
+          test: "value",
+        },
       });
     });
   });
