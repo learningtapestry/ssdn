@@ -154,6 +154,8 @@ export default function Incoming() {
     <tr key={request.id}>
       <td>{request.consumerEndpoint}</td>
       <td>{request.organization}</td>
+      <td>{request.namespace}</td>
+      <td>{request.formats.join(", ")}</td>
       <td>{displayDate(request.creationDate)}</td>
       <td>
         <StatusLabel status={request.status} statusType="incoming" />
@@ -167,11 +169,13 @@ export default function Incoming() {
       <h1>Incoming Requests</h1>
       <p>This section displays incoming connection requests from other instances.</p>
       {renderAlert()}
-      <Table striped={true} hover={true} className="mt-3">
+      <Table striped={true} hover={true} className="mt-3" size="sm">
         <thead>
           <tr>
             <th>Endpoint</th>
             <th>Organization</th>
+            <th>Namespace</th>
+            <th>Formats</th>
             <th>Creation Date</th>
             <th>Status</th>
             <th />

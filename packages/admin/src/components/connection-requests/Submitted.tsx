@@ -48,6 +48,8 @@ export default function Submitted() {
   const renderedConnectionRequests = connectionRequests.map((request) => (
     <tr key={request.id}>
       <td>{request.providerEndpoint}</td>
+      <td>{request.namespace}</td>
+      <td>{request.formats.join(", ")}</td>
       <td>{displayDate(request.creationDate)}</td>
       <td>
         <StatusLabel status={request.status} statusType="submitted" />
@@ -76,10 +78,12 @@ export default function Submitted() {
           <Button variant="outline-primary">Create New Connection</Button>
         </LinkContainer>
       </ButtonToolbar>
-      <Table striped={true} hover={true} className="mt-3">
+      <Table striped={true} hover={true} className="mt-3" size="sm">
         <thead>
           <tr>
             <th>Endpoint</th>
+            <th>Namespace</th>
+            <th>Formats</th>
             <th>Creation Date</th>
             <th>Status</th>
             <th />

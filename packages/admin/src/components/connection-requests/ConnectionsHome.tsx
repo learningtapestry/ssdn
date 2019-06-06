@@ -19,7 +19,7 @@ export default function ConnectionsHome(props: {}) {
   return (
     <section>
       <Row className="left-nav">
-        <Col md="3">
+        <Col md="2">
           <Nav variant="pills" defaultActiveKey="/home" className="flex-column">
             <Nav.Item>
               <NavHeading>Connection Requests</NavHeading>
@@ -54,7 +54,7 @@ export default function ConnectionsHome(props: {}) {
             </Nav.Item>
           </Nav>
         </Col>
-        <Col md="9">
+        <Col md="10">
           <Switch>
             <Redirect from="/connections" exact={true} to="/connections/requests/incoming" />
             <Route exact={true} path="/connections/streams/inputs" component={StreamInputs} />

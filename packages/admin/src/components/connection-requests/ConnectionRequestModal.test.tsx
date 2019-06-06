@@ -8,7 +8,11 @@ import ConnectionRequestModal from "./ConnectionRequestModal";
 
 describe("<ConnectionRequestModal />", () => {
   const props = {
-    connectionRequest: factories.connectionRequests()[0],
+    connectionRequest: {
+      ...factories.connectionRequests()[0],
+      formats: ["xAPI", "S3"],
+      namespace: "test.learningtapestry.com",
+    },
     onClose: jest.fn(),
     show: true,
     type: "incoming",
@@ -32,6 +36,8 @@ describe("<ConnectionRequestModal />", () => {
     getByText("2/13/2019, 7:21:36 AM");
     getByText("Accepted");
     getByText(props.connectionRequest.organization);
+    getByText(props.connectionRequest.namespace);
+    getByText(props.connectionRequest.formats.join(", "));
   });
 
   it("shows the verification code when seeing a provider request", () => {

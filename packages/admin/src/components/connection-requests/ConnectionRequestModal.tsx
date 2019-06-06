@@ -61,6 +61,12 @@ export default function ConnectionRequestModal(props: ConnectionRequestModalProp
           <ConnectionAttribute name="Organization">
             {props.connectionRequest.organization}
           </ConnectionAttribute>
+          <ConnectionAttribute name="Namespace">
+            {props.connectionRequest.namespace}
+          </ConnectionAttribute>
+          <ConnectionAttribute name="Formats">
+            {props.connectionRequest.formats.join(", ")}
+          </ConnectionAttribute>
           {verificationCode()}
         </Container>
       </Modal.Body>
