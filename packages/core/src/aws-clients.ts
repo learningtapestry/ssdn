@@ -5,8 +5,8 @@ import IAM from "aws-sdk/clients/iam";
 import Kinesis from "aws-sdk/clients/kinesis";
 import Lambda from "aws-sdk/clients/lambda";
 import S3 from "aws-sdk/clients/s3";
+import SNS from "aws-sdk/clients/sns";
 import STS from "aws-sdk/clients/sts";
-
 import { readEnv } from "./helpers/app-helper";
 
 export function getDocumentClient(clientSettings = {}) {
@@ -99,4 +99,12 @@ export function getS3(clientSettings = {}) {
       clientSettings,
     ),
   );
+}
+
+export function getSns(clientSettings = {}) {
+  return new SNS({
+    apiVersion: "2010-03-31",
+    endpoint: readEnv("NUCLEUS_SNS_ENDPOINT", undefined),
+    ...clientSettings,
+  });
 }

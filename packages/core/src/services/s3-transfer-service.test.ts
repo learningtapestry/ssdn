@@ -1,16 +1,25 @@
 import S3 from "aws-sdk/clients/s3";
+import SNS from "aws-sdk/clients/sns";
 import { TemporaryCredentials } from "aws-sdk/lib/core";
-
-import { buildConnection, buildEvent, buildEventMetadata } from "../../test-support/factories";
+import {
+  buildConnection,
+  buildEvent,
+  buildSNSFileTransferNotification,
+} from "../../test-support/factories";
 import { fakeAws, fakeImpl, mocked } from "../../test-support/jest-helper";
-import { BUCKETS } from "../interfaces/aws-metadata-keys";
+import { BUCKETS, TOPICS } from "../interfaces/aws-metadata-keys";
 import NucleusMetadataService from "./nucleus-metadata-service";
 import S3TransferService from "./s3-transfer-service";
 import TemporaryCredentialsFactory from "./temporary-credentials-factory";
 
 const fakeMetadata = fakeImpl<NucleusMetadataService>({
-  getMetadataValue: jest.fn((k: string) =>
-    k === BUCKETS.download ? Promise.resolve({ value: "RedBucket" }) : Promise.reject(),
+  getMetadataValue: jest.fn((key: string) =>
+    Promise.resolve({
+      value: ({
+        [BUCKETS.download]: "RedBucket",
+        [TOPICS.fileTransferNotifications]: "NotificationsTopic",
+      } as any)[key],
+    }),
   ),
 });
 
@@ -30,17 +39,20 @@ const fakeS3 = fakeAws<S3>({
   putObject: jest.fn(),
 });
 
+const fakeSNS = fakeAws<SNS>({ publish: jest.fn() });
+
 const fakeS3Factory = jest.fn(() => fakeS3);
+
+const service = new S3TransferService(
+  fakeMetadata,
+  fakeS3Factory,
+  fakeTempCredentialsFactory,
+  fakeSNS,
+);
 
 describe("S3TransferService", () => {
   describe("transferObject", () => {
     it("fetches an object from another instance", async () => {
-      const service = new S3TransferService(
-        fakeMetadata,
-        fakeS3Factory,
-        fakeTempCredentialsFactory,
-      );
-
       const connection = buildConnection({
         endpoint: "https://blue.com",
         externalConnection: { arn: "BlueRedArn", externalId: "BlueRedExternalId" },
@@ -76,6 +88,32 @@ describe("S3TransferService", () => {
         Metadata: {
           test: "value",
         },
+      });
+    });
+  });
+
+  describe("sendNotification", () => {
+    it("sends an SNS notification to the topic", async () => {
+      await service.sendNotification(buildSNSFileTransferNotification());
+
+      expect(fakeSNS.publish).toHaveBeenCalledWith({
+        Message: "This is a test message for the file transfer notification topic",
+        MessageAttributes: {
+          Bucket: { DataType: "string", StringValue: "error" },
+          Details: {
+            DataType: "string",
+            StringValue:
+              "aws-service.ts:295 Uncaught (in promise) Error: An unexpected error occurred: " +
+              "Network Error at _callee36$ (aws-service.ts:295)",
+          },
+          File: {
+            DataType: "string",
+            StringValue: "nucleus-test.learningtapestry.com/xAPI/test.txt",
+          },
+          Type: { DataType: "string", StringValue: "error" },
+        },
+        Subject: "This is a test message",
+        TopicArn: "NotificationsTopic",
       });
     });
   });

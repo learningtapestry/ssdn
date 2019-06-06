@@ -13,3 +13,12 @@ export interface FileTransferNotification {
   details?: string;
   creationDate: Date | string;
 }
+
+export interface SNSFileTransferNotification {
+  subject: string;
+  message: string;
+  type: FileTransferNotificationType;
+  file: string;
+  bucket: string;
+  details?: string;
+}

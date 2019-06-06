@@ -1,5 +1,4 @@
 import Kinesis from "aws-sdk/clients/kinesis";
-
 import {
   getApiGateway,
   getCloudFormation,
@@ -8,6 +7,7 @@ import {
   getKinesis,
   getLambda,
   getS3,
+  getSns,
   getSts,
 } from "./aws-clients";
 import { readEnv } from "./helpers/app-helper";
@@ -151,7 +151,12 @@ export function getExternalMetadataService(connection: Connection) {
 }
 
 export function getS3TransferService() {
-  return new S3TransferService(getMetadataService(), getS3, getTemporaryCredentialsFactory());
+  return new S3TransferService(
+    getMetadataService(),
+    getS3,
+    getTemporaryCredentialsFactory(),
+    getSns(),
+  );
 }
 
 export function getUploadCredentialsService() {

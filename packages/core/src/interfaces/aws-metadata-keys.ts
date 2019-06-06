@@ -63,3 +63,7 @@ export enum TABLES {
   nucleusFormats = "NucleusFormatsTable",
   nucleusFileTransferNotifications = "NucleusFileTransferNotificationsTable",
 }
+
+export enum TOPICS {
+  fileTransferNotifications = "FileTransferNotificationsTopic",
+}

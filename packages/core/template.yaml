@@ -1645,6 +1645,9 @@ Outputs:
   GenerateUploadCredentialsFunctionPolicy:
     Description: Upload credentials generation policy
     Value: !Ref GenerateUploadCredentialsFunctionPolicy
+  FileTransferNotificationsTopic:
+    Description: SNS Topic that receives file transfer notifications
+    Value: !Ref FileTransferNotificationsTopic
   AwsAccountId:
     Description: The AWS account ID
     Value: !Ref AWS::AccountId

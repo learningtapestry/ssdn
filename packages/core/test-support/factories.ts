@@ -1,7 +1,11 @@
 import { Connection } from "../src/interfaces/connection";
 import { ConnectionRequest, ConnectionRequestStatus } from "../src/interfaces/connection-request";
 import Event, { EventMetadata } from "../src/interfaces/event";
-import { FileTransferNotification } from "../src/interfaces/file-transfer-notification";
+import {
+  FileTransferNotification,
+  FileTransferNotificationType,
+  SNSFileTransferNotification,
+} from "../src/interfaces/file-transfer-notification";
 import { Format } from "../src/interfaces/format";
 import { UploadCredentials } from "../src/interfaces/upload-credentials";
 
@@ -131,7 +135,21 @@ export function buildFileTransferNotification(overrides?: Partial<FileTransferNo
     id: "4f331ac9-5d41-4129-ad1b-b704adc80ce2",
     message: "This is a test message for the file transfer notification topic",
     subject: "This is a test message",
-    type: "error",
+    type: FileTransferNotificationType.Error,
+    ...overrides,
+  };
+}
+
+export function buildSNSFileTransferNotification(overrides?: Partial<SNSFileTransferNotification>) {
+  return {
+    bucket: "example-bucket",
+    details:
+      "aws-service.ts:295 Uncaught (in promise) Error: An unexpected error occurred: " +
+      "Network Error at _callee36$ (aws-service.ts:295)",
+    file: "nucleus-test.learningtapestry.com/xAPI/test.txt",
+    message: "This is a test message for the file transfer notification topic",
+    subject: "This is a test message",
+    type: FileTransferNotificationType.Error,
     ...overrides,
   };
 }
