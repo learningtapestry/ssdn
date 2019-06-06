@@ -78,6 +78,7 @@ function CreateConnectionRequestForm(props: FormikProps<NewConnectionRequest>) {
     return (
       <Form.Check
         type="checkbox"
+        id={format.name}
         key={format.name}
         label={format.name}
         name="formats"
@@ -147,15 +148,13 @@ function CreateConnectionRequestForm(props: FormikProps<NewConnectionRequest>) {
             </Form.Group>
             <Form.Group controlId="formats">
               <Form.Label>Formats</Form.Label>
-              <InputGroup>
-                {renderedFormats}
-                <Form.Control.Feedback
-                  type="invalid"
-                  style={{ display: !!errors.formats ? "block" : "none" }}
-                >
-                  {errors.formats}
-                </Form.Control.Feedback>
-              </InputGroup>
+              {renderedFormats}
+              <Form.Control.Feedback
+                type="invalid"
+                style={{ display: !!errors.formats ? "block" : "none" }}
+              >
+                {errors.formats}
+              </Form.Control.Feedback>
             </Form.Group>
             <Button type="submit">Send</Button>
           </Form>
