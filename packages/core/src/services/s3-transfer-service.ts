@@ -25,8 +25,6 @@ export default class S3TransferService {
   }
 
   public async transferObject(connection: Connection, event: Event) {
-    logger.info(`Received event ${JSON.stringify(event)}`);
-
     const externalS3 = this.s3ClientFactory({
       credentials: await this.tempCredentialsFactory.getCredentials(
         connection.externalConnection.arn,
