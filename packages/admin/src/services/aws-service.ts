@@ -1,6 +1,9 @@
 /**
  * aws-service.ts: Main service that interacts with the AWS APIs and SDKs
  */
+import API from "@aws-amplify/api";
+import Auth from "@aws-amplify/auth";
+import Amplify from "@aws-amplify/core";
 import ApiGateway from "aws-sdk/clients/apigateway";
 import CloudFormation from "aws-sdk/clients/cloudformation";
 import CloudWatchLogs from "aws-sdk/clients/cloudwatchlogs";
@@ -8,11 +11,7 @@ import CognitoIdentityServiceProvider from "aws-sdk/clients/cognitoidentityservi
 import DynamoDB from "aws-sdk/clients/dynamodb";
 import { config } from "aws-sdk/global";
 import { flatMap, map } from "lodash/fp";
-
-import API from "@aws-amplify/api";
-import Auth from "@aws-amplify/auth";
-import Amplify from "@aws-amplify/core";
-
+import { FileTransferNotification } from "nucleus-core/src/interfaces/file-transfer-notification";
 import { nullInstance } from "../app-helper";
 import awsconfiguration from "../aws-configuration";
 import awsmobile from "../aws-exports";
@@ -274,6 +273,23 @@ export default class AWSService {
     const key = await new ApiGateway().getApiKey({ apiKey: keyId, includeValue: true }).promise();
 
     return key.value;
+  }
+
+  public static async retrieveFileTransferNotifications(): Promise<FileTransferNotification[]> {
+    return AWSService.withCredentials(async () => {
+      const response = await API.get(
+        "FileTransferNotificationsApi",
+        "/file-transfers/notifications",
+        {},
+      );
+      return response as FileTransferNotification[];
+    });
+  }
+
+  public static async deleteFileTransferNotification(id: string): Promise<void> {
+    return AWSService.withCredentials(async () => {
+      await API.del("FileTransferNotificationsApi", `/file-transfers/notifications/${id}`, {});
+    });
   }
 
   private static async withCredentials(request: () => Promise<any>) {

@@ -1,8 +1,8 @@
 import { Connection } from "../src/interfaces/connection";
 import { ConnectionRequest, ConnectionRequestStatus } from "../src/interfaces/connection-request";
 import Event, { EventMetadata } from "../src/interfaces/event";
-import { Format } from "../src/interfaces/format";
 import { FileTransferNotification } from "../src/interfaces/file-transfer-notification";
+import { Format } from "../src/interfaces/format";
 import { UploadCredentials } from "../src/interfaces/upload-credentials";
 
 export function buildConnectionRequest(overrides?: Partial<ConnectionRequest>): ConnectionRequest {

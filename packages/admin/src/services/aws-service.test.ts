@@ -1,11 +1,9 @@
+import API from "@aws-amplify/api";
 import ApiGateway from "aws-sdk/clients/apigateway";
 import CloudFormation from "aws-sdk/clients/cloudformation";
 import CloudWatchLogs from "aws-sdk/clients/cloudwatchlogs";
 import CognitoIdentityServiceProvider from "aws-sdk/clients/cognitoidentityserviceprovider";
 import DynamoDB from "aws-sdk/clients/dynamodb";
-
-import API from "@aws-amplify/api";
-
 import * as factories from "../../test-support/factories";
 import * as responses from "../../test-support/service-responses";
 import { mockWithPromise } from "../../test-support/test-helper";
@@ -241,6 +239,32 @@ describe("AWSService", () => {
       const apiKey = await AWSService.retrieveApiKey("okothmfzma");
 
       expect(apiKey).toEqual("K4I8vkxjRz3OUZ8HBPKdS9Y8hCIh4fjY5F4JPFfn");
+    });
+  });
+
+  describe("retrieveFileTransferNotifications", () => {
+    it("retrieves file transfer notifications from the API", async () => {
+      API.get = jest.fn();
+      await AWSService.retrieveFileTransferNotifications();
+
+      expect(API.get).toHaveBeenCalledWith(
+        "FileTransferNotificationsApi",
+        "/file-transfers/notifications",
+        {},
+      );
+    });
+  });
+
+  describe("deleteFileTransferNotification", () => {
+    it("deletes a file transfer notification with the API", async () => {
+      API.del = jest.fn();
+      await AWSService.deleteFileTransferNotification("6e6e94dd-aa5e-47bb-a2df-7f21cafed71e");
+
+      expect(API.del).toHaveBeenCalledWith(
+        "FileTransferNotificationsApi",
+        "/file-transfers/notifications/6e6e94dd-aa5e-47bb-a2df-7f21cafed71e",
+        {},
+      );
     });
   });
 });

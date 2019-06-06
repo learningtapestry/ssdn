@@ -3,6 +3,7 @@ import { Col, Nav, Row } from "react-bootstrap";
 import { Redirect, Route, Switch } from "react-router";
 import { LinkContainer } from "react-router-bootstrap";
 import CreateUploadCredentials from "./CreateUploadCredentials";
+import Notifications from "./Notifications";
 
 export default function FileTransfersHome() {
   return (
@@ -35,6 +36,7 @@ export default function FileTransfersHome() {
               path="/file-transfers/upload-credentials"
               component={CreateUploadCredentials}
             />
+            <Route exact={true} path="/file-transfers/notifications" component={Notifications} />
           </Switch>
         </Col>
       </Row>

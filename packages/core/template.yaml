@@ -1461,6 +1461,57 @@ Resources:
       DeadLetterQueue:
         Type: SNS
         TargetArn: !Ref LambdaDeadLetterQueueTopic
+  FileTransferNotificationsApiFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./dist/file-transfer-notifications
+      Events:
+        ListAll:
+          Type: Api
+          Properties:
+            Path: /file-transfers/notifications
+            Method: get
+            RestApiId: !Ref FileTransferNotificationsApi
+            Auth:
+              Authorizer: CognitoAuth
+        Delete:
+          Type: Api
+          Properties:
+            Path: /file-transfers/notifications/{id}
+            Method: delete
+            RestApiId: !Ref FileTransferNotificationsApi
+            Auth:
+              Authorizer: CognitoAuth
+      Policies:
+        - Version: 2012-10-17
+          Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:Query
+                - dynamodb:Scan
+                - dynamodb:DeleteItem
+              Resource:
+                - !Sub ${NucleusFileTransferNotificationsTable.Arn}*
+            - Effect: Allow
+              Action:
+                - cloudformation:DescribeStacks
+              Resource:
+                - "*"
+      DeadLetterQueue:
+        Type: SNS
+        TargetArn: !Ref LambdaDeadLetterQueueTopic
+  FileTransferNotificationsApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: !Sub Nucleus-${NucleusId}-FileTransferNotificationsApi
+      StageName: !Ref Environment
+      Cors:
+        AllowOrigin: "'*'"
+        AllowHeaders: "'Content-Type,Authorization'"
+      Auth:
+        Authorizers:
+          CognitoAuth:
+            UserPoolArn: !GetAtt CognitoUserPool.Arn
 Outputs:
   CognitoUserPoolId:
     Description: CognitoUserPool
@@ -1543,6 +1594,9 @@ Outputs:
   EntitiesApi:
     Description: EntitiesApi
     Value: !Sub https://${EntitiesApi}.execute-api.${AWS::Region}.amazonaws.com/${Environment}
+  FileTransferNotificationsApi:
+    Description: API to perform CRUD operations on file transfer notifications
+    Value: !Sub https://${FileTransferNotificationsApi}.execute-api.${AWS::Region}.amazonaws.com/${Environment}
   EntitiesApiFunction:
     Description: EntitiesApiFunction
     Value: !GetAtt EntitiesApiFunction.Arn

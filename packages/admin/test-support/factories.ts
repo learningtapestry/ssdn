@@ -1,10 +1,10 @@
-import flatMap from "lodash/fp/flatMap";
-
-import { Connection } from "../src/interfaces/connection";
-import { Format } from "../src/interfaces/format";
 /**
  * factories.ts: Utility functions that create domain objects, useful for testing.
  */
+
+import flatMap from "lodash/fp/flatMap";
+import { Connection } from "../src/interfaces/connection";
+import { Format } from "../src/interfaces/format";
 import UserForm from "../src/interfaces/user-form";
 import * as responses from "./service-responses";
 
@@ -176,4 +176,28 @@ FDrypNC9Yjc8fPOLn9FX9KSYvKTr4rvx3iSIlTJabIQwj2ICCR/oLxBA==`,
     },
     instructions: "These are the test instructions...",
   };
+}
+
+export function fileTransferNotifications() {
+  return [
+    {
+      bucket: "example-bucket",
+      creationDate: new Date(2019, 6, 4, 13, 38, 39),
+      details: "aws-service.ts:295 Uncaught (in promise) Error: An unexpected error occurred",
+      file: "nucleus-test.learningtapestry.com/xAPI/test.txt",
+      id: "4f331ac9-5d41-4129-ad1b-b704adc80ce2",
+      message: "Network error has occurred",
+      subject: "This is a test message",
+      type: "error",
+    },
+    {
+      bucket: "another-bucket",
+      creationDate: new Date(2019, 6, 7, 12, 55, 8),
+      file: "nucleus-test.learningtapestry.com/Caliper/file.pdf",
+      id: "e0ad3b90-4169-4267-a293-52767c1ce78b",
+      message: "File was successfully transferred",
+      subject: "This is another test message",
+      type: "info",
+    },
+  ];
 }
