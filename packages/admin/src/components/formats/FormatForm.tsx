@@ -3,14 +3,14 @@ import React from "react";
 import { Alert, Button, Col, Form, Row } from "react-bootstrap";
 import { object, string } from "yup";
 
-import { NewDbFormat } from "../../interfaces/format";
+import { NewFormat } from "../../interfaces/format";
 
 export const Schema = object({
   description: string().notRequired(),
   name: string().required(),
 });
 
-function FormatForm(props: FormikProps<NewDbFormat>) {
+function FormatForm(props: FormikProps<NewFormat>) {
   const { handleSubmit, handleChange, values, errors, status, setStatus } = props;
 
   const displayAlert = () => {

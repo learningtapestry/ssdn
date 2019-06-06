@@ -8,7 +8,7 @@ import { Alert, Button, Col, Form, InputGroup, Row } from "react-bootstrap";
 import { array, object, string } from "yup";
 
 import { NewConnectionRequest } from "../../interfaces/connection-request";
-import { DbFormat } from "../../interfaces/format";
+import { Format } from "../../interfaces/format";
 import AWSService from "../../services/aws-service";
 import ConfirmationModal from "../ui/ConfirmationModal";
 
@@ -44,7 +44,7 @@ const onSubmit = async (
 function CreateConnectionRequestForm(props: FormikProps<NewConnectionRequest>) {
   const { handleSubmit, handleChange, values, errors, status, setFieldValue, setStatus } = props;
 
-  const [formats, setFormats] = useState<DbFormat[]>([]);
+  const [formats, setFormats] = useState<Format[]>([]);
 
   useEffect(() => {
     fetchData();

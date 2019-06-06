@@ -1,7 +1,7 @@
 import flatMap from "lodash/fp/flatMap";
 
 import { Connection } from "../src/interfaces/connection";
-import { DbFormat } from "../src/interfaces/format";
+import { Format } from "../src/interfaces/format";
 /**
  * factories.ts: Utility functions that create domain objects, useful for testing.
  */
@@ -100,7 +100,7 @@ export function userForm(userParams: UserForm) {
   };
 }
 
-export function buildFormat(overrides?: Partial<DbFormat>): DbFormat {
+export function buildFormat(overrides?: Partial<Format>): Format {
   return {
     creationDate: "",
     description: "",

@@ -5,21 +5,21 @@ import omitBy from "lodash/fp/omitBy";
 import React, { useEffect, useState } from "react";
 import { RouteComponentProps } from "react-router";
 
-import { DbFormat, NewDbFormat } from "../../interfaces/format";
+import { Format, NewFormat } from "../../interfaces/format";
 import AWSService from "../../services/aws-service";
 import FormatForm, { Schema } from "./FormatForm";
 
 const onSubmit = async (
-  values: NewDbFormat,
-  { setStatus, setSubmitting, resetForm }: FormikActions<NewDbFormat>,
+  values: NewFormat,
+  { setStatus, setSubmitting, resetForm }: FormikActions<NewFormat>,
 ) => {
   try {
-    const format = omitBy((value) => isString(value) && isEmpty(value))(values) as NewDbFormat;
+    const format = omitBy((value) => isString(value) && isEmpty(value))(values) as Format;
     resetForm(await AWSService.updateFormat(format));
     setStatus({
       isEditForm: true,
-      success: true,
       message: "The format has been updated successfully.",
+      success: true,
     });
   } catch (error) {
     setStatus({ isEditForm: true, success: false, message: error.message });
@@ -28,7 +28,7 @@ const onSubmit = async (
   }
 };
 
-const EditFormatForm = withFormik<{ format: NewDbFormat }, NewDbFormat>({
+const EditFormatForm = withFormik<{ format: NewFormat }, NewFormat>({
   enableReinitialize: true,
   handleSubmit: onSubmit,
   mapPropsToStatus: () => ({ isEditForm: true }),
@@ -42,7 +42,7 @@ interface EditFormatProps {
 }
 
 function EditFormat(props: RouteComponentProps<EditFormatProps>) {
-  const [format, setFormat] = useState<DbFormat>({
+  const [format, setFormat] = useState<Format>({
     creationDate: "",
     name: "",
     updateDate: "",

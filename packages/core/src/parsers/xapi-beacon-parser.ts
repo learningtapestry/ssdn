@@ -2,7 +2,6 @@ import { APIGatewayProxyEvent } from "aws-lambda";
 import get from "lodash/fp/get";
 
 import { calculateIdentifier } from "../helpers/app-helper";
-import { Format } from "../interfaces/format";
 import ApiGatewayEventParser from "./api-gateway-event-parser";
 
 export default class XAPIBeaconParser extends ApiGatewayEventParser {
@@ -24,7 +23,7 @@ export default class XAPIBeaconParser extends ApiGatewayEventParser {
     return this.content;
   }
 
-  protected format(): Format {
+  protected format() {
     return "xAPI";
   }
 

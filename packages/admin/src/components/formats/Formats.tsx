@@ -5,15 +5,15 @@ import ButtonToolbar from "react-bootstrap/ButtonToolbar";
 import Table from "react-bootstrap/Table";
 import { LinkContainer } from "react-router-bootstrap";
 
-import { DbFormat } from "../../interfaces/format";
+import { Format } from "../../interfaces/format";
 import AWSService from "../../services/aws-service";
 import ConfirmationModal from "../ui/ConfirmationModal";
 import useModal from "../ui/use-modal";
 
 function Formats() {
-  const [formats, setFormats] = useState<DbFormat[]>([]);
+  const [formats, setFormats] = useState<Format[]>([]);
   const [triggerRefresh, setTriggerRefresh] = useState(false);
-  const [selectedFormat, setSelectedFormat] = useState<DbFormat>({
+  const [selectedFormat, setSelectedFormat] = useState<Format>({
     creationDate: "",
     name: "",
     updateDate: "",

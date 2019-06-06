@@ -1,8 +1,6 @@
-import { Format } from "./format";
-
 export interface EventMetadata {
   date: string;
-  format: Format;
+  format: string;
   namespace: string;
   operation: any;
   origin: string;

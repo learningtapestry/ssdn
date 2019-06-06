@@ -1,5 +1,3 @@
-import { Format } from "./format";
-
 export enum StreamType {
   Input = "input",
   Output = "output",
@@ -13,6 +11,6 @@ export enum StreamStatus {
 
 export interface Stream {
   namespace: string;
-  format: Format;
+  format: string;
   status: StreamStatus;
 }

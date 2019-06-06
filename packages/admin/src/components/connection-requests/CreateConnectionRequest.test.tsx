@@ -5,14 +5,14 @@ import { fireEvent, render, wait, waitForElement } from "react-testing-library";
 
 import * as factories from "../../../test-support/factories";
 import { nullConnectionRequest } from "../../app-helper";
-import { DbFormat } from "../../interfaces/format";
+import { Format } from "../../interfaces/format";
 import AWSService from "../../services/aws-service";
 import CreateConnectionRequest from "./CreateConnectionRequest";
 
 describe("<CreateConnectionRequest/>", () => {
   beforeAll(() => {
     AWSService.saveConnectionRequest = jest.fn(async () => nullConnectionRequest());
-    AWSService.retrieveFormats = jest.fn(async () => [{ name: "xAPI" } as DbFormat]);
+    AWSService.retrieveFormats = jest.fn(async () => [{ name: "xAPI" } as Format]);
   });
 
   it("renders title and connection request form", async () => {

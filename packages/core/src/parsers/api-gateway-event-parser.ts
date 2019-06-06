@@ -7,7 +7,6 @@ import get from "lodash/fp/get";
 
 import { isoDate } from "../helpers/app-helper";
 import Event from "../interfaces/event";
-import { Format } from "../interfaces/format";
 import logger from "../logger";
 
 export default abstract class ApiGatewayEventParser {
@@ -47,7 +46,7 @@ export default abstract class ApiGatewayEventParser {
     };
   }
 
-  protected abstract format(): Format;
+  protected abstract format(): string;
 
   protected abstract interpretContent(): any;
 

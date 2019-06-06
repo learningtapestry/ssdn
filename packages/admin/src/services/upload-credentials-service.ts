@@ -6,7 +6,7 @@
 import axios, { AxiosInstance } from "axios/index";
 import find from "lodash/fp/find";
 import querystring from "querystring";
-import { Format } from "../interfaces/format";
+
 import Instance from "../interfaces/instance";
 import Setting from "../interfaces/setting";
 import AWSService from "./aws-service";
@@ -24,7 +24,7 @@ class UploadCredentialsService {
     });
   }
 
-  public async generate(client: string, format: Format) {
+  public async generate(client: string, format: string) {
     const endpoint = await this.outputValue("GenerateUploadCredentialsApi");
     const url = `${endpoint}/upload-credentials`;
     const response = await this.instance.post(url, querystring.stringify({ client, format }), {

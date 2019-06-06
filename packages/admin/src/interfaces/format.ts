@@ -1,17 +1,11 @@
-export type CaliperFormat = "Caliper";
-
-export type XAPIFormat = "xAPI";
-
-export type Format = CaliperFormat | XAPIFormat;
-
-export interface DbFormat {
+export interface Format {
   name: string;
   description?: string;
   creationDate: string;
   updateDate: string;
 }
 
-export interface NewDbFormat {
+export interface NewFormat {
   name: string;
   description?: string;
 }

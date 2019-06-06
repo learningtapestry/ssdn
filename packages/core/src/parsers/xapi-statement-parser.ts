@@ -1,7 +1,6 @@
 import get from "lodash/fp/get";
 
 import { calculateIdentifier, decode64, toArray } from "../helpers/app-helper";
-import { Format } from "../interfaces/format";
 import ApiGatewayEventParser from "./api-gateway-event-parser";
 
 export default class XAPIStatementParser extends ApiGatewayEventParser {
@@ -16,7 +15,7 @@ export default class XAPIStatementParser extends ApiGatewayEventParser {
     return parsedContent;
   }
 
-  protected format(): Format {
+  protected format() {
     return "xAPI";
   }
 

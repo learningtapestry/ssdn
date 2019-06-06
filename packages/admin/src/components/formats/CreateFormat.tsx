@@ -4,16 +4,16 @@ import isString from "lodash/fp/isString";
 import omitBy from "lodash/fp/omitBy";
 import React from "react";
 
-import { NewDbFormat } from "../../interfaces/format";
+import { NewFormat } from "../../interfaces/format";
 import AWSService from "../../services/aws-service";
 import FormatForm, { Schema } from "./FormatForm";
 
 const onSubmit = async (
-  values: NewDbFormat,
-  { setStatus, setSubmitting, resetForm }: FormikActions<NewDbFormat>,
+  values: NewFormat,
+  { setStatus, setSubmitting, resetForm }: FormikActions<NewFormat>,
 ) => {
   try {
-    const format = omitBy((value) => isString(value) && isEmpty(value))(values) as NewDbFormat;
+    const format = omitBy((value) => isString(value) && isEmpty(value))(values) as NewFormat;
     await AWSService.createFormat(format);
     resetForm();
     setStatus({ success: true, message: "The format has been created successfully." });
@@ -24,7 +24,7 @@ const onSubmit = async (
   }
 };
 
-const CreateFormatForm = withFormik<{}, NewDbFormat>({
+const CreateFormatForm = withFormik<{}, NewFormat>({
   handleSubmit: onSubmit,
   mapPropsToValues: () => {
     return {

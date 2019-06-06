@@ -5,7 +5,7 @@ import React, { useEffect, useState } from "react";
 import { Alert, Button, Form } from "react-bootstrap";
 import { object, string } from "yup";
 
-import { DbFormat, Format } from "../../interfaces/format";
+import { Format } from "../../interfaces/format";
 import UploadCredentialsForm from "../../interfaces/upload-credentials-form";
 import AWSService from "../../services/aws-service";
 import UploadCredentialsService from "../../services/upload-credentials-service";
@@ -20,10 +20,7 @@ const onSubmit = async (
   { setStatus, setSubmitting }: FormikActions<UploadCredentialsForm>,
 ) => {
   try {
-    const credentials = await new UploadCredentialsService().generate(
-      values.client,
-      values.format as Format,
-    );
+    const credentials = await new UploadCredentialsService().generate(values.client, values.format);
     setStatus({ credentials });
   } catch (error) {
     setStatus({ message: error.message });
@@ -34,7 +31,7 @@ const onSubmit = async (
 
 function CreateUploadCredentialsForm(props: FormikProps<UploadCredentialsForm>) {
   const { handleSubmit, handleChange, values, errors, status } = props;
-  const [formats, setFormats] = useState<DbFormat[]>([]);
+  const [formats, setFormats] = useState<Format[]>([]);
 
   useEffect(() => {
     fetchData();

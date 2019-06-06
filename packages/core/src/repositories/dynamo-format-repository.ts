@@ -4,7 +4,7 @@ import sortBy from "lodash/fp/sortBy";
 import { isoDate } from "../helpers/app-helper";
 import { getOrFail } from "../helpers/dynamo-helper";
 import { TABLES } from "../interfaces/aws-metadata-keys";
-import { DbFormat } from "../interfaces/format";
+import { Format } from "../interfaces/format";
 import NucleusMetadataService from "../services/nucleus-metadata-service";
 import FormatRepository from "./format-repository";
 
@@ -17,21 +17,21 @@ export default class DynamoFormatRepository implements FormatRepository {
     this.client = client;
   }
 
-  public async get(name: string): Promise<DbFormat> {
-    return getOrFail<DbFormat>(this.client, { name }, await this.getTableName());
+  public async get(name: string): Promise<Format> {
+    return getOrFail<Format>(this.client, { name }, await this.getTableName());
   }
 
-  public async findAll(): Promise<DbFormat[]> {
+  public async findAll(): Promise<Format[]> {
     const items = await this.client.scan({ TableName: await this.getTableName() }).promise();
 
     if (!items || !items.Items) {
       return [];
     }
 
-    return sortBy((format) => format.name, items.Items as DbFormat[]);
+    return sortBy((format) => format.name, items.Items as Format[]);
   }
 
-  public async update(name: string, format: DbFormat): Promise<DbFormat> {
+  public async update(name: string, format: Format): Promise<Format> {
     const oldFormat = await this.get(name);
     const newFormat = {
       ...oldFormat,
@@ -51,7 +51,7 @@ export default class DynamoFormatRepository implements FormatRepository {
     return newFormat;
   }
 
-  public async put(format: DbFormat): Promise<DbFormat> {
+  public async put(format: Format): Promise<Format> {
     format = {
       ...format,
       creationDate: format.creationDate || isoDate(),

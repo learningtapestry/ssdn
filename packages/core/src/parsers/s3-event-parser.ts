@@ -6,9 +6,9 @@
 import { S3EventRecord } from "aws-lambda";
 import get from "lodash/fp/get";
 import split from "lodash/fp/split";
+
 import { isoDate } from "../helpers/app-helper";
 import Event from "../interfaces/event";
-import { Format } from "../interfaces/format";
 import logger from "../logger";
 
 export default class S3EventParser {
@@ -37,8 +37,8 @@ export default class S3EventParser {
     };
   }
 
-  protected format(): Format {
-    return this.key()[1] as Format;
+  protected format() {
+    return this.key()[1];
   }
 
   protected namespace() {

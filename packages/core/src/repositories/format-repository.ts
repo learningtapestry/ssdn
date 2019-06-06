@@ -1,9 +1,9 @@
-import { DbFormat } from "../interfaces/format";
+import { Format } from "../interfaces/format";
 
 export default interface FormatRepository {
-  get(name: string): Promise<DbFormat>;
-  findAll(): Promise<DbFormat[]>;
-  put(format: DbFormat): Promise<DbFormat>;
+  get(name: string): Promise<Format>;
+  findAll(): Promise<Format[]>;
+  put(format: Format): Promise<Format>;
   delete(name: string): Promise<void>;
-  update(name: string, format: DbFormat): Promise<DbFormat>;
+  update(name: string, format: Format): Promise<Format>;
 }
