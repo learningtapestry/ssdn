@@ -4,6 +4,7 @@ import { Redirect, Route, Switch } from "react-router";
 import { LinkContainer } from "react-router-bootstrap";
 import CreateUploadCredentials from "./CreateUploadCredentials";
 import Notifications from "./Notifications";
+import ProgrammaticAccess from "./ProgrammaticAccess";
 
 export default function FileTransfersHome() {
   return (
@@ -22,8 +23,8 @@ export default function FileTransfersHome() {
               </LinkContainer>
             </Nav.Item>
             <Nav.Item>
-              <LinkContainer to="/file-transfers/schema-descriptions" exact={true}>
-                <Nav.Link>Manage Schema Descriptions</Nav.Link>
+              <LinkContainer to="/file-transfers/programmatic-access" exact={true}>
+                <Nav.Link>Programmatic Access</Nav.Link>
               </LinkContainer>
             </Nav.Item>
           </Nav>
@@ -37,6 +38,11 @@ export default function FileTransfersHome() {
               component={CreateUploadCredentials}
             />
             <Route exact={true} path="/file-transfers/notifications" component={Notifications} />
+            <Route
+              exact={true}
+              path="/file-transfers/programmatic-access"
+              component={ProgrammaticAccess}
+            />
           </Switch>
         </Col>
       </Row>

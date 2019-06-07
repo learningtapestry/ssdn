@@ -18,7 +18,7 @@ describe("<FileTransfersHome />", () => {
     });
     getAllByText("Generate Upload Credentials");
     getByText("Notifications");
-    getByText("Manage Schema Descriptions");
+    getByText("Programmatic Access");
   });
 
   it("redirects to the upload credentials form", async () => {

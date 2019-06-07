@@ -272,7 +272,7 @@ export default class AWSService {
   public static async retrieveApiKey(keyId: string) {
     const key = await new ApiGateway().getApiKey({ apiKey: keyId, includeValue: true }).promise();
 
-    return key.value;
+    return key.value!;
   }
 
   public static async retrieveFileTransferNotifications(): Promise<FileTransferNotification[]> {

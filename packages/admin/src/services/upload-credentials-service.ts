@@ -25,11 +25,13 @@ class UploadCredentialsService {
   }
 
   public async generate(client: string, format: string) {
-    const endpoint = await this.outputValue("GenerateUploadCredentialsApi");
-    const url = `${endpoint}/upload-credentials`;
-    const response = await this.instance.post(url, querystring.stringify({ client, format }), {
-      headers: { "x-api-key": await this.apiKey() },
-    });
+    const response = await this.instance.post(
+      await this.endpoint(),
+      querystring.stringify({ client, format }),
+      {
+        headers: { "x-api-key": await this.apiKey() },
+      },
+    );
 
     return response.data.credentials;
   }
@@ -38,6 +40,12 @@ class UploadCredentialsService {
     const apiKeyId = await this.outputValue("GenerateUploadCredentialsApiKeyId");
 
     return AWSService.retrieveApiKey(apiKeyId);
+  }
+
+  public async endpoint() {
+    const endpoint = await this.outputValue("GenerateUploadCredentialsApi");
+
+    return `${endpoint}/upload-credentials`;
   }
 
   private async stackOutputs() {
