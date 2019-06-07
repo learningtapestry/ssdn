@@ -1,22 +1,23 @@
 /**
  * aws-service.ts: Main service that interacts with the AWS APIs and SDKs
  */
+import API from "@aws-amplify/api";
+import Auth from "@aws-amplify/auth";
+import Amplify from "@aws-amplify/core";
+import ApiGateway from "aws-sdk/clients/apigateway";
 import CloudFormation from "aws-sdk/clients/cloudformation";
 import CloudWatchLogs from "aws-sdk/clients/cloudwatchlogs";
 import CognitoIdentityServiceProvider from "aws-sdk/clients/cognitoidentityserviceprovider";
 import DynamoDB from "aws-sdk/clients/dynamodb";
 import { config } from "aws-sdk/global";
 import { flatMap, map } from "lodash/fp";
-
-import API from "@aws-amplify/api";
-import Auth from "@aws-amplify/auth";
-import Amplify from "@aws-amplify/core";
-
 import { nullInstance } from "../app-helper";
 import awsconfiguration from "../aws-configuration";
 import awsmobile from "../aws-exports";
 import { Connection } from "../interfaces/connection";
 import { ConnectionRequest, NewConnectionRequest } from "../interfaces/connection-request";
+import { FileTransferNotification } from "../interfaces/file-transfer-notification";
+import { Format, NewFormat } from "../interfaces/format";
 import UserForm from "../interfaces/user-form";
 import AWSAdapter from "./aws-adapter";
 
@@ -29,6 +30,7 @@ export default class AWSService {
     });
     await AWSService.updateCredentials();
     config.apiVersions = {
+      apigateway: "2015-07-09",
       cloudformation: "2010-05-15",
       cloudwatchlogs: "2014-03-28",
       cognitoidentityserviceprovider: "2016-04-18",
@@ -40,6 +42,44 @@ export default class AWSService {
     config.update({
       credentials: await Auth.currentCredentials(),
       region: awsmobile.aws_project_region,
+    });
+  }
+
+  public static async retrieveFormats(): Promise<Format[]> {
+    return AWSService.withCredentials(async () => {
+      const response = await API.get("EntitiesApi", "/formats", {});
+      return response as Format[];
+    });
+  }
+
+  public static async retrieveFormat(name: string): Promise<Format> {
+    return AWSService.withCredentials(async () => {
+      const response = await API.get("EntitiesApi", `/formats/${name}`, {});
+      return response as Format;
+    });
+  }
+
+  public static async updateFormat(format: Format): Promise<Format> {
+    return AWSService.withCredentials(async () => {
+      const response = await API.patch("EntitiesApi", `/formats/${format.name}`, {
+        body: format,
+      });
+      return response as Format;
+    });
+  }
+
+  public static async createFormat(format: NewFormat): Promise<Format> {
+    return AWSService.withCredentials(async () => {
+      const response = await API.post("EntitiesApi", "/formats", {
+        body: format,
+      });
+      return response as Format;
+    });
+  }
+
+  public static async deleteFormat(name: string): Promise<void> {
+    return AWSService.withCredentials(async () => {
+      await API.del("EntitiesApi", `/formats/${name}`, {});
     });
   }
 
@@ -60,14 +100,14 @@ export default class AWSService {
 
       return flatMap((e: Connection) =>
         e[filterAttr]!.map((ex) => ({
-          channel: ex.channel,
           endpoint: e.endpoint,
+          format: ex.format,
           namespace: ex.namespace,
           status: ex.status,
         })),
       )(items.Items as Connection[]).sort((a, b) =>
-        `${a.endpoint}.${a.namespace}.${a.channel}`.localeCompare(
-          `${a.endpoint}.${b.namespace}.${b.channel}`,
+        `${a.endpoint}.${a.namespace}.${a.format}`.localeCompare(
+          `${a.endpoint}.${b.namespace}.${b.format}`,
         ),
       );
     });
@@ -95,7 +135,7 @@ export default class AWSService {
 
   public static async updateStream(
     endpoint: string,
-    channel: string,
+    format: string,
     namespace: string,
     status: "active" | "paused",
     type: "input" | "output",
@@ -105,7 +145,7 @@ export default class AWSService {
         body: {
           endpoint,
           stream: {
-            channel,
+            format,
             namespace,
             status,
           },
@@ -226,6 +266,29 @@ export default class AWSService {
           Username: username,
         })
         .promise();
+    });
+  }
+
+  public static async retrieveApiKey(keyId: string) {
+    const key = await new ApiGateway().getApiKey({ apiKey: keyId, includeValue: true }).promise();
+
+    return key.value!;
+  }
+
+  public static async retrieveFileTransferNotifications(): Promise<FileTransferNotification[]> {
+    return AWSService.withCredentials(async () => {
+      const response = await API.get(
+        "FileTransferNotificationsApi",
+        "/file-transfers/notifications",
+        {},
+      );
+      return response as FileTransferNotification[];
+    });
+  }
+
+  public static async deleteFileTransferNotification(id: string): Promise<void> {
+    return AWSService.withCredentials(async () => {
+      await API.del("FileTransferNotificationsApi", `/file-transfers/notifications/${id}`, {});
     });
   }
 

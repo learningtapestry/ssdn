@@ -14,7 +14,7 @@ infrastructure we use for development/testing purposes._
 Before you're able to start the installation process, you need to make sure to install the following
 software packages on your system:
 
-- [Node.js](https://nodejs.org/en/). We recommend using version 8.15 or higher.
+- [Node.js](https://nodejs.org/en/). We recommend using version 10.15 or higher.
 - [Yarn](https://yarnpkg.com/en/). Any version equal or higher than 1.15.x should work fine.
 - [AWS CLI](https://aws.amazon.com/cli/). This is necessary to package and deploy the CloudFormation
   templates.

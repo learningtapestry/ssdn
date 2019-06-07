@@ -1,4 +1,12 @@
-import { calculateIdentifier, decode64, isoDate, readEnv, toArray, wrap } from "./app-helper";
+import {
+  calculateIdentifier,
+  decode64,
+  isoDate,
+  readEnv,
+  timeIdentifier,
+  toArray,
+  wrap,
+} from "./app-helper";
 
 describe("AppHelper", () => {
   describe("decode64", () => {
@@ -75,6 +83,13 @@ describe("AppHelper", () => {
 
     it("ignores the wrapping when root is not set", () => {
       expect(wrap({ a: 1 })).toEqual({ a: 1 });
+    });
+  });
+
+  describe("timeIdentifier", () => {
+    it("returns an identifier based on the current time", () => {
+      expect(timeIdentifier()).toHaveLength(14);
+      expect(parseInt(timeIdentifier(), 10)).not.toBeNaN();
     });
   });
 });

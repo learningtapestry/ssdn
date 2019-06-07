@@ -18,7 +18,7 @@ Parameters:
 Globals:
   Function:
     Timeout: 30
-    Runtime: nodejs8.10
+    Runtime: nodejs10.x
     Handler: index.handler
     Environment:
       Variables:
@@ -158,9 +158,13 @@ Resources:
                   - !Sub ${NucleusConnectionRequestsTable.Arn}*
                   - !Sub ${NucleusIncomingConnectionRequestsTable.Arn}*
                   - !Sub ${NucleusConnectionsTable.Arn}*
+                  - !Sub ${NucleusFormatsTable.Arn}*
               - Effect: Allow
                 Action: execute-api:Invoke
                 Resource: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ExchangeApi}/${Environment}/*
+              - Effect: Allow
+                Action: apigateway:GET
+                Resource: !Sub arn:aws:apigateway:${AWS::Region}::/apikeys/*
   UnauthRole:
     Type: AWS::IAM::Role
     Properties:
@@ -213,7 +217,7 @@ Resources:
       Name: !Sub Nucleus-${NucleusId}-CollectionApiKey
       Description: Default API Key to access the Nucleus collection endpoint
       Enabled: true
-  ApiUsagePlan:
+  CollectionApiUsagePlan:
     Type: AWS::ApiGateway::UsagePlan
     DependsOn:
       - ProcessXAPIStatementApiStage
@@ -227,16 +231,16 @@ Resources:
           Stage: !Ref Environment
         - ApiId: !Ref ExchangeApi
           Stage: !Ref Environment
-      UsagePlanName: !Sub Nucleus-${NucleusId}-UsagePlan
-  ApiUsagePlanKey:
+      UsagePlanName: !Sub Nucleus-${NucleusId}-CollectionApiUsagePlan
+  CollectionApiUsagePlanKey:
     Type: AWS::ApiGateway::UsagePlanKey
     DependsOn:
       - CollectionApiKey
-      - ApiUsagePlan
+      - CollectionApiUsagePlan
     Properties:
       KeyId: !Ref CollectionApiKey
       KeyType: API_KEY
-      UsagePlanId: !Ref ApiUsagePlan
+      UsagePlanId: !Ref CollectionApiUsagePlan
   #
   # Event Collection
   #
@@ -494,6 +498,19 @@ Resources:
   #
   # Interchange
   #
+  NucleusFormatsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub Nucleus-${NucleusId}-Formats
+      ProvisionedThroughput:
+        ReadCapacityUnits: 2
+        WriteCapacityUnits: 2
+      AttributeDefinitions:
+        - AttributeName: name
+          AttributeType: S
+      KeySchema:
+        - AttributeName: name
+          KeyType: HASH
   NucleusConnectionRequestsTable:
     Type: AWS::DynamoDB::Table
     Properties:
@@ -537,6 +554,151 @@ Resources:
       KeySchema:
         - AttributeName: endpoint
           KeyType: HASH
+  EntitiesApiFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./dist/entities
+      Events:
+        EntitiesApiRoot:
+          Type: Api
+          Properties:
+            Path: /
+            Method: ANY
+            RestApiId: !Ref EntitiesApi
+        EntitiesApiGreedy:
+          Type: Api
+          Properties:
+            Path: /{proxy+}
+            Method: ANY
+            RestApiId: !Ref EntitiesApi
+      Policies:
+        - Version: 2012-10-17
+          Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:GetItem
+                - dynamodb:Query
+                - dynamodb:Scan
+                - dynamodb:PutItem
+                - dynamodb:UpdateItem
+                - dynamodb:DeleteItem
+              Resource:
+                - !Sub ${NucleusFormatsTable.Arn}*
+            - Effect: Allow
+              Action:
+                - cloudformation:DescribeStacks
+              Resource:
+                - "*"
+      DeadLetterQueue:
+        Type: SNS
+        TargetArn: !Ref LambdaDeadLetterQueueTopic
+  EntitiesApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: !Ref Environment
+      MethodSettings:
+        - LoggingLevel: ERROR
+          DataTraceEnabled: true
+          MetricsEnabled: true
+          ResourcePath: "/*"
+          HttpMethod: "*"
+      # The next section is needed because SAM does not implement API Usage Plans yet.
+      # See https://github.com/awslabs/serverless-application-model/issues/248
+      DefinitionBody:
+        openapi: 3.0.1
+        info:
+          title: !Sub Nucleus-${NucleusId}-EntitiesApi
+          version: 1.0
+        x-amazon-apigateway-request-validators:
+          parameters-only:
+            validateRequestParameters: true
+            validateRequestBody: false
+        x-amazon-apigateway-request-validator: parameters-only
+        paths:
+          /:
+            x-amazon-apigateway-any-method:
+              produces:
+                - application/json
+              responses: {}
+              x-amazon-apigateway-integration:
+                uri: !Sub arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${EntitiesApiFunction.Arn}/invocations
+                httpMethod: POST
+                type: aws_proxy
+              security:
+                - cognito_authorizer: []
+            options:
+              responses:
+                "200":
+                  description: 200 response
+                  headers:
+                    Access-Control-Allow-Origin:
+                      type: string
+                    Access-Control-Allow-Methods:
+                      type: string
+                    Access-Control-Allow-Headers:
+                      type: string
+              x-amazon-apigateway-integration:
+                responses:
+                  default:
+                    statusCode: 200
+                    responseParameters:
+                      method.response.header.Access-Control-Allow-Methods: "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'"
+                      method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'"
+                      method.response.header.Access-Control-Allow-Origin: "'*'"
+                requestTemplates:
+                  "application/json": '{"statusCode": 200}'
+                passthroughBehavior: when_no_match
+                type: mock
+          /{proxy+}:
+            x-amazon-apigateway-any-method:
+              produces:
+                - application/json
+              parameters:
+                - name: proxy
+                  in: path
+                  required: true
+                  type: string
+              responses: {}
+              x-amazon-apigateway-integration:
+                uri: !Sub arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${EntitiesApiFunction.Arn}/invocations
+                httpMethod: POST
+                type: aws_proxy
+              security:
+                - cognito_authorizer: []
+            options:
+              responses:
+                "200":
+                  description: 200 response
+                  headers:
+                    Access-Control-Allow-Origin:
+                      type: string
+                    Access-Control-Allow-Methods:
+                      type: string
+                    Access-Control-Allow-Headers:
+                      type: string
+              x-amazon-apigateway-integration:
+                responses:
+                  default:
+                    statusCode: 200
+                    responseParameters:
+                      method.response.header.Access-Control-Allow-Methods: "'DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT'"
+                      method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'"
+                      method.response.header.Access-Control-Allow-Origin: "'*'"
+                requestTemplates:
+                  "application/json": '{"statusCode": 200}'
+                passthroughBehavior: when_no_match
+                type: mock
+        components:
+          securitySchemes:
+            cognito_authorizer:
+              name: Authorization
+              type: apiKey
+              in: header
+              x-amazon-apigateway-authtype: cognito_user_pools
+              x-amazon-apigateway-authorizer:
+                providerARNs:
+                  - !GetAtt CognitoUserPool.Arn
+                type: cognito_user_pools
   ExchangeApi:
     Type: AWS::Serverless::Api
     Properties:
@@ -943,6 +1105,37 @@ Resources:
       DeadLetterQueue:
         Type: SNS
         TargetArn: !Ref LambdaDeadLetterQueueTopic
+  TransferObjectFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./dist/transfer-object
+      Events:
+        TransferObject:
+          Type: Kinesis
+          Properties:
+            Stream: !GetAtt EventProcessorStream.Arn
+            StartingPosition: TRIM_HORIZON
+            Enabled: true
+      Policies:
+        - !Ref ExchangeAdminFunctionPolicy
+        - Version: 2012-10-17
+          Statement:
+            - Action:
+                - s3:ListBucket
+                - s3:GetObject
+                - s3:PutObject
+              Resource:
+                - !GetAtt DownloadS3Bucket.Arn
+                - !Sub ${DownloadS3Bucket.Arn}/*
+              Effect: Allow
+            - Action:
+                - sns:Publish
+              Resource:
+                - !Ref FileTransferNotificationsTopic
+              Effect: Allow
+      DeadLetterQueue:
+        Type: SNS
+        TargetArn: !Ref LambdaDeadLetterQueueTopic
   ExchangeAdminFunctionPolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
@@ -960,7 +1153,9 @@ Resources:
             Action:
               - iam:GetRole
               - iam:CreateRole
+              - iam:ListRoles
               - iam:AttachRolePolicy
+              - iam:PutRolePolicy
             Resource:
               - arn:aws:iam::*:role/nucleus*
               - arn:aws:iam::*:policy/*
@@ -968,7 +1163,7 @@ Resources:
             Action:
               - sts:AssumeRole
             Resource:
-              - arn:aws:iam::*:role/nucleus_ex_*
+              - arn:aws:iam::*:role/nucleus*
           - Effect: Allow
             Action:
               - dynamodb:GetItem
@@ -1011,6 +1206,317 @@ Resources:
               - kinesis:PutRecord
               - kinesis:PutRecords
             Resource: !GetAtt EventProcessorStream.Arn
+  #
+  # Raw File Transfer
+  #
+  UploadS3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      VersioningConfiguration:
+        Status: Enabled
+      AccessControl: Private
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        IgnorePublicAcls: true
+        BlockPublicPolicy: true
+        RestrictPublicBuckets: true
+      LifecycleConfiguration:
+        Rules:
+          - ExpirationInDays: 7
+            Status: Enabled
+  DownloadS3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      VersioningConfiguration:
+        Status: Enabled
+      AccessControl: Private
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        IgnorePublicAcls: true
+        BlockPublicPolicy: true
+        RestrictPublicBuckets: true
+  UploadFileRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub Nucleus-${NucleusId}-UploadFileRole
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              AWS:
+                - !GetAtt GenerateUploadCredentialsFunctionRole.Arn
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: !Sub Nucleus-${NucleusId}-UploadFilePolicy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Action:
+                  - s3:ListBucket
+                  - s3:PutObject
+                Resource:
+                  - !GetAtt UploadS3Bucket.Arn
+                  - !Sub ${UploadS3Bucket.Arn}/*
+                Effect: Allow
+  GenerateUploadCredentialsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./dist/generate-upload-credentials
+      Events:
+        UploadCredentials:
+          Type: Api
+          Properties:
+            Path: /upload-credentials
+            Method: post
+            RestApiId: GenerateUploadCredentialsApi
+      Policies:
+        - !Ref GenerateUploadCredentialsFunctionPolicy
+      DeadLetterQueue:
+        Type: SNS
+        TargetArn: !Ref LambdaDeadLetterQueueTopic
+  GenerateUploadCredentialsFunctionPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: !Sub Nucleus-${NucleusId}-GenerateUploadCredentialsFunctionPolicy
+      Description: Permissions needed to generate temporary upload credentials
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - cloudformation:DescribeStacks
+            Resource:
+              - !Sub arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/${AWS::StackName}/*
+          - Effect: Allow
+            Action:
+              - s3:ListBucket
+              - s3:GetObject
+              - s3:PutObject
+            Resource:
+              - !GetAtt UploadS3Bucket.Arn
+              - !Sub ${UploadS3Bucket.Arn}/*
+          - Effect: Allow
+            Action:
+              - dynamodb:GetItem
+              - dynamodb:Query
+              - dynamodb:Scan
+            Resource:
+              - !Sub ${NucleusFormatsTable.Arn}*
+  GenerateUploadCredentialsApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: !Ref Environment
+      Cors:
+        AllowOrigin: "'*'"
+        AllowHeaders: "'Content-Type,X-Api-Key'"
+      DefinitionBody:
+        # FIXME: Need to use previous spec instead of "openapi: 3.0.1" because of this:
+        # https://github.com/awslabs/serverless-application-model/issues/627
+        swagger: 2.0
+        info:
+          title: !Sub Nucleus-${NucleusId}-GenerateUploadCredentialsApi
+          version: 1.0
+        x-amazon-apigateway-request-validators:
+          parameters-only:
+            validateRequestParameters: true
+            validateRequestBody: false
+        x-amazon-apigateway-request-validator: parameters-only
+        securityDefinitions:
+          api_key:
+            type: apiKey
+            name: x-api-key
+            in: header
+        paths:
+          /upload-credentials:
+            consumes:
+              - application/x-www-form-urlencoded
+            parameters:
+              - in: formData
+                name: client
+                description: The client you want to share the uploaded file with
+                required: true
+                schema:
+                  type: string
+              - in: formData
+                name: format
+                description: The format/channel that the data belongs to
+                required: true
+                schema:
+                  type: string
+            post:
+              x-amazon-apigateway-integration:
+                uri: !Sub arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${GenerateUploadCredentialsFunction.Arn}/invocations
+                passthroughBehavior: when_no_match
+                httpMethod: POST
+                type: aws_proxy
+              security:
+                - api_key: []
+  GenerateUploadCredentialsFunctionPermission:
+    Type: AWS::Lambda::Permission
+    DependsOn:
+      - GenerateUploadCredentialsFunction
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref GenerateUploadCredentialsFunction
+      Principal: apigateway.amazonaws.com
+  GenerateUploadCredentialsApiKey:
+    Type: AWS::ApiGateway::ApiKey
+    Properties:
+      Name: !Sub Nucleus-${NucleusId}-GenerateUploadCredentialsApiKey
+      Description: Default API Key to access the upload credentials endpoint
+      Enabled: true
+  GenerateUploadCredentialsApiUsagePlan:
+    Type: AWS::ApiGateway::UsagePlan
+    DependsOn:
+      - GenerateUploadCredentialsApiStage
+    Properties:
+      ApiStages:
+        - ApiId: !Ref GenerateUploadCredentialsApi
+          Stage: !Ref Environment
+      UsagePlanName: !Sub Nucleus-${NucleusId}-GenerateUploadCredentialsApiUsagePlan
+  GenerateUploadCredentialsApiUsagePlanKey:
+    Type: AWS::ApiGateway::UsagePlanKey
+    DependsOn:
+      - GenerateUploadCredentialsApiKey
+      - GenerateUploadCredentialsApiUsagePlan
+    Properties:
+      KeyId: !Ref GenerateUploadCredentialsApiKey
+      KeyType: API_KEY
+      UsagePlanId: !Ref GenerateUploadCredentialsApiUsagePlan
+  ProcessUploadFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./dist/process-upload
+      Events:
+        FileUpload:
+          Type: S3
+          Properties:
+            Bucket: !Ref UploadS3Bucket
+            Events: s3:ObjectCreated:*
+      Policies:
+        - Version: 2012-10-17
+          Statement:
+            - Effect: Allow
+              Action:
+                - kinesis:PutRecord
+                - kinesis:PutRecords
+              Resource: !GetAtt EventProcessorStream.Arn
+            - Effect: Allow
+              Action:
+                - cloudformation:DescribeStacks
+              Resource:
+                - !Sub arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/${AWS::StackName}/*
+      DeadLetterQueue:
+        Type: SNS
+        TargetArn: !Ref LambdaDeadLetterQueueTopic
+  NucleusFileTransferNotificationsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub Nucleus-${NucleusId}-FileTransferNotificationsTable
+      ProvisionedThroughput:
+        ReadCapacityUnits: 2
+        WriteCapacityUnits: 2
+      SSESpecification:
+        SSEEnabled: true
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+  FileTransferNotificationsTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      DisplayName: !Sub Nucleus-${NucleusId}-FileTransferNotificationsTopic
+      KmsMasterKeyId: alias/aws/sns
+      Subscription:
+        - Endpoint: !Ref NotificationEmail
+          Protocol: email
+  StoreFileTransferNotificationFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./dist/store-file-transfer-notification
+      Events:
+        FileTransferError:
+          Type: SNS
+          Properties:
+            Topic: !Ref FileTransferNotificationsTopic
+      Policies:
+        - Version: 2012-10-17
+          Statement:
+            - Effect: Allow
+              Action:
+                - cloudformation:DescribeStacks
+              Resource:
+                - !Sub arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/${AWS::StackName}/*
+            - Effect: Allow
+              Action:
+                - dynamodb:PutItem
+              Resource:
+                - !GetAtt NucleusFileTransferNotificationsTable.Arn
+      DeadLetterQueue:
+        Type: SNS
+        TargetArn: !Ref LambdaDeadLetterQueueTopic
+  FileTransferNotificationsApiFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./dist/file-transfer-notifications
+      Events:
+        ListAll:
+          Type: Api
+          Properties:
+            Path: /file-transfers/notifications
+            Method: get
+            RestApiId: !Ref FileTransferNotificationsApi
+            Auth:
+              Authorizer: CognitoAuth
+        Delete:
+          Type: Api
+          Properties:
+            Path: /file-transfers/notifications/{id}
+            Method: delete
+            RestApiId: !Ref FileTransferNotificationsApi
+            Auth:
+              Authorizer: CognitoAuth
+      Policies:
+        - Version: 2012-10-17
+          Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:Query
+                - dynamodb:Scan
+                - dynamodb:DeleteItem
+              Resource:
+                - !Sub ${NucleusFileTransferNotificationsTable.Arn}*
+            - Effect: Allow
+              Action:
+                - cloudformation:DescribeStacks
+              Resource:
+                - "*"
+      DeadLetterQueue:
+        Type: SNS
+        TargetArn: !Ref LambdaDeadLetterQueueTopic
+  FileTransferNotificationsApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: !Sub Nucleus-${NucleusId}-FileTransferNotificationsApi
+      StageName: !Ref Environment
+      Cors:
+        AllowOrigin: "'*'"
+        AllowHeaders: "'Content-Type,Authorization'"
+      Auth:
+        Authorizers:
+          CognitoAuth:
+            UserPoolArn: !GetAtt CognitoUserPool.Arn
 Outputs:
   CognitoUserPoolId:
     Description: CognitoUserPool
@@ -1031,8 +1537,11 @@ Outputs:
     Description: UnauthRole
     Value: !GetAtt UnauthRole.Arn
   CollectionApiKeyId:
-    Description: CollectionApiKey
+    Description: Default API Key to access the Nucleus collection endpoint
     Value: !Ref CollectionApiKey
+  GenerateUploadCredentialsApiKeyId:
+    Description: Default API Key to access the upload credentials endpoint
+    Value: !Ref GenerateUploadCredentialsApiKey
   EventProcessorStream:
     Description: EventProcessorStream
     Value: !Ref EventProcessorStream
@@ -1042,6 +1551,15 @@ Outputs:
   DeliveryS3Bucket:
     Description: DeliveryS3Bucket
     Value: !Ref DeliveryS3Bucket
+  UploadS3Bucket:
+    Description: Bucket used to upload files that are going to be transferred
+    Value: !Ref UploadS3Bucket
+  DownloadS3Bucket:
+    Description: Bucket that stores files received from other instances
+    Value: !Ref DownloadS3Bucket
+  UploadFileRole:
+    Description: IAM role that determines the generic permissions over the upload bucket
+    Value: !GetAtt UploadFileRole.Arn
   AuthorizeBeaconFunction:
     Description: AuthorizeBeaconFunction
     Value: !GetAtt AuthorizeBeaconFunction.Arn
@@ -1057,6 +1575,12 @@ Outputs:
   ProcessXAPIBeaconApi:
     Description: ProcessXAPIBeaconApi
     Value: !Sub https://${ProcessXAPIBeaconApi}.execute-api.${AWS::Region}.amazonaws.com/${Environment}
+  GenerateUploadCredentialsApi:
+    Description: Endpoint that generates temporary upload credentials to specific folders
+    Value: !Sub https://${GenerateUploadCredentialsApi}.execute-api.${AWS::Region}.amazonaws.com/${Environment}
+  NucleusFormatsTable:
+    Description: NucleusFormatsTable
+    Value: !Ref NucleusFormatsTable
   NucleusConnectionRequestsTable:
     Description: NucleusConnectionRequestsTable
     Value: !Ref NucleusConnectionRequestsTable
@@ -1066,9 +1590,21 @@ Outputs:
   NucleusConnectionsTable:
     Description: NucleusConnectionsTable
     Value: !Ref NucleusConnectionsTable
+  NucleusFileTransferNotificationsTable:
+    Description: NucleusFileTransferNotificationsTable
+    Value: !Ref NucleusFileTransferNotificationsTable
   ExchangeApi:
     Description: ExchangeApi
     Value: !Sub https://${ExchangeApi}.execute-api.${AWS::Region}.amazonaws.com/${Environment}
+  EntitiesApi:
+    Description: EntitiesApi
+    Value: !Sub https://${EntitiesApi}.execute-api.${AWS::Region}.amazonaws.com/${Environment}
+  FileTransferNotificationsApi:
+    Description: API to perform CRUD operations on file transfer notifications
+    Value: !Sub https://${FileTransferNotificationsApi}.execute-api.${AWS::Region}.amazonaws.com/${Environment}
+  EntitiesApiFunction:
+    Description: EntitiesApiFunction
+    Value: !GetAtt EntitiesApiFunction.Arn
   ConnectionRequestAcceptFunction:
     Description: ConnectionRequestAcceptFunction
     Value: !GetAtt ConnectionRequestAcceptFunction.Arn
@@ -1093,12 +1629,30 @@ Outputs:
   RouteEventsFunction:
     Description: RouteEventsFunction
     Value: !GetAtt RouteEventsFunction.Arn
+  GenerateUploadCredentialsFunction:
+    Description: Generates temporary upload credentials for a specific bucket and folder
+    Value: !GetAtt GenerateUploadCredentialsFunction.Arn
+  ProcessUploadFunction:
+    Description: Triggers when a file is stored in the upload S3 bucket
+    Value: !GetAtt ProcessUploadFunction.Arn
+  TransferObjectFunction:
+    Description: TransferObjectFunction
+    Value: !GetAtt TransferObjectFunction.Arn
+  StoreFileTransferNotificationFunction:
+    Description: Stores an SNS event triggered by the raw file transfer component
+    Value: !GetAtt StoreFileTransferNotificationFunction.Arn
   ExchangeConsumerPolicy:
     Description: Consumer policy for Nucleus instances
     Value: !Ref ExchangeConsumerPolicy
   ExchangeProviderPolicy:
     Description: Provider policy for Nucleus instances
     Value: !Ref ExchangeProviderPolicy
+  GenerateUploadCredentialsFunctionPolicy:
+    Description: Upload credentials generation policy
+    Value: !Ref GenerateUploadCredentialsFunctionPolicy
+  FileTransferNotificationsTopic:
+    Description: SNS Topic that receives file transfer notifications
+    Value: !Ref FileTransferNotificationsTopic
   AwsAccountId:
     Description: The AWS account ID
     Value: !Ref AWS::AccountId

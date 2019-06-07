@@ -1,7 +1,15 @@
 import IAM from "aws-sdk/clients/iam";
 
-import { fakeAws } from "../../test-support/jest-helper";
+import { fakeAws, fakeImpl } from "../../test-support/jest-helper";
+import { AWS_NUCLEUS } from "../interfaces/aws-metadata-keys";
 import IamService from "./iam-service";
+import NucleusMetadataService from "./nucleus-metadata-service";
+
+const fakeMetadata = fakeImpl<NucleusMetadataService>({
+  getMetadataValue: jest.fn((key: string) => ({
+    value: ({ [AWS_NUCLEUS.nucleusId]: "RedNucleusId" } as any)[key],
+  })),
+});
 
 const fakeIam = fakeAws<IAM>({
   attachRolePolicy: jest.fn(() => Promise.resolve()),
@@ -12,72 +20,96 @@ const fakeIam = fakeAws<IAM>({
       },
     }),
   ),
-  getRole: jest.fn(({ RoleName }) =>
-    RoleName === "nucleus_ex_654321_nucleustest_externaltest"
+  listRoles: jest.fn(({ PathPrefix }) =>
+    PathPrefix === "/nucleus/RedNucleusId/externaltest.learningtapestry.com/"
       ? Promise.resolve({
-          Role: {
-            Arn: `${RoleName}Arn`,
-            AssumeRolePolicyDocument: encodeURIComponent(
-              JSON.stringify({
-                Statement: [
-                  {
-                    Action: "sts:AssumeRole",
-                    Condition: { StringEquals: { "sts:ExternalId": "123456" } },
-                    Effect: "Allow",
-                    Principal: { AWS: "Example Corp's AWS Account ID" },
-                  },
-                ],
-                Version: "2012-10-17",
-              }),
-            ),
-          },
+          Roles: [
+            {
+              Arn: `TestRoleArn`,
+              AssumeRolePolicyDocument: encodeURIComponent(
+                JSON.stringify({
+                  Statement: [
+                    {
+                      Action: "sts:AssumeRole",
+                      Condition: { StringEquals: { "sts:ExternalId": "123456" } },
+                      Effect: "Allow",
+                      Principal: { AWS: "Example Corp's AWS Account ID" },
+                    },
+                  ],
+                  Version: "2012-10-17",
+                }),
+              ),
+              RoleName: "TestRoleName",
+            },
+          ],
         })
-      : Promise.reject(),
+      : Promise.resolve({ Roles: [] }),
   ),
+  putRolePolicy: jest.fn(),
 });
 
 describe("IamService", () => {
   describe("attachEndpointRolePolicy", () => {
     it("attaches a role to a policy", async () => {
-      const iamService = new IamService(fakeIam);
+      const iamService = new IamService(fakeIam, fakeMetadata);
       await iamService.attachEndpointRolePolicy(
         { value: "TestPolicyArn" },
-        { value: "https://nucleustest.learningtapestry.com" },
         "https://externaltest.learningtapestry.com",
-        "123456",
       );
       expect(fakeIam.impl.attachRolePolicy!.mock.calls[0][0]).toEqual({
         PolicyArn: "TestPolicyArn",
-        RoleName: "nucleus_ex_123456_nucleustest_externaltest",
+        RoleName: "TestRoleName",
       });
     });
   });
 
   describe("findOrCreateEndpointRole", () => {
     it("finds a role when one already exists", async () => {
-      const iamService = new IamService(fakeIam);
+      const iamService = new IamService(fakeIam, fakeMetadata);
       const result = await iamService.findOrCreateEndpointRole(
-        { value: "https://nucleustest.learningtapestry.com" },
         "https://externaltest.learningtapestry.com",
         "654321",
       );
       expect(result).toEqual({
-        arn: "nucleus_ex_654321_nucleustest_externaltestArn",
+        arn: "TestRoleArn",
         externalId: "123456",
-        name: "nucleus_ex_654321_nucleustest_externaltest",
+        name: "TestRoleName",
       });
     });
 
     it("creates a role when none exists", async () => {
-      const iamService = new IamService(fakeIam);
+      const iamService = new IamService(fakeIam, fakeMetadata);
       const result = await iamService.findOrCreateEndpointRole(
-        { value: "https://nucleustest.learningtapestry.com" },
         "https://newrole.learningtapestry.com",
         "654321",
       );
-      expect(result.arn).toEqual("nucleus_ex_654321_nucleustest_newroleArn");
+      expect(result.arn).toContain("nucleus_ex_RedNucleusId_newrole.learni_");
       expect(result.externalId).toBeTruthy();
       expect(result.externalId.split("-")).toHaveLength(5); // It's an UUID v4
+    });
+  });
+
+  describe("updateEndpointRoleInlinePolicy", () => {
+    it("skips empty policies", async () => {
+      const iamService = new IamService(fakeIam, fakeMetadata);
+      await iamService.updateEndpointRoleInlinePolicy(
+        { Statement: [] },
+        "https://externaltest.learningtapestry.com",
+      );
+      expect(fakeIam.putRolePolicy).not.toHaveBeenCalled();
+    });
+
+    it("finds the role and updates its policy", async () => {
+      const iamService = new IamService(fakeIam, fakeMetadata);
+      await iamService.updateEndpointRoleInlinePolicy(
+        { Statement: [{ test: "works" }] },
+        "https://externaltest.learningtapestry.com",
+      );
+      expect(fakeIam.putRolePolicy).toHaveBeenCalledWith({
+        PolicyDocument: '{"Statement":[{"test":"works"}]}',
+        PolicyName: "TestRoleName-Policy",
+        RoleName: "TestRoleName",
+      });
     });
   });
 });

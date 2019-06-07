@@ -1,6 +1,4 @@
 import Kinesis from "aws-sdk/clients/kinesis";
-import { TemporaryCredentials } from "aws-sdk/lib/core";
-
 import {
   getApiGateway,
   getCloudFormation,
@@ -8,11 +6,16 @@ import {
   getIam,
   getKinesis,
   getLambda,
+  getS3,
+  getSns,
+  getSts,
 } from "./aws-clients";
 import { readEnv } from "./helpers/app-helper";
 import { Connection } from "./interfaces/connection";
 import DynamoConnectionRepository from "./repositories/dynamo-connection-repository";
 import DynamoConnectionRequestRepository from "./repositories/dynamo-connection-request-repository";
+import DynamoFileTransferNotificationRepository from "./repositories/dynamo-file-transfer-notification-repository";
+import DynamoFormatRepository from "./repositories/dynamo-format-repository";
 import KinesisEventRepository from "./repositories/kinesis-event-repository";
 import ApiGatewayService from "./services/api-gateway-service";
 import AwsConnectionRequestService from "./services/aws-connection-request-service";
@@ -23,6 +26,9 @@ import AwsNucleusMetadataService from "./services/aws-nucleus-metadata-service";
 import ExternalNucleusMetadataService from "./services/external-nucleus-metadata-service";
 import IamService from "./services/iam-service";
 import LambdaService from "./services/lambda-service";
+import S3TransferService from "./services/s3-transfer-service";
+import TemporaryCredentialsFactory from "./services/temporary-credentials-factory";
+import UploadCredentialsService from "./services/upload-credentials-service";
 
 const CONTAINER_CACHE: { [k: string]: any } = {};
 
@@ -56,8 +62,15 @@ export function getEventRepository() {
   );
 }
 
+export function getFileTransferNotificationRepository() {
+  return singleton(
+    "FileTransferNotificationRepository",
+    () => new DynamoFileTransferNotificationRepository(getMetadataService(), getDocumentClient()),
+  );
+}
+
 export function getIamService() {
-  return singleton("IamService", () => new IamService(getIam()));
+  return singleton("IamService", () => new IamService(getIam(), getMetadataService()));
 }
 
 export function getApiGatewayService() {
@@ -74,7 +87,7 @@ export function getExchangeService() {
     () =>
       new AwsExchangeService(
         getMetadataService(),
-        getTemporaryCredentials,
+        getTemporaryCredentialsFactory(),
         getExternalEventRepository,
       ),
   );
@@ -129,15 +142,27 @@ export function getExternalEventRepository(
   );
 }
 
-export function getTemporaryCredentials(params: TemporaryCredentials.TemporaryCredentialsOptions) {
-  return new TemporaryCredentials({
-    ...params,
-    // This is not specified in the type annotations, but looking at the source code,
-    // client options are passed along.
-    endpoint: readEnv("NUCLEUS_STS_ENDPOINT", undefined),
-  } as any);
+export function getTemporaryCredentialsFactory() {
+  return new TemporaryCredentialsFactory();
 }
 
 export function getExternalMetadataService(connection: Connection) {
   return new ExternalNucleusMetadataService(connection);
+}
+
+export function getS3TransferService() {
+  return new S3TransferService(
+    getMetadataService(),
+    getS3,
+    getTemporaryCredentialsFactory(),
+    getSns(),
+  );
+}
+
+export function getUploadCredentialsService() {
+  return new UploadCredentialsService(getMetadataService(), getSts(), getS3());
+}
+
+export function getFormatRepository() {
+  return new DynamoFormatRepository(getMetadataService(), getDocumentClient());
 }

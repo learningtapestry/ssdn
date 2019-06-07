@@ -1,9 +1,10 @@
-import flatMap from "lodash/fp/flatMap";
-
-import { Connection } from "../src/interfaces/connection";
 /**
  * factories.ts: Utility functions that create domain objects, useful for testing.
  */
+
+import flatMap from "lodash/fp/flatMap";
+import { Connection } from "../src/interfaces/connection";
+import { Format } from "../src/interfaces/format";
 import UserForm from "../src/interfaces/user-form";
 import * as responses from "./service-responses";
 
@@ -14,6 +15,16 @@ export const nucleusDevStack = {
       description: "Name of the Event Processor Kinesis Data Stream",
       key: "EventProcessorStreamName",
       value: "Nucleus-Development-EventProcessor",
+    },
+    {
+      description: "Endpoint that generates temporary upload credentials to specific folders",
+      key: "GenerateUploadCredentialsApi",
+      value: "https://nucleus.example.org/Development",
+    },
+    {
+      description: "Default API Key to access the upload credentials endpoint",
+      key: "GenerateUploadCredentialsApiKeyId",
+      value: "okothmfzma",
     },
     {
       description: "Hello Nucleus Lambda Function ARN",
@@ -32,6 +43,16 @@ export const nucleusStack = {
       description: "Name of the Event Processor Kinesis Data Stream",
       key: "EventProcessorStreamName",
       value: "Nucleus-Production-EventProcessor",
+    },
+    {
+      description: "Endpoint that generates temporary upload credentials to specific folders",
+      key: "GenerateUploadCredentialsApi",
+      value: "https://nucleus.example.org/Production",
+    },
+    {
+      description: "Default API Key to access the upload credentials endpoint",
+      key: "GenerateUploadCredentialsApiKeyId",
+      value: "okothmfzma",
     },
     {
       description: "Hello Nucleus Lambda Function ARN",
@@ -79,6 +100,16 @@ export function userForm(userParams: UserForm) {
   };
 }
 
+export function buildFormat(overrides?: Partial<Format>): Format {
+  return {
+    creationDate: "",
+    description: "",
+    name: "",
+    updateDate: "",
+    ...overrides,
+  };
+}
+
 export function connectionRequests() {
   return responses.connectionRequestItems().Items;
 }
@@ -91,8 +122,8 @@ export function inputStreams() {
   return flatMap((item: Connection) =>
     item.inputStreams
       ? item.inputStreams.map((stream) => ({
-          channel: stream.channel,
           endpoint: item.endpoint,
+          format: stream.format,
           namespace: stream.namespace,
           status: stream.status,
         }))
@@ -104,8 +135,8 @@ export function outputStreams() {
   return flatMap((item: Connection) =>
     item.outputStreams
       ? item.outputStreams.map((stream) => ({
-          channel: stream.channel,
           endpoint: item.endpoint,
+          format: stream.format,
           namespace: stream.namespace,
           status: stream.status,
         }))
@@ -129,6 +160,44 @@ export function logEvents() {
     {
       creationDate: new Date(1555255316099),
       message: "END RequestId: df528d1a-6049-4430-8835-38e7ef58b800\n",
+    },
+  ];
+}
+
+export function uploadCredentials() {
+  return {
+    credentials: {
+      accessKeyId: "AKIAIOSFODNN7EXAMPLE",
+      secretAccessKey: "wJalrXUtnFEMI/K7MDENG/bPxRfiCYzEXAMPLEKEY",
+      sessionToken: `AQoDYXdzEPT//////////wEXAMPLEtc764bNrC9SAPBSM22wDOk4x4HIZ8j4FZTwdQWLWsKWHGBuFq
+wAeMicRXmxfpSPfIeoIYRqTflfKD8YUuwthAx7mSEI/qkPpKPi/kMcGdQrmGdeehM4IC1NtBmUpp2wUE8phUZampKsburEDy0KPk
+yQDYwT7WZ0wq5VSXDvp75YU9HFvlRd8Tx6q6fE8YQcHNVXAkiY9q6d+xo0rKwT38xVqr7ZD0u0iPPkUL64lIZbqBAz+scqKmlzm8
+FDrypNC9Yjc8fPOLn9FX9KSYvKTr4rvx3iSIlTJabIQwj2ICCR/oLxBA==`,
+    },
+    instructions: "These are the test instructions...",
+  };
+}
+
+export function fileTransferNotifications() {
+  return [
+    {
+      bucket: "example-bucket",
+      creationDate: new Date(2019, 6, 4, 13, 38, 39),
+      details: "aws-service.ts:295 Uncaught (in promise) Error: An unexpected error occurred",
+      file: "nucleus-test.learningtapestry.com/xAPI/test.txt",
+      id: "4f331ac9-5d41-4129-ad1b-b704adc80ce2",
+      message: "Network error has occurred",
+      subject: "This is a test message",
+      type: "error",
+    },
+    {
+      bucket: "another-bucket",
+      creationDate: new Date(2019, 6, 7, 12, 55, 8),
+      file: "nucleus-test.learningtapestry.com/Caliper/file.pdf",
+      id: "e0ad3b90-4169-4267-a293-52767c1ce78b",
+      message: "File was successfully transferred",
+      subject: "This is another test message",
+      type: "info",
     },
   ];
 }

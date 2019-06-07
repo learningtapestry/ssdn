@@ -2,6 +2,7 @@ export enum API {
   beacon = "ProcessXAPIBeaconApi",
   exchange = "ExchangeApi",
   statements = "ProcessXAPIStatementApi",
+  entities = "EntitiesApi",
 }
 
 export enum API_KEYS {
@@ -14,6 +15,11 @@ export enum AWS_NUCLEUS {
   nucleusId = "NucleusId",
 }
 
+export enum BUCKETS {
+  download = "DownloadS3Bucket",
+  upload = "UploadS3Bucket",
+}
+
 export enum LAMBDAS {
   authorizeBeacon = "AuthorizeBeaconFunction",
   connectionRequestAccept = "ConnectionRequestAcceptFunction",
@@ -21,6 +27,7 @@ export enum LAMBDAS {
   connectionRequestCreate = "ConnectionRequestCreateFunction",
   connectionRequestSend = "ConnectionRequestSendFunction",
   connectionRequestVerify = "ConnectionRequestVerifyFunction",
+  entities = "EntitiesApiFunction",
   incomingConnectionRequestAccept = "IncomingConnectionRequestAcceptFunction",
   incomingConnectionRequestCancel = "IncomingConnectionRequestCancelFunction",
   incomingConnectionRequestCreate = "IncomingConnectionRequestCreateFunction",
@@ -29,6 +36,11 @@ export enum LAMBDAS {
   processXAPIStatement = "ProcessXAPIStatementFunction",
   routeEvents = "RouteEventsFunction",
   streamUpdate = "StreamUpdate",
+  generateUploadCredentials = "GenerateUploadCredentialsFunction",
+}
+
+export enum ROLES {
+  uploadFile = "UploadFileRole",
 }
 
 export enum POLICIES {
@@ -48,4 +60,10 @@ export enum TABLES {
   nucleusConnectionRequests = "NucleusConnectionRequestsTable",
   nucleusConnections = "NucleusConnectionsTable",
   nucleusIncomingConnectionRequests = "NucleusIncomingConnectionRequestsTable",
+  nucleusFormats = "NucleusFormatsTable",
+  nucleusFileTransferNotifications = "NucleusFileTransferNotificationsTable",
+}
+
+export enum TOPICS {
+  fileTransferNotifications = "FileTransferNotificationsTopic",
 }

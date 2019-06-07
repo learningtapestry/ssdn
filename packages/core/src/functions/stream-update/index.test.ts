@@ -28,7 +28,7 @@ describe("ConnectionRequestAcceptFunction", () => {
     const update: StreamUpdate = {
       endpoint: "https://test.com",
       stream: {
-        channel: "XAPI",
+        format: "xAPI",
         namespace: "test.com",
         status: StreamStatus.Active,
       },
@@ -52,7 +52,7 @@ describe("ConnectionRequestAcceptFunction", () => {
     expect(fakeConnectionService.updateStream).toHaveBeenCalledWith(
       buildConnection(),
       {
-        channel: "XAPI",
+        format: "xAPI",
         namespace: "test.com",
         status: StreamStatus.Active,
       },
@@ -64,7 +64,7 @@ describe("ConnectionRequestAcceptFunction", () => {
   it("updates streams, for updates issued by external nucleus instances", async () => {
     const update: StreamUpdate = {
       stream: {
-        channel: "XAPI",
+        format: "xAPI",
         namespace: "test.com",
         status: StreamStatus.Active,
       },
@@ -90,7 +90,7 @@ describe("ConnectionRequestAcceptFunction", () => {
     expect(fakeConnectionService.updateStream).toHaveBeenCalledWith(
       buildConnection(),
       {
-        channel: "XAPI",
+        format: "xAPI",
         namespace: "test.com",
         status: StreamStatus.Active,
       },

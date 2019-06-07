@@ -1,5 +1,3 @@
-import { Channel } from "./channel";
-
 export enum ConnectionRequestStatus {
   Created = "created",
   Pending = "pending",
@@ -23,7 +21,7 @@ export interface ConnectionRequest {
   verificationCode: string;
   acceptanceToken: string;
   creationDate: Date | string;
-  channels: Channel[];
+  formats: string[];
   status: ConnectionRequestStatus | IncomingConnectionRequestStatus;
   connection: {
     awsAccountId: string;

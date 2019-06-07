@@ -1,5 +1,3 @@
-import { Channel } from "./channel";
-
 export enum StreamType {
   Input = "input",
   Output = "output",
@@ -13,6 +11,6 @@ export enum StreamStatus {
 
 export interface Stream {
   namespace: string;
-  channel: Channel;
+  format: string;
   status: StreamStatus;
 }

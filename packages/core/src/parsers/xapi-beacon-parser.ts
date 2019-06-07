@@ -2,10 +2,9 @@ import { APIGatewayProxyEvent } from "aws-lambda";
 import get from "lodash/fp/get";
 
 import { calculateIdentifier } from "../helpers/app-helper";
-import { Channel } from "../interfaces/channel";
-import LambdaEventParser from "./lambda-event-parser";
+import ApiGatewayEventParser from "./api-gateway-event-parser";
 
-export default class XAPIBeaconParser extends LambdaEventParser {
+export default class XAPIBeaconParser extends ApiGatewayEventParser {
   private content: any;
 
   constructor(public lambdaEvent: APIGatewayProxyEvent, defaultNamespace: string) {
@@ -18,10 +17,6 @@ export default class XAPIBeaconParser extends LambdaEventParser {
     }
 
     this.content = content;
-  }
-
-  protected channel(): Channel {
-    return "XAPI";
   }
 
   protected interpretContent() {

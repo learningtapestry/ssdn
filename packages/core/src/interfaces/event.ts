@@ -1,7 +1,4 @@
-import { Channel } from "./channel";
-
 export interface EventMetadata {
-  channel: Channel;
   date: string;
   format: string;
   namespace: string;
@@ -10,10 +7,15 @@ export interface EventMetadata {
   protocol: any;
   representation: string;
   request: {
-    headers: object;
-    queryStringParameters: {
+    // API Gateway specific elements
+    headers?: object;
+    queryStringParameters?: {
       [k: string]: string;
     };
+    // S3 specific elements
+    requestParameters?: object;
+    responseElements?: object;
+    userIdentity?: object;
   };
   resource: string;
   resourceId?: string;
@@ -23,6 +25,6 @@ export default interface Event {
   content: any;
   event: EventMetadata;
   source?: {
-    nucleusId: string;
+    endpoint: string;
   };
 }

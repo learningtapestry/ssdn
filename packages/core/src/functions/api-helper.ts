@@ -4,6 +4,7 @@ import middy from "@middy/core";
 import cors from "@middy/http-cors";
 
 import { NucleusError } from "../errors/nucleus-error";
+import { decode64 } from "../helpers/app-helper";
 import logger from "../logger";
 
 const errorMiddleware: middy.IMiddyMiddlewareObject = {
@@ -77,4 +78,11 @@ export function getRoleName(event: APIGatewayProxyEvent) {
     isExternal: name.startsWith("nucleus_ex"),
     name,
   };
+}
+
+export function parseKinesisData<T>(data: string) {
+  // Kinesis data is stored as a Base64 encoded string.
+  // The Base64 decoded value must then parsed as a JSON.
+  const decodedData = decode64(data);
+  return JSON.parse(decodedData) as T;
 }

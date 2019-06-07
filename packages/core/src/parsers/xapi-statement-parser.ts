@@ -1,10 +1,9 @@
 import get from "lodash/fp/get";
 
 import { calculateIdentifier, decode64, toArray } from "../helpers/app-helper";
-import { Channel } from "../interfaces/channel";
-import LambdaEventParser from "./lambda-event-parser";
+import ApiGatewayEventParser from "./api-gateway-event-parser";
 
-export default class XAPIStatementParser extends LambdaEventParser {
+export default class XAPIStatementParser extends ApiGatewayEventParser {
   protected interpretContent(): void {
     const content = get("isBase64Encoded")(this.lambdaEvent) ? decode64(this.body) : this.body;
     const parsedContent = content ? JSON.parse(content) : {};
@@ -14,10 +13,6 @@ export default class XAPIStatementParser extends LambdaEventParser {
     });
 
     return parsedContent;
-  }
-
-  protected channel(): Channel {
-    return "XAPI";
   }
 
   protected format() {

@@ -50,6 +50,8 @@ export default class DeployCore {
         "--capabilities",
         "CAPABILITY_NAMED_IAM",
         "--no-fail-on-empty-changeset",
+        "--s3-bucket",
+        this.nucleusConfig.bucket,
         "--parameter-overrides",
       ].concat(this.parameters()),
     );

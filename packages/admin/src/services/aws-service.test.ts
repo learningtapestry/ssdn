@@ -1,10 +1,10 @@
+import API from "@aws-amplify/api";
+import ApiGateway from "aws-sdk/clients/apigateway";
 import CloudFormation from "aws-sdk/clients/cloudformation";
 import CloudWatchLogs from "aws-sdk/clients/cloudwatchlogs";
 import CognitoIdentityServiceProvider from "aws-sdk/clients/cognitoidentityserviceprovider";
 import DynamoDB from "aws-sdk/clients/dynamodb";
-
-import API from "@aws-amplify/api";
-
+import { buildFormat } from "../../test-support/factories";
 import * as factories from "../../test-support/factories";
 import * as responses from "../../test-support/service-responses";
 import { mockWithPromise } from "../../test-support/test-helper";
@@ -12,7 +12,7 @@ import { nullConnectionRequest } from "../app-helper";
 import awsconfiguration from "../aws-configuration";
 import AWSService from "./aws-service";
 
-describe(AWSService, () => {
+describe("AWSService", () => {
   describe("retrieveConnectionRequests", () => {
     it("retrieves incoming requests from the DynamoDB table", async () => {
       DynamoDB.DocumentClient.prototype.scan = mockWithPromise(responses.connectionRequestItems());
@@ -48,36 +48,36 @@ describe(AWSService, () => {
   });
 
   describe("retrieveStreams", () => {
-    const mockChannels = [
+    const mockFormats = [
       {
-        channel: "XAPI",
         endpoint: "https://nucleus.adam.acme.org/",
+        format: "xAPI",
         namespace: "nucleus.ajax.org",
         status: "active",
       },
       {
-        channel: "XAPI",
         endpoint: "https://nucleus.jonah.acme.org/",
+        format: "xAPI",
         namespace: "nucleus.ajax.org",
         status: "paused",
       },
       {
-        channel: "XAPI",
         endpoint: "https://nucleus.mickey.acme.org/",
+        format: "xAPI",
         namespace: "nucleus.ajax.org",
         status: "paused_external",
       },
     ];
-    const mockOutputChannels = [
-      { ...mockChannels[0], namespace: "nucleus.adam.acme.org" },
-      { ...mockChannels[1], namespace: "nucleus.jonah.acme.org" },
-      { ...mockChannels[2], namespace: "nucleus.mickey.acme.org" },
+    const mockOutputFormats = [
+      { ...mockFormats[0], namespace: "nucleus.adam.acme.org" },
+      { ...mockFormats[1], namespace: "nucleus.jonah.acme.org" },
+      { ...mockFormats[2], namespace: "nucleus.mickey.acme.org" },
     ];
 
     it("finds inputs", async () => {
       DynamoDB.DocumentClient.prototype.scan = mockWithPromise(responses.connections());
       const streams = await AWSService.retrieveStreams("input");
-      expect(streams).toEqual(mockChannels);
+      expect(streams).toEqual(mockFormats);
       expect(DynamoDB.DocumentClient.prototype.scan).toHaveBeenCalledWith({
         FilterExpression: "attribute_exists(inputStreams[0])",
         TableName: awsconfiguration.Storage.nucleusConnections,
@@ -87,7 +87,7 @@ describe(AWSService, () => {
     it("finds outputs", async () => {
       DynamoDB.DocumentClient.prototype.scan = mockWithPromise(responses.connections());
       const streams = await AWSService.retrieveStreams("output");
-      expect(streams).toEqual(mockOutputChannels);
+      expect(streams).toEqual(mockOutputFormats);
       expect(DynamoDB.DocumentClient.prototype.scan).toHaveBeenCalledWith({
         FilterExpression: "attribute_exists(outputStreams[0])",
         TableName: awsconfiguration.Storage.nucleusConnections,
@@ -177,14 +177,97 @@ describe(AWSService, () => {
     it("updates a stream with sigv4", async () => {
       const request = nullConnectionRequest();
       API.post = jest.fn(async () => request);
-      await AWSService.updateStream("https://test.com", "XAPI", "test.com", "active", "input");
+      await AWSService.updateStream("https://test.com", "xAPI", "test.com", "active", "input");
       expect(API.post).toHaveBeenCalledWith("ExchangeApiSigv4", "/connections/streams/update", {
         body: {
           endpoint: "https://test.com",
-          stream: { channel: "XAPI", namespace: "test.com", status: "active" },
+          stream: { format: "xAPI", namespace: "test.com", status: "active" },
           streamType: "input",
         },
       });
+    });
+  });
+
+  describe("retrieveFormats", () => {
+    it("retrieves formats from the API", async () => {
+      API.get = jest.fn();
+      await AWSService.retrieveFormats();
+      expect(API.get).toHaveBeenCalledWith("EntitiesApi", "/formats", {});
+    });
+  });
+
+  describe("retrieveFormat", () => {
+    it("retrieves a format from the API", async () => {
+      API.get = jest.fn();
+      await AWSService.retrieveFormat("test");
+      expect(API.get).toHaveBeenCalledWith("EntitiesApi", "/formats/test", {});
+    });
+  });
+
+  describe("updateFormat", () => {
+    it("updates a format with the API", async () => {
+      API.patch = jest.fn(() => Promise.resolve({ name: "test" }));
+      const format = await AWSService.updateFormat(
+        buildFormat({ name: "test", description: "test" }),
+      );
+      expect(format.name).toEqual("test");
+      expect(API.patch).toHaveBeenCalledWith("EntitiesApi", "/formats/test", {
+        body: { description: "test", name: "test", creationDate: "", updateDate: "" },
+      });
+    });
+  });
+
+  describe("createFormat", () => {
+    it("creates a format with the API", async () => {
+      API.post = jest.fn(() => Promise.resolve({ name: "test" }));
+      const format = await AWSService.createFormat({ name: "test", description: "test" });
+      expect(format.name).toEqual("test");
+      expect(API.post).toHaveBeenCalledWith("EntitiesApi", "/formats", {
+        body: { description: "test", name: "test" },
+      });
+    });
+  });
+
+  describe("deleteFormat", () => {
+    it("deletes a format with the API", async () => {
+      API.del = jest.fn();
+      await AWSService.deleteFormat("test");
+      expect(API.del).toHaveBeenCalledWith("EntitiesApi", "/formats/test", {});
+    });
+  });
+
+  describe("retrieveApiKey", () => {
+    it("retrieves the api key by its id", async () => {
+      ApiGateway.prototype.getApiKey = mockWithPromise(responses.apiKey());
+      const apiKey = await AWSService.retrieveApiKey("okothmfzma");
+
+      expect(apiKey).toEqual("K4I8vkxjRz3OUZ8HBPKdS9Y8hCIh4fjY5F4JPFfn");
+    });
+  });
+
+  describe("retrieveFileTransferNotifications", () => {
+    it("retrieves file transfer notifications from the API", async () => {
+      API.get = jest.fn();
+      await AWSService.retrieveFileTransferNotifications();
+
+      expect(API.get).toHaveBeenCalledWith(
+        "FileTransferNotificationsApi",
+        "/file-transfers/notifications",
+        {},
+      );
+    });
+  });
+
+  describe("deleteFileTransferNotification", () => {
+    it("deletes a file transfer notification with the API", async () => {
+      API.del = jest.fn();
+      await AWSService.deleteFileTransferNotification("6e6e94dd-aa5e-47bb-a2df-7f21cafed71e");
+
+      expect(API.del).toHaveBeenCalledWith(
+        "FileTransferNotificationsApi",
+        "/file-transfers/notifications/6e6e94dd-aa5e-47bb-a2df-7f21cafed71e",
+        {},
+      );
     });
   });
 });

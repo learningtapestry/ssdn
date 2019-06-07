@@ -11,6 +11,7 @@ import KinesisEventRepository from "../repositories/kinesis-event-repository";
 import AwsExchangeService from "./aws-exchange-service";
 import ExternalNucleusMetadataService from "./external-nucleus-metadata-service";
 import NucleusMetadataService from "./nucleus-metadata-service";
+import TemporaryCredentialsFactory from "./temporary-credentials-factory";
 
 jest.mock("axios", () => ({
   get: jest.fn(),
@@ -19,6 +20,7 @@ jest.mock("axios", () => ({
 }));
 
 const fakeMetadata = fakeImpl<NucleusMetadataService>({
+  getEndpoint: jest.fn(() => Promise.resolve({ value: "https://red.com" })),
   getMetadataValue: jest.fn(() => Promise.resolve({ value: "RedNucleusId" })),
 });
 
@@ -33,7 +35,9 @@ const fakeTempCredentials = ({
   sessionToken: "1234",
 } as unknown) as TemporaryCredentials;
 
-const fakeTempCredentialsFactory = jest.fn(() => fakeTempCredentials);
+const fakeTempCredentialsFactory = fakeImpl<TemporaryCredentialsFactory>({
+  getCredentials: jest.fn(() => Promise.resolve(fakeTempCredentials)),
+});
 
 const fakeEventRepoFactory = jest.fn(
   (
@@ -58,6 +62,7 @@ const buildProviderAcceptance: () => ProviderIssuedAcceptance = () => ({
     },
     metadata: {
       EventProcessorStream: "test",
+      UploadS3Bucket: "test",
     },
   },
 });
@@ -110,11 +115,7 @@ describe("AwsExchangeService", () => {
       });
       const events = [buildEvent(), buildEvent(), buildEvent()];
       await buildExchangeService().sendEvents(connection, events);
-      expect(fakeTempCredentialsFactory).toHaveBeenCalledWith({
-        ExternalId: "123456",
-        RoleArn: "123456",
-        RoleSessionName: expect.stringContaining("Nucleus-"),
-      });
+      expect(fakeTempCredentialsFactory.getCredentials).toHaveBeenCalledWith("123456", "123456");
       expect(fakeEventRepoFactory).toHaveBeenCalledWith(
         [connection],
         [{ credentials: fakeTempCredentials }],
@@ -123,7 +124,7 @@ describe("AwsExchangeService", () => {
       const pushedEvents = mocked(fakeEventRepo.storeBatch).mock.calls[0][0] as Event[];
       expect(pushedEvents.length).toEqual(3);
       for (const event of pushedEvents) {
-        expect(event.source).toEqual({ nucleusId: "RedNucleusId" });
+        expect(event.source).toEqual({ endpoint: "https://red.com" });
       }
     });
   });
@@ -151,7 +152,7 @@ describe("AwsExchangeService", () => {
         externalConnection: { arn: "123456", externalId: "123456" },
       });
       const streamUpdate: StreamUpdate = {
-        stream: { channel: "XAPI", namespace: "blue.com", status: StreamStatus.Paused },
+        stream: { format: "xAPI", namespace: "blue.com", status: StreamStatus.Paused },
         streamType: StreamType.Input,
       };
       await buildExchangeService().sendStreamUpdate(connection, streamUpdate);
@@ -159,12 +160,12 @@ describe("AwsExchangeService", () => {
       // tslint:disable: max-line-length
       expect(Axios.request).toHaveBeenCalledWith({
         body: JSON.stringify({
-          stream: { channel: "XAPI", namespace: "blue.com", status: "paused" },
+          stream: { format: "xAPI", namespace: "blue.com", status: "paused" },
           streamType: "input",
         }),
         data: {
           stream: {
-            channel: "XAPI",
+            format: "xAPI",
             namespace: "blue.com",
             status: "paused",
           },

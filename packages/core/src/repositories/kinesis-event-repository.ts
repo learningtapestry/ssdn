@@ -1,8 +1,8 @@
 /**
- * kinesis-repository.ts: Repository class to manage Kinesis Data Streams access
+ * kinesis-event-repository.ts: Repository class to manage Kinesis Data Streams access
  */
-import Kinesis, { PutRecordsInput } from "aws-sdk/clients/kinesis";
 
+import Kinesis, { PutRecordsInput } from "aws-sdk/clients/kinesis";
 import { STREAMS } from "../interfaces/aws-metadata-keys";
 import logger from "../logger";
 import NucleusMetadataService from "../services/nucleus-metadata-service";

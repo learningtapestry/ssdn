@@ -36,4 +36,13 @@ describe("<ConfirmationModal />", () => {
     expect(props.onClose).toHaveBeenCalled();
     expect(props.onConfirm).toHaveBeenCalled();
   });
+
+  it("honors the provided button labels", () => {
+    const { getByText } = render(
+      <ConfirmationModal {...props} closeLabel="Defend!" confirmLabel="Attack!" />,
+    );
+
+    getByText("Defend!");
+    getByText("Attack!");
+  });
 });

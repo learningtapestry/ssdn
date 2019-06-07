@@ -61,7 +61,7 @@ _nucleus-collection-agent_ is written in [TypeScript](https://www.typescriptlang
 
 ## Requirements
 
-In order to build the project, you'll need [Node.js](https://nodejs.org/en/download/) (version 8.10 or higher) and [Yarn](https://yarnpkg.com/en/).
+In order to build the project, you'll need [Node.js](https://nodejs.org/en/download/) (version 10.15 or higher) and [Yarn](https://yarnpkg.com/en/).
 
 To run end-to-end tests in the default configuration, you should have a recent version of [Google Chrome](https://www.google.com/chrome/) installed.
 

@@ -65,7 +65,7 @@ describe("<Streams />", () => {
       expect(AWSService.updateStream).toHaveBeenCalledTimes(1);
       expect(AWSService.updateStream).toHaveBeenCalledWith(
         "https://nucleus.adam.acme.org/",
-        "XAPI",
+        "xAPI",
         "nucleus.adam.acme.org",
         "paused",
         "output",
@@ -82,7 +82,7 @@ describe("<Streams />", () => {
       expect(AWSService.updateStream).toHaveBeenCalledTimes(1);
       expect(AWSService.updateStream).toHaveBeenCalledWith(
         "https://nucleus.jonah.acme.org/",
-        "XAPI",
+        "xAPI",
         "nucleus.jonah.acme.org",
         "active",
         "output",

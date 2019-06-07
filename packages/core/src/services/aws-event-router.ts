@@ -46,7 +46,7 @@ export default class AwsEventRouter implements EventRouter {
           continue;
         }
 
-        const key = this.getKey(stream.namespace, stream.channel);
+        const key = this.getKey(stream.namespace, stream.format);
         let endpoints = this.routes.get(key);
 
         if (!endpoints) {
@@ -68,9 +68,9 @@ export default class AwsEventRouter implements EventRouter {
       return eventsByConnection;
     }
 
-    const { namespace, channel } = event.event;
+    const { namespace, format } = event.event;
 
-    const connections = this.routes.get(this.getKey(namespace, channel));
+    const connections = this.routes.get(this.getKey(namespace, format));
     if (!connections) {
       return eventsByConnection;
     }
@@ -85,7 +85,7 @@ export default class AwsEventRouter implements EventRouter {
     return eventsByConnection;
   }
 
-  private getKey(namespace: string, channel: string) {
-    return `${namespace}/${channel}`;
+  private getKey(namespace: string, format: string) {
+    return `${namespace}/${format}`;
   }
 }

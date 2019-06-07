@@ -1,57 +1,82 @@
 import IAM from "aws-sdk/clients/iam";
 import property from "lodash/fp/property";
+import nanoid from "nanoid";
 import { parse } from "url";
 import uuid from "uuid/v4";
 
-import { API, POLICIES } from "../interfaces/aws-metadata-keys";
+import { AWS_NUCLEUS, POLICIES } from "../interfaces/aws-metadata-keys";
 import { MetadataValue } from "../interfaces/base-types";
 import logger from "../logger";
+import NucleusMetadataService from "./nucleus-metadata-service";
+
+export interface RoleInfo {
+  arn: string;
+  externalId: string;
+  name: string;
+}
 
 export default class IamService {
   private client: IAM;
+  private metadata: NucleusMetadataService;
 
-  constructor(client: IAM) {
+  constructor(client: IAM, metadata: NucleusMetadataService) {
     this.client = client;
+    this.metadata = metadata;
   }
 
   public async attachEndpointRolePolicy(
     policyArn: MetadataValue<POLICIES>,
-    endpoint: MetadataValue<API>,
     externalEndpoint: string,
-    externalAwsAccountId: string,
   ) {
-    const roleName = this.buildRoleName(externalAwsAccountId, endpoint.value, externalEndpoint);
+    const rolePath = this.buildRolePath(
+      (await this.metadata.getMetadataValue(AWS_NUCLEUS.nucleusId)).value,
+      externalEndpoint,
+    );
     await this.client
       .attachRolePolicy({
         PolicyArn: policyArn.value,
-        RoleName: roleName,
+        RoleName: (await this.findRoleByPath(rolePath)).RoleName,
       })
       .promise();
   }
 
-  public async findOrCreateEndpointRole(
-    endpoint: MetadataValue<API>,
-    externalEndpoint: string,
-    externalAwsAccountId: string,
-  ) {
-    const roleName = this.buildRoleName(externalAwsAccountId, endpoint.value, externalEndpoint);
-    const role = {
-      arn: "",
-      externalId: "",
-      name: roleName,
-    };
+  public async updateEndpointRoleInlinePolicy(policyDocument: any, externalEndpoint: string) {
+    if (!policyDocument.Statement.length) {
+      return;
+    }
+
+    const rolePath = this.buildRolePath(
+      (await this.metadata.getMetadataValue(AWS_NUCLEUS.nucleusId)).value,
+      externalEndpoint,
+    );
+
+    const role = await this.findRoleByPath(rolePath);
+
+    await this.client
+      .putRolePolicy({
+        PolicyDocument: JSON.stringify(policyDocument),
+        PolicyName: `${role.RoleName}-Policy`,
+        RoleName: role.RoleName,
+      })
+      .promise();
+  }
+
+  public async findOrCreateEndpointRole(externalEndpoint: string, externalAwsAccountId: string) {
+    const nucleusId = (await this.metadata.getMetadataValue(AWS_NUCLEUS.nucleusId)).value;
+    const rolePath = this.buildRolePath(nucleusId, externalEndpoint);
+
+    let role: RoleInfo;
 
     try {
-      const response = await this.client
-        .getRole({
-          RoleName: roleName,
-        })
-        .promise();
-      role.arn = response.Role.Arn;
-      role.externalId = this.findRoleExternalId(response.Role.AssumeRolePolicyDocument!);
-    } catch (e) {
+      const existingRole = await this.findRoleByPath(rolePath);
+      role = {
+        arn: existingRole.Arn,
+        externalId: this.findRoleExternalId(existingRole.AssumeRolePolicyDocument!),
+        name: existingRole.RoleName,
+      };
+    } catch {
       const externalId = uuid();
-      const response = await this.client
+      const newRole = await this.client
         .createRole({
           AssumeRolePolicyDocument: JSON.stringify({
             Statement: [
@@ -66,33 +91,44 @@ export default class IamService {
             ],
             Version: "2012-10-17",
           }),
-          RoleName: roleName,
+          Path: rolePath,
+          RoleName: this.buildRoleName(nucleusId, externalEndpoint),
         })
         .promise();
-      role.arn = response.Role.Arn;
-      role.externalId = externalId;
+
+      role = {
+        arn: newRole.Role.Arn,
+        externalId,
+        name: newRole.Role.RoleName,
+      };
     }
 
     return role;
   }
 
-  private buildRoleName(
-    externalAwsAccountId: string,
-    ownEndpoint: string,
-    externalEndpoint: string,
-  ) {
-    return [
-      "nucleus",
-      "ex",
-      externalAwsAccountId,
-      this.getEndpointId(ownEndpoint),
-      this.getEndpointId(externalEndpoint),
-    ].join("_");
+  private buildRolePath(nucleusId: string, externalEndpoint: string) {
+    return `/nucleus/${nucleusId}/${externalEndpoint.replace(/^https?\:\/\//i, "")}/`;
   }
 
-  private getEndpointId(endpoint: string) {
-    const parsed = parse(endpoint);
-    return parsed.hostname!.split(".")[0];
+  private buildRoleName(nucleusId: string, externalEndpoint: string) {
+    return `nucleus_ex_${nucleusId.slice(0, 14)}_${parse(externalEndpoint).hostname!.slice(
+      0,
+      14,
+    )}_${nanoid()}`;
+  }
+
+  private async findRoleByPath(path: string) {
+    const roles = await this.client
+      .listRoles({
+        PathPrefix: path,
+      })
+      .promise();
+
+    if (!roles.Roles.length) {
+      throw new Error(`Could not find role for path: ${path}`);
+    }
+
+    return roles.Roles[0]!;
   }
 
   private findRoleExternalId(policyDocumentBody: string) {

@@ -125,6 +125,9 @@ class NucleusCLI {
   private async exportStackConfiguration() {
     const outputs: any = await getStackValues(this.nucleusConfig.stackName);
     process.env.REACT_APP_ENDPOINT = outputs.ExchangeApi;
+    process.env.REACT_APP_ENTITIES_ENDPOINT = outputs.EntitiesApi;
+    process.env.REACT_APP_FILE_TRANSFER_NOTIFICATIONS_ENDPOINT =
+      outputs.FileTransferNotificationsApi;
     process.env.REACT_APP_IDENTITY_POOL_ID = outputs.CognitoIdentityPoolId;
     process.env.REACT_APP_NUCLEUS_ID = outputs.NucleusId;
     process.env.REACT_APP_AWS_REGION = this.nucleusConfig.region;

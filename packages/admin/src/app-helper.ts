@@ -5,6 +5,10 @@ import uuid from "uuid/v4";
 
 import { Connection } from "./interfaces/connection";
 import { ConnectionRequest, ConnectionRequestStatus } from "./interfaces/connection-request";
+import {
+  FileTransferNotification,
+  FileTransferNotificationType,
+} from "./interfaces/file-transfer-notification";
 import Instance from "./interfaces/instance";
 import { StreamStatus } from "./interfaces/stream";
 
@@ -35,7 +39,6 @@ export function nullConnectionRequest(
 ): ConnectionRequest {
   return {
     acceptanceToken: uuid(),
-    channels: ["S3"],
     connection: {
       awsAccountId: uuid(),
       externalId: uuid(),
@@ -43,6 +46,7 @@ export function nullConnectionRequest(
     },
     consumerEndpoint: "https://example.org/register",
     creationDate: new Date(),
+    formats: ["Caliper"],
     id: uuid(),
     namespace: "example.org",
     organization: "Organization 1",
@@ -58,11 +62,23 @@ export function nullConnection(overrideProps?: Partial<Connection>): Connection 
   return {
     creationDate: "",
     endpoint: "https://example.org/register",
-    inputStreams: [{ namespace: "acme.org", channel: "XAPI", status: StreamStatus.Active }],
+    inputStreams: [{ namespace: "acme.org", format: "xAPI", status: StreamStatus.Active }],
     isConsumer: true,
     isProvider: true,
-    outputStreams: [{ namespace: "acme.org", channel: "XAPI", status: StreamStatus.Active }],
+    outputStreams: [{ namespace: "acme.org", format: "xAPI", status: StreamStatus.Active }],
     updateDate: "",
     ...overrideProps,
+  };
+}
+
+export function nullFileTransferNotification(): FileTransferNotification {
+  return {
+    bucket: "null-bucket",
+    creationDate: new Date(),
+    file: "/null.file",
+    id: "NULL-ID",
+    message: "This is a null notification",
+    subject: "Null Notification",
+    type: FileTransferNotificationType.Info,
   };
 }

@@ -2,8 +2,9 @@ import CloudFormation from "aws-sdk/clients/cloudformation";
 
 import { NucleusError } from "../errors/nucleus-error";
 import TtlCache from "../helpers/ttl-cache";
-import { API, STREAMS } from "../interfaces/aws-metadata-keys";
+import { API, BUCKETS, STREAMS } from "../interfaces/aws-metadata-keys";
 import { MetadataKey } from "../interfaces/base-types";
+import { PublicNucleusMetadata } from "../interfaces/connection";
 import logger from "../logger";
 import NucleusMetadataService from "./nucleus-metadata-service";
 
@@ -36,10 +37,12 @@ export default class AwsNucleusMetadataService implements NucleusMetadataService
     return await this.getMetadataValue(API.exchange);
   }
 
-  public async getPublicMetadata() {
+  public async getPublicMetadata(): Promise<PublicNucleusMetadata> {
     const eventProcessorStreamName = await this.getMetadataValue(STREAMS.eventProcessor);
+    const uploadS3BucketName = await this.getMetadataValue(BUCKETS.upload);
     return {
       EventProcessorStream: eventProcessorStreamName.value,
+      UploadS3Bucket: uploadS3BucketName.value,
     };
   }
 

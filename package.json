@@ -3,9 +3,12 @@
   "private": true,
   "bin": "bin/nucleus",
   "dependencies": {
-    "aws-sdk": "^2.456.0",
+    "@sindresorhus/slugify": "^0.9.1",
+    "aws-sdk": "^2.470.0",
     "axios": "^0.18.0",
+    "filenamify": "^4.1.0",
     "lodash": "^4.17.11",
+    "moment": "^2.24.0",
     "nanoid": "^2.0.1",
     "pino": "^5.11.3",
     "uuid": "^3.3.2"

@@ -1,15 +1,11 @@
 import Kinesis from "aws-sdk/clients/kinesis";
-import { AssumeRoleRequest } from "aws-sdk/clients/sts";
-import { TemporaryCredentials } from "aws-sdk/lib/core";
 import { sign } from "aws4";
 import Axios from "axios";
 import { RequestOptions } from "https";
 import { parse } from "url";
 
 import { NucleusError } from "../errors/nucleus-error";
-import TtlCache from "../helpers/ttl-cache";
 import { AWS_NUCLEUS } from "../interfaces/aws-metadata-keys";
-import { Factory } from "../interfaces/base-types";
 import {
   Connection,
   ConsumerIssuedConnection,
@@ -23,6 +19,7 @@ import KinesisEventRepository from "../repositories/kinesis-event-repository";
 import ExchangeService from "./exchange-service";
 import ExternalNucleusMetadataService from "./external-nucleus-metadata-service";
 import NucleusMetadataService from "./nucleus-metadata-service";
+import TemporaryCredentialsFactory from "./temporary-credentials-factory";
 
 type SignedRequestOptions = RequestOptions & {
   body: string;
@@ -47,14 +44,13 @@ type ExternalRepoFactory = (
 ) => KinesisEventRepository;
 
 export default class AwsExchangeService implements ExchangeService {
-  private cache = new TtlCache<string, TemporaryCredentials>(24 * 60 * 60 * 1000);
   private metadata: NucleusMetadataService;
-  private temporaryCredentialsFactory: Factory<TemporaryCredentials>;
+  private temporaryCredentialsFactory: TemporaryCredentialsFactory;
   private kinesisEventRepoFactory: ExternalRepoFactory;
 
   constructor(
     metadata: NucleusMetadataService,
-    temporaryCredentialsFactory: Factory<TemporaryCredentials>,
+    temporaryCredentialsFactory: TemporaryCredentialsFactory,
     kinesisEventRepoFactory: ExternalRepoFactory,
   ) {
     this.metadata = metadata;
@@ -87,13 +83,13 @@ export default class AwsExchangeService implements ExchangeService {
   public async sendEvents(connection: Connection, events: Event[]) {
     logger.info(`Sending events to ${connection.endpoint}`);
     const { arn, externalId } = connection.externalConnection;
-    const credentials = await this.getTemporaryCredentials(arn, externalId);
+    const credentials = await this.temporaryCredentialsFactory.getCredentials(arn, externalId);
     const externalRepository = this.kinesisEventRepoFactory([connection], [{ credentials }]);
-    const nucleusId = await this.metadata.getMetadataValue(AWS_NUCLEUS.nucleusId);
+    const endpoint = await this.metadata.getEndpoint();
     const annotatedEvents: Event[] = events.map((evt) => ({
       ...evt,
       source: {
-        nucleusId: nucleusId.value,
+        endpoint: endpoint.value,
       },
     }));
     await externalRepository.storeBatch(annotatedEvents);
@@ -142,17 +138,6 @@ export default class AwsExchangeService implements ExchangeService {
     }
   }
 
-  private async getTemporaryCredentials(roleArn: string, externalId: string) {
-    const key = `${roleArn}.${externalId}`;
-    return await this.cache.get(key, async () =>
-      this.temporaryCredentialsFactory({
-        ExternalId: externalId,
-        RoleArn: roleArn,
-        RoleSessionName: `Nucleus-${new Date().getTime()}`,
-      } as AssumeRoleRequest),
-    );
-  }
-
   private async signedRequest(
     connectionDetails: ExternalConnectionDetails,
     method: string,
@@ -177,7 +162,7 @@ export default class AwsExchangeService implements ExchangeService {
       url,
       ...additionalOptions,
     };
-    const credentials = await this.getTemporaryCredentials(
+    const credentials = await this.temporaryCredentialsFactory.getCredentials(
       connectionDetails.arn,
       connectionDetails.externalId,
     );
