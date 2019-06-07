@@ -11,12 +11,12 @@ import CognitoIdentityServiceProvider from "aws-sdk/clients/cognitoidentityservi
 import DynamoDB from "aws-sdk/clients/dynamodb";
 import { config } from "aws-sdk/global";
 import { flatMap, map } from "lodash/fp";
-import { FileTransferNotification } from "nucleus-core/src/interfaces/file-transfer-notification";
 import { nullInstance } from "../app-helper";
 import awsconfiguration from "../aws-configuration";
 import awsmobile from "../aws-exports";
 import { Connection } from "../interfaces/connection";
 import { ConnectionRequest, NewConnectionRequest } from "../interfaces/connection-request";
+import { FileTransferNotification } from "../interfaces/file-transfer-notification";
 import { Format, NewFormat } from "../interfaces/format";
 import UserForm from "../interfaces/user-form";
 import AWSAdapter from "./aws-adapter";
