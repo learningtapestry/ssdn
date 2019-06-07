@@ -3340,10 +3340,10 @@ aws-sdk@2.329.0:
     uuid "3.1.0"
     xml2js "0.4.19"
 
-aws-sdk@^2.456.0:
-  version "2.456.0"
-  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.456.0.tgz#1d258997bd859de00a931d81b601765edbeae359"
-  integrity sha512-ySGGBuzDDmZuW1JbjlKHdt04xdB2hFNmas1Vj7Cg4VMGKU12FTcKc3g8M9Le0RLt21egmzyPwrD0HeXH1ipViw==
+aws-sdk@^2.470.0:
+  version "2.470.0"
+  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.470.0.tgz#33cbf793b4ab6a08770e8af90fbf45d517526e7e"
+  integrity sha512-XCMLSNiYaUUc3wxH3NxFxPPmYAF95IHhDwc0o6pOIY30om83ZYJwuPizgheRWXuOGjrXQxWgT6W3EfyfeuAISA==
   dependencies:
     buffer "4.9.1"
     events "1.1.1"
@@ -13423,9 +13423,9 @@ run-queue@^1.0.0, run-queue@^1.0.3:
     aproba "^1.1.1"
 
 rxjs@>=6.4.0:
-  version "6.5.1"
-  resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-6.5.1.tgz#f7a005a9386361921b8524f38f54cbf80e5d08f4"
-  integrity sha512-y0j31WJc83wPu31vS1VlAFW5JGrnGC+j+TtGAa1fRQphy48+fDYiDmX8tjGloToEsMkxnouOg/1IzXGKkJnZMg==
+  version "6.5.2"
+  resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-6.5.2.tgz#2e35ce815cd46d84d02a209fb4e5921e051dbec7"
+  integrity sha512-HUb7j3kvb7p7eCUHE3FqjoDsC1xfZQ4AHFWfTKSpZ+sAhhz5X1WX0ZuUqWbzB2QhSLp3DoLUG+hMdEDKqWo2Zg==
   dependencies:
     tslib "^1.9.0"
 

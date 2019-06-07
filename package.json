@@ -4,7 +4,7 @@
   "bin": "bin/nucleus",
   "dependencies": {
     "@sindresorhus/slugify": "^0.9.1",
-    "aws-sdk": "^2.456.0",
+    "aws-sdk": "^2.470.0",
     "axios": "^0.18.0",
     "filenamify": "^4.1.0",
     "lodash": "^4.17.11",
