@@ -4,6 +4,7 @@ import CloudFormation from "aws-sdk/clients/cloudformation";
 import CloudWatchLogs from "aws-sdk/clients/cloudwatchlogs";
 import CognitoIdentityServiceProvider from "aws-sdk/clients/cognitoidentityserviceprovider";
 import DynamoDB from "aws-sdk/clients/dynamodb";
+import { buildFormat } from "../../test-support/factories";
 import * as factories from "../../test-support/factories";
 import * as responses from "../../test-support/service-responses";
 import { mockWithPromise } from "../../test-support/test-helper";
@@ -206,10 +207,12 @@ describe("AWSService", () => {
   describe("updateFormat", () => {
     it("updates a format with the API", async () => {
       API.patch = jest.fn(() => Promise.resolve({ name: "test" }));
-      const format = await AWSService.updateFormat({ name: "test", description: "test" });
+      const format = await AWSService.updateFormat(
+        buildFormat({ name: "test", description: "test" }),
+      );
       expect(format.name).toEqual("test");
       expect(API.patch).toHaveBeenCalledWith("EntitiesApi", "/formats/test", {
-        body: { description: "test", name: "test" },
+        body: { description: "test", name: "test", creationDate: "", updateDate: "" },
       });
     });
   });
