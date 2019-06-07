@@ -129,7 +129,7 @@ function CreateConnectionRequestForm(props: FormikProps<NewConnectionRequest>) {
                 The organization the request is associated with.
               </Form.Text>
             </Form.Group>
-            <Form.Group controlId="organization">
+            <Form.Group controlId="namespace">
               <Form.Label>Namespace</Form.Label>
               <InputGroup>
                 <Form.Control

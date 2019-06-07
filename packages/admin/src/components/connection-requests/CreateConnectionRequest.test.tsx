@@ -23,7 +23,7 @@ describe("<CreateConnectionRequest/>", () => {
     getByLabelText("Endpoint URL");
     getByLabelText("Organization");
     getByLabelText("Namespace");
-    getByLabelText("Formats");
+    getByText("Formats");
   });
 
   it("validates the entered values and displays error messages", async () => {
