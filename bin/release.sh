@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-VERSION="1.0.0.pre1"
+VERSION="1.0.0.pre2"
 ROOT_DIR=$(pwd)
 RELEASE_PATH="releases/nucleus-${VERSION}"
 
