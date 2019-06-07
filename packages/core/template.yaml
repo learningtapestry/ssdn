@@ -1128,6 +1128,11 @@ Resources:
                 - !GetAtt DownloadS3Bucket.Arn
                 - !Sub ${DownloadS3Bucket.Arn}/*
               Effect: Allow
+            - Action:
+                - sns:Publish
+              Resource:
+                - !Ref FileTransferNotificationsTopic
+              Effect: Allow
       DeadLetterQueue:
         Type: SNS
         TargetArn: !Ref LambdaDeadLetterQueueTopic

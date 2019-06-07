@@ -1,6 +1,7 @@
 import S3 from "aws-sdk/clients/s3";
 import SNS from "aws-sdk/clients/sns";
 import { parse } from "url";
+
 import { BUCKETS, TOPICS } from "../interfaces/aws-metadata-keys";
 import { Factory } from "../interfaces/base-types";
 import { Connection } from "../interfaces/connection";
@@ -60,9 +61,15 @@ export default class S3TransferService {
         type: FileTransferNotificationType.Info,
       });
     } catch (error) {
+      const errorDetails = error.trace
+        ? error.trace()
+        : error.message
+        ? error.message
+        : "Unexpected error";
+
       await this.sendNotification({
         bucket: connection.metadata.UploadS3Bucket,
-        details: error.trace(),
+        details: errorDetails,
         file: event.content.key,
         message: "There was a problem transferring the file",
         subject: error.message,
@@ -91,22 +98,22 @@ export default class S3TransferService {
   private buildMessageAttributes(notification: SNSFileTransferNotification) {
     const attributes: SNS.MessageAttributeMap = {
       Bucket: {
-        DataType: "string",
-        StringValue: notification.type,
+        DataType: "String",
+        StringValue: notification.bucket,
       },
       File: {
-        DataType: "string",
+        DataType: "String",
         StringValue: notification.file,
       },
       Type: {
-        DataType: "string",
+        DataType: "String",
         StringValue: notification.type,
       },
     };
 
     if (notification.details) {
       attributes.Details = {
-        DataType: "string",
+        DataType: "String",
         StringValue: notification.details,
       };
     }

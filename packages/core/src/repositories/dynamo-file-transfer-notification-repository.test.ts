@@ -1,4 +1,5 @@
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
+
 import { buildFileTransferNotification } from "../../test-support/factories";
 import { fakeAws, fakeImpl } from "../../test-support/jest-helper";
 import { TABLES } from "../interfaces/aws-metadata-keys";
@@ -36,7 +37,7 @@ describe("DynamoFileTransferNotificationRepository", () => {
         Items: [
           buildFileTransferNotification(),
           buildFileTransferNotification({
-            creationDate: new Date(2019, 6, 6).toISOString(),
+            creationDate: "2019-07-05T22:00:00.000Z",
             id: "dded0fbe-6abe-4c7f-8a55-b1543b7405e9",
             subject: "This is another test message",
           }),

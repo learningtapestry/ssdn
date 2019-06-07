@@ -1,6 +1,7 @@
 import S3 from "aws-sdk/clients/s3";
 import SNS from "aws-sdk/clients/sns";
 import { TemporaryCredentials } from "aws-sdk/lib/core";
+
 import {
   buildConnection,
   buildEvent,
@@ -99,18 +100,18 @@ describe("S3TransferService", () => {
       expect(fakeSNS.publish).toHaveBeenCalledWith({
         Message: "This is a test message for the file transfer notification topic",
         MessageAttributes: {
-          Bucket: { DataType: "string", StringValue: "error" },
+          Bucket: { DataType: "String", StringValue: "example-bucket" },
           Details: {
-            DataType: "string",
+            DataType: "String",
             StringValue:
               "aws-service.ts:295 Uncaught (in promise) Error: An unexpected error occurred: " +
               "Network Error at _callee36$ (aws-service.ts:295)",
           },
           File: {
-            DataType: "string",
+            DataType: "String",
             StringValue: "nucleus-test.learningtapestry.com/xAPI/test.txt",
           },
-          Type: { DataType: "string", StringValue: "error" },
+          Type: { DataType: "String", StringValue: "error" },
         },
         Subject: "This is a test message",
         TopicArn: "NotificationsTopic",
