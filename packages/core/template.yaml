@@ -250,6 +250,9 @@ Resources:
       Name: !Sub Nucleus-${NucleusId}-EventProcessor
       RetentionPeriodHours: 48
       ShardCount: 1
+      StreamEncryption:
+        EncryptionType: KMS
+        KeyId: alias/aws/kinesis
   EventDeliveryStream:
     Type: AWS::KinesisFirehose::DeliveryStream
     Properties:
@@ -300,6 +303,22 @@ Resources:
                   - !GetAtt EventProcessorStream.Arn
   DeliveryS3Bucket:
     Type: AWS::S3::Bucket
+    Properties:
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      VersioningConfiguration:
+        Status: Enabled
+      AccessControl: Private
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        IgnorePublicAcls: true
+        BlockPublicPolicy: true
+        RestrictPublicBuckets: true
+      LoggingConfiguration:
+        DestinationBucketName: !Ref LoggingS3Bucket
+        LogFilePrefix: delivery/
   AuthorizeBeaconFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -1228,6 +1247,9 @@ Resources:
         Rules:
           - ExpirationInDays: 7
             Status: Enabled
+      LoggingConfiguration:
+        DestinationBucketName: !Ref LoggingS3Bucket
+        LogFilePrefix: upload/
   DownloadS3Bucket:
     Type: AWS::S3::Bucket
     Properties:
@@ -1243,6 +1265,9 @@ Resources:
         IgnorePublicAcls: true
         BlockPublicPolicy: true
         RestrictPublicBuckets: true
+      LoggingConfiguration:
+        DestinationBucketName: !Ref LoggingS3Bucket
+        LogFilePrefix: download/
   UploadFileRole:
     Type: AWS::IAM::Role
     Properties:
@@ -1425,8 +1450,6 @@ Resources:
       ProvisionedThroughput:
         ReadCapacityUnits: 2
         WriteCapacityUnits: 2
-      SSESpecification:
-        SSEEnabled: true
       AttributeDefinitions:
         - AttributeName: id
           AttributeType: S
@@ -1517,6 +1540,21 @@ Resources:
         Authorizers:
           CognitoAuth:
             UserPoolArn: !GetAtt CognitoUserPool.Arn
+  LoggingS3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      VersioningConfiguration:
+        Status: Enabled
+      AccessControl: LogDeliveryWrite
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        IgnorePublicAcls: true
+        BlockPublicPolicy: true
+        RestrictPublicBuckets: true
 Outputs:
   CognitoUserPoolId:
     Description: CognitoUserPool
