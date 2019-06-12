@@ -176,7 +176,25 @@ verification code that can be used by the receiving organization to validate the
 * The process should be as easy and streamlined as possible.
 * The validating organization will be able to review and then accept/reject the request right from 
 their administration panel.
+* Connection requests are scoped to a specific namespace and a set of formats. A namespace is a free-form organizational or content-type data domain, written as an URL hostname, e.g. `mydata.myorganization.com`. A format identifies the standard used to represent or structure data, e.g. `Caliper`, `Ed-Fi`, `xAPI`.
 
+### S3 file transfer
+
+#### Main characteristics
+* The purpose of this feature is to allow Nucleus instances to exchange binary data, in the form of S3 files.
+* Instances that have established a relationship are able to exchange files associated to the namespaces and formats that were authorized during door-knocking.
+* It should be trivial for a user to store files in the instance's S3 bucket, preferably using standard S3 tools and libraries.
+* Once a file is stored, it will eventually be mirrored by consumer instances.
+* Plugins have insight into metadata information for the exchanged files.
+* Users have visibility into the files that are being exchanged.
+
+#### Committed solution
+* When a file needs to be stored, users invoke an API method that provisions a folder in an S3 bucket. The API method takes in the namespace and format as parameters. It returns temporary credentials for writing to that folder. The credentials can be used by any tool that makes use of the S3 API.
+* Uploaded files are stored in a dedicated upload bucket organized by namespace and format.
+* Whenever a file is written to the upload bucket, an event is created and sent to the instance's processing stream (Kinesis). It contains metadata about the file. This event is then routed to consumer instances.
+* During the door-knocking process for a consumer instance, the consumer is granted read access to a specific folder in the upload S3 bucket of the provider instance (corresponding to the door-knocking request). Once the consumer receives an event for an upload in that folder, it is able to download the file. This happens automatically.
+* Downloaded files are stored in a dedicated download bucket organized by provider instance, namespace, and format.
+* SNS notifications are generated for S3 events.
 
 ### Administration panel	
 
