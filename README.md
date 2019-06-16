@@ -8,6 +8,11 @@ more:
 - [Nucleus Browser Collection Agent](packages/collection-agent#readme)
 - [Nucleus CLI (installer)](packages/cli#readme)
 
+## Additional documentation
+
+- [Architecture design](docs/architecture-design.md)
+- [Testing methodology](docs/testing-methodology.md)
+
 ## Setup
 
 The root project uses [Yarn workspaces](https://yarnpkg.com/lang/en/docs/workspaces/) and
