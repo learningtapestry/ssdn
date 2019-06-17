@@ -542,6 +542,8 @@ Resources:
       KeySchema:
         - AttributeName: name
           KeyType: HASH
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
   NucleusConnectionRequestsTable:
     Type: AWS::DynamoDB::Table
     Properties:
@@ -555,6 +557,8 @@ Resources:
       KeySchema:
         - AttributeName: id
           KeyType: HASH
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
   NucleusIncomingConnectionRequestsTable:
     Type: AWS::DynamoDB::Table
     Properties:
@@ -572,6 +576,8 @@ Resources:
           KeyType: HASH
         - AttributeName: id
           KeyType: RANGE
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
   NucleusConnectionsTable:
     Type: AWS::DynamoDB::Table
     Properties:
@@ -585,6 +591,8 @@ Resources:
       KeySchema:
         - AttributeName: endpoint
           KeyType: HASH
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
   EntitiesApiFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -1474,6 +1482,8 @@ Resources:
       KeySchema:
         - AttributeName: id
           KeyType: HASH
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
   FileTransferNotificationsTopic:
     Type: AWS::SNS::Topic
     Properties:
