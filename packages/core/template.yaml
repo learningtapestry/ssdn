@@ -416,6 +416,12 @@ Resources:
     Type: AWS::Serverless::Api
     Properties:
       StageName: !Ref Environment
+      MethodSettings:
+        - LoggingLevel: ERROR
+          DataTraceEnabled: true
+          MetricsEnabled: true
+          ResourcePath: "/*"
+          HttpMethod: "*"
       # The next section is needed because SAM does not implement API Usage Plans yet.
       # See https://github.com/awslabs/serverless-application-model/issues/248
       DefinitionBody:
@@ -471,6 +477,12 @@ Resources:
     Type: AWS::Serverless::Api
     Properties:
       StageName: !Ref Environment
+      MethodSettings:
+        - LoggingLevel: ERROR
+          DataTraceEnabled: true
+          MetricsEnabled: true
+          ResourcePath: "/*"
+          HttpMethod: "*"
       # The next section is needed because SAM does not implement API Usage Plans yet.
       # See https://github.com/awslabs/serverless-application-model/issues/248
       DefinitionBody:
@@ -1343,6 +1355,12 @@ Resources:
       Cors:
         AllowOrigin: "'*'"
         AllowHeaders: "'Content-Type,X-Api-Key'"
+      MethodSettings:
+        - LoggingLevel: ERROR
+          DataTraceEnabled: true
+          MetricsEnabled: true
+          ResourcePath: "/*"
+          HttpMethod: "*"
       DefinitionBody:
         # FIXME: Need to use previous spec instead of "openapi: 3.0.1" because of this:
         # https://github.com/awslabs/serverless-application-model/issues/627
@@ -1540,6 +1558,12 @@ Resources:
         Authorizers:
           CognitoAuth:
             UserPoolArn: !GetAtt CognitoUserPool.Arn
+      MethodSettings:
+        - LoggingLevel: ERROR
+          DataTraceEnabled: true
+          MetricsEnabled: true
+          ResourcePath: "/*"
+          HttpMethod: "*"
   LoggingS3Bucket:
     Type: AWS::S3::Bucket
     Properties:
