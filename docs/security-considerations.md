@@ -120,10 +120,9 @@ Let's see what steps are involved security-wise:
    - The uploaded files are automatically deleted after 7 days.
    - The returned temporary credentials are only valid for 1 hour, and only give access to a specific folder inside the
      upload S3 bucket.
-   - The chosen authentication mechanism is API keys (`GenerateUploadCredentialsApiKey`). We're aware that it's not the
-     most secure option available in API Gateway, but we had to strike a balance between easy of use for developers with
-     moderate technical skills versus providing a very secure authentication scheme. After some discussion, we agreed
-     that API keys provided a good enough balance.
+   - The chosen authentication mechanism for the credentials endpoint are API keys (`GenerateUploadCredentialsApiKey`).          We're aware that it's not the most secure option available in API Gateway, but we had to strike a balance between
+     easy of use for developers with moderate technical skills versus providing a very secure authentication scheme. 
+     After some discussion, we agreed that API keys provided a good enough balance.
 
 2. After the user has finished uploading a file to the upload S3 bucket, a Lambda function (`ProcessUploadFunction`) is
    triggered. This function is responsible for processing the file and generating an internal Nucleus event that
