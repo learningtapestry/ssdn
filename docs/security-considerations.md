@@ -190,3 +190,5 @@ points worth mentioning:
 - Point-in-time recovery backups are enabled for all DynamoDB tables.
 - API endpoints log their error output to CloudWatch Logs. Detailed CloudWatch metrics are enabled as well.
 - Lambda functions encrypt the environment variables at rest using the default Lambda service key (`aws/lambda`).
+- CloudTrail logs are globally enabled (`CloudTrail`) for all AWS API calls and other services like IAM. It's configured
+  to dump the logs inside a dedicated bucket (`CloudTrailLoggingS3Bucket`).
