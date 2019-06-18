@@ -38,15 +38,8 @@
     "test:all": "npm-run-all test test:integration"
   },
   "devDependencies": {
-    "@babel/core": "^7.4.0",
-    "@babel/plugin-proposal-class-properties": "^7.4.0",
-    "@babel/preset-env": "^7.4.2",
-    "@babel/preset-typescript": "^7.3.3",
-    "@types/dotenv": "^6.1.0",
     "@types/express": "^4.16.1",
     "@types/jasmine": "^3.3.12",
-    "@types/jest": "^24.0.6",
-    "@types/node": "^11.9.5",
     "@types/request": "^2.48.1",
     "@types/sinon": "^7.0.7",
     "@wdio/cli": "^5.7.5",
@@ -55,19 +48,9 @@
     "@wdio/selenium-standalone-service": "^5.7.2",
     "@wdio/spec-reporter": "^5.7.2",
     "@wdio/sync": "^5.7.3",
-    "axios": "^0.18.0",
-    "babel-core": "^7.0.0-bridge.0",
-    "express": "^4.16.4",
     "jest": "^24.7.1",
     "npm-run-all": "^4.1.5",
-    "parcel-bundler": "^1.11.0",
-    "prettier": "^1.16.4",
     "sinon": "^7.2.5",
-    "ts-node": "^8.0.2",
-    "tslint": "^5.13.0",
-    "tslint-config-prettier": "^1.18.0",
-    "tslint-plugin-prettier": "^2.0.1",
-    "typescript": "^3.3.3333",
     "webdriverio": "^5.7.5"
   }
 }

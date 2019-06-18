@@ -6,6 +6,7 @@
     "@sindresorhus/slugify": "^0.9.1",
     "aws-sdk": "^2.470.0",
     "axios": "^0.18.0",
+    "express": "^4.17.0",
     "filenamify": "^4.1.0",
     "lodash": "^4.17.11",
     "moment": "^2.24.0",
@@ -14,6 +15,11 @@
     "uuid": "^3.3.2"
   },
   "devDependencies": {
+    "@babel/core": "^7.4.0",
+    "@babel/plugin-proposal-class-properties": "^7.4.0",
+    "@babel/plugin-proposal-object-rest-spread": "^7.4.0",
+    "@babel/preset-env": "^7.4.2",
+    "@babel/preset-typescript": "^7.3.3",
     "@types/dotenv": "^6.1.0",
     "@types/jest": "^24.0.11",
     "@types/lodash": "^4.14.123",
@@ -21,6 +27,7 @@
     "@types/node": "^11.13.6",
     "@types/pino": "^5.8.6",
     "@types/uuid": "^3.4.4",
+    "babel-core": "^7.0.0-bridge.0",
     "dotenv": "^7.0.0",
     "lerna": "^3.13.3",
     "parcel-bundler": "^1.12.3",
