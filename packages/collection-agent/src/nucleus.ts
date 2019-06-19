@@ -47,6 +47,11 @@ export interface BuildNucleusOptions {
    * The Nucleus message user.
    */
   user: User;
+
+  /**
+   * The namespace sent along with events.
+   */
+  defaultNamespace?: string;
 }
 
 /**
@@ -61,7 +66,12 @@ export class Nucleus {
    * @param options Options for building a new Nucleus instance.
    */
   public static build(options: BuildNucleusOptions) {
-    const client = new ImageBeaconClient(options.server, options.apiKey, new XApiEncoder());
+    const client = new ImageBeaconClient(
+      options.server,
+      options.apiKey,
+      new XApiEncoder(),
+      options.defaultNamespace,
+    );
 
     const collectors = [];
 

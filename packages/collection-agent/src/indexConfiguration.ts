@@ -11,6 +11,7 @@ const configuration: { [k: string]: string | undefined } = {
   API_KEY: process.env.API_KEY,
   BACKEND_ADDRESS: process.env.BACKEND_ADDRESS,
   HEARTBEAT_INTERVAL: process.env.HEARTBEAT_INTERVAL,
+  NAMESPACE: process.env.NAMESPACE,
   USER_HOME_PAGE: process.env.USER_HOME_PAGE,
   USER_ID: process.env.USER_ID,
 };

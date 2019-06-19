@@ -41,6 +41,11 @@ export class ImageBeaconClient implements Client {
   public apiKey: string;
 
   /**
+   * The default namespace for events.
+   */
+  public defaultNamespace?: string;
+
+  /**
    * The message encoder for encoding Nucleus messages into the desired format.
    */
   public encoder: MessageEncoder;
@@ -52,9 +57,10 @@ export class ImageBeaconClient implements Client {
    * @param encoder The message encoder for encoding Nucleus messages into the
    *                desired format.
    */
-  constructor(baseUrl: string, apiKey: string, encoder: MessageEncoder) {
+  constructor(baseUrl: string, apiKey: string, encoder: MessageEncoder, defaultNamespace?: string) {
     this.baseUrl = baseUrl;
     this.apiKey = apiKey;
+    this.defaultNamespace = defaultNamespace;
     this.encoder = encoder;
   }
 
@@ -64,7 +70,11 @@ export class ImageBeaconClient implements Client {
    * @param [callback] An optional callback for handling responses and errors for
    *                   the network request.
    */
-  public sendMessage(message: Message, callback?: ImageBeaconCallback) {
+  public sendMessage(
+    message: Message,
+    callback?: ImageBeaconCallback,
+    namespace = this.defaultNamespace,
+  ) {
     const encodedMessage = encodeURIComponent(JSON.stringify(this.encoder.encode(message)));
     const image = document.createElement("img");
     image.onload = (_) => {
@@ -77,10 +87,18 @@ export class ImageBeaconClient implements Client {
         callback(true, undefined, image);
       }
     };
-    image.src = this.buildUrl(encodedMessage);
+    image.src = this.buildUrl(encodedMessage, namespace);
   }
 
-  private buildUrl(message: string) {
-    return `${this.baseUrl}/beacon?aid=${this.apiKey}&event=${message}`;
+  private buildUrl(message: string, namespace?: string) {
+    const pieces = [];
+
+    if (namespace) {
+      pieces.push(`ns=${namespace}`);
+    }
+
+    pieces.push(`aid=${this.apiKey}`, `event=${message}`);
+
+    return `${this.baseUrl}/beacon?${pieces.join("&")}`;
   }
 }

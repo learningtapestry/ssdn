@@ -13,6 +13,7 @@
         },
       };
       nucleus.configure("server", window.configuration.BACKEND_ADDRESS);
+      nucleus.configure("defaultNamespace", window.configuration.NAMESPACE);
       nucleus.configure("apiKey", window.configuration.API_KEY);
       nucleus.configure("collectors", [
         [

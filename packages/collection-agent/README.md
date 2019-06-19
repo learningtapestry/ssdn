@@ -20,6 +20,7 @@ instance according to the provided configuration:
   };
   nucleus.configure("server", "<URL TO NUCLEUS SERVER>");
   nucleus.configure("apiKey", "<AGENT API KEY+>");
+  nucleus.configure("defaultNamespace", "<DEFAULT EVENT NAMESPACE>"); // Optional
   nucleus.configure("collectors", [
     "video",
     ["heartbeat", { heartbeatInterval: 5000 }],
