@@ -1,7 +1,13 @@
 import { APIGatewayProxyEvent, APIGatewayProxyHandler } from "aws-lambda";
 
 import { NucleusError } from "../errors/nucleus-error";
-import { apiResponse, applyMiddlewares, getRoleName, verifyAuthorization } from "./api-helper";
+import {
+  apiResponse,
+  applyMiddlewares,
+  getLowercaseHeader,
+  getRoleName,
+  verifyAuthorization,
+} from "./api-helper";
 
 describe("ApiHelper", () => {
   describe("apiResponse", () => {
@@ -123,6 +129,14 @@ describe("ApiHelper", () => {
       } as APIGatewayProxyEvent);
       expect(roleName.isExternal).toBeTruthy();
       expect(roleName.name).toEqual("nucleus_ex_test_test");
+    });
+  });
+
+  describe("getLowercaseHeader", () => {
+    it("returns a function that finds headers no matter the case", () => {
+      expect(getLowercaseHeader({ test: "success" })("test")).toEqual("success");
+      expect(getLowercaseHeader({ TeSt: "success" })("test")).toEqual("success");
+      expect(getLowercaseHeader({ TEST: "success" })("test")).toEqual("success");
     });
   });
 });

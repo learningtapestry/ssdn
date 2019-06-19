@@ -86,3 +86,15 @@ export function parseKinesisData<T>(data: string) {
   const decodedData = decode64(data);
   return JSON.parse(decodedData) as T;
 }
+
+export function getLowercaseHeader(headers?: { [name: string]: string }) {
+  if (!headers) {
+    return () => undefined;
+  }
+
+  const lowerCaseHeaders: { [name: string]: string } = {};
+  for (const [key, value] of Object.entries(headers)) {
+    lowerCaseHeaders[key.toLowerCase()] = value;
+  }
+  return (name: string) => lowerCaseHeaders[name];
+}

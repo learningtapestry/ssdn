@@ -5,6 +5,7 @@
 import { APIGatewayProxyEvent } from "aws-lambda";
 import get from "lodash/fp/get";
 
+import { getLowercaseHeader } from "../functions/api-helper";
 import { isoDate } from "../helpers/app-helper";
 import Event from "../interfaces/event";
 import logger from "../logger";
@@ -14,7 +15,7 @@ export default abstract class ApiGatewayEventParser {
   public defaultNamespace: string;
   public request: object;
   public queryParams: { [k: string]: string };
-  public headers: object;
+  public headers: { [k: string]: string };
   public body: any;
 
   constructor(public lambdaEvent: APIGatewayProxyEvent, defaultNamespace: string) {
@@ -51,7 +52,7 @@ export default abstract class ApiGatewayEventParser {
   protected abstract interpretContent(): any;
 
   protected namespace() {
-    const eventNamespace = get("X-Nucleus-Namespace")(this.headers);
+    const eventNamespace = getLowercaseHeader(this.headers)("x-nucleus-namespace");
     if (eventNamespace) {
       return eventNamespace;
     }

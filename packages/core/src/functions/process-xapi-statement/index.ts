@@ -9,6 +9,7 @@ import XAPIStatementParser from "../../parsers/xapi-statement-parser";
 import { getEventRepository, getMetadataService } from "../../services";
 import XAPIStatementService from "../../services/xapi-statement-service";
 import XAPIValidator from "../../validators/xapi-validator";
+import { getLowercaseHeader } from "../api-helper";
 
 export const handler: APIGatewayProxyHandler = async (event) => {
   const requestErrors = validateRequest(event);
@@ -35,7 +36,10 @@ export const handler: APIGatewayProxyHandler = async (event) => {
 
 const validateRequest = (event: object) => {
   const errors = [];
-  const xAPIVersion = trim(get("headers.X-Experience-API-Version")(event));
+  const xAPIVersion = trim(
+    getLowercaseHeader(get("headers")(event))("x-experience-api-version") || "",
+  );
+
   if (!/^1\.0(\.\d{1,2})?$/.test(xAPIVersion)) {
     errors.push(`Unsupported xAPI version (${xAPIVersion})`);
   }
