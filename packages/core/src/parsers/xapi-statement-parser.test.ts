@@ -16,6 +16,22 @@ describe("XAPIStatementParser", () => {
       expect(nucleusEvent).toEqual(nucleusEventSample);
     });
 
+    it("allows user to specify a custom namespace", async () => {
+      const customNamespaceEvent = {
+        ...processEventInput,
+        headers: {
+          ...processEventInput.headers,
+          "X-Nucleus-Namespace": "custom.learningtapestry.com",
+        },
+      };
+      const nucleusEvent = new XAPIStatementParser(
+        (customNamespaceEvent as unknown) as APIGatewayProxyEvent,
+        "nucleus-test.learningtapestry.com",
+      ).parse();
+
+      expect(nucleusEvent.event.namespace).toEqual("custom.learningtapestry.com");
+    });
+
     it("does not try to decode content when flag is not set", async () => {
       const unencodedEventInput = clone(processEventInput);
       unencodedEventInput.body = JSON.stringify({

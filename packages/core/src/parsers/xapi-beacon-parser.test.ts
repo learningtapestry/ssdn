@@ -15,6 +15,23 @@ describe("XAPIBeaconParser", () => {
       expect(nucleusEvent).toEqual(beaconEventSample);
     });
 
+    it("allows user to specify a custom namespace", async () => {
+      const customNamespaceEvent = {
+        ...beaconEventInput,
+        queryStringParameters: {
+          ...beaconEventInput.queryStringParameters,
+          ns: "custom.learningtapestry.com",
+        },
+      };
+
+      const nucleusEvent = new XAPIBeaconParser(
+        (customNamespaceEvent as unknown) as APIGatewayProxyEvent,
+        "nucleus-test.learningtapestry.com",
+      ).parse();
+
+      expect(nucleusEvent.event.namespace).toEqual("custom.learningtapestry.com");
+    });
+
     it("generates an UUID when none is provided", async () => {
       const nucleusEvent = new XAPIBeaconParser(
         (beaconEventInput as unknown) as APIGatewayProxyEvent,
