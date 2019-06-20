@@ -93,9 +93,9 @@ export function userForm(userParams: UserForm) {
   return {
     email: "cypress-user@example.org",
     name: "Cypress User",
-    password: "@Mb94TQT5nqE",
+    password: Cypress.env("DEFAULT_PASSWORD"),
     phoneNumber: "+1555555555",
-    username: "cypress-user",
+    username: Cypress.env("DEFAULT_USERNAME"),
     ...userParams,
   };
 }

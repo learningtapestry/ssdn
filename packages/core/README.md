@@ -2,11 +2,6 @@
 Open source application that provides a non-proprietary, vendor-neutral solution for facilitating 
 data interchange between public school districts and education technology providers.
 
-## Documentation
-* [Architecture design](docs/architecture-design.md)
-* [Testing methodology](docs/testing-methodology.md)
-
-
 ## Main dependencies and tools
 This project uses the [AWS Serverless Application Model framework](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/what-is-sam.html) 
 (AWS SAM) alongside its command-line interface, so it should be compatible with any command that 
@@ -150,7 +145,7 @@ yarn test:integration
 Due to the nature of these tests, in most cases you'll probably want to run them in the Continuous 
 Integration environment. However, sometimes it might be useful to run specific tests in a 
 local or development environment. Please refer to the 
-[testing methodology guidelines](docs/testing-methodology.md) for more information.
+[testing methodology guidelines](../../docs/testing-methodology.md) for more information.
 
 ## Logging
 We use [Pino](https://github.com/pinojs/pino) as the default logging library. We export a customized

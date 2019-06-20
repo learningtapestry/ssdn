@@ -7,7 +7,7 @@ import keyBy from "lodash/fp/keyBy";
 import mapValues from "lodash/fp/mapValues";
 import logger from "./logger";
 
-export async function execute(command: () => void) {
+export async function execute(command: () => any) {
   try {
     await command();
   } catch (error) {
