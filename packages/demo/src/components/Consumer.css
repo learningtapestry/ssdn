@@ -1,0 +1,62 @@
+.Consumer .bg-amazon {
+  background: #ff9900;
+}
+
+.Consumer h2 {
+  margin-bottom: 0;
+  padding-top: 0.25em;
+  font-size: 1.2rem;
+}
+
+.Consumer section {
+  padding: 1rem;
+  text-align: left;
+  color: #555555;
+  background: linear-gradient(to bottom, #ff9900 0%, #ffffff 90%) left bottom #ffffff no-repeat;
+  background-size: 100% 10px;
+}
+
+.Consumer .logo {
+  width: 3rem;
+  height: 3rem;
+  margin-right: 1rem;
+  border-radius: 50%;
+  line-height: 3rem;
+  font-size: 1.5rem;
+  color: #ffffff;
+  background-color: red;
+  text-align: center;
+}
+
+.Consumer .logo-go {
+  background-color: #ba8b00;
+}
+
+.Consumer .logo-s {
+  background-color: #7abaff;
+}
+
+.Consumer .logo-sis {
+  background-color: #1e7e34;
+}
+
+.Consumer .logo-sc {
+  background-color: #004085;
+}
+
+.Consumer .date {
+  font-size: 0.75rem;
+}
+
+.Consumer .sis-picture {
+  position: absolute;
+  top: -0.2rem;
+  left: 2.3rem;
+}
+
+.Consumer .sis-info {
+  margin-top: 2rem;
+  position: relative;
+  background-color: #cccccc;
+  padding: 0.5rem 0 0.5rem 8rem;
+}

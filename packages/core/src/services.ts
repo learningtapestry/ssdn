@@ -14,6 +14,7 @@ import { readEnv } from "./helpers/app-helper";
 import { Connection } from "./interfaces/connection";
 import DynamoConnectionRepository from "./repositories/dynamo-connection-repository";
 import DynamoConnectionRequestRepository from "./repositories/dynamo-connection-request-repository";
+import DynamoDemoEventRepository from "./repositories/dynamo-demo-event-repository";
 import DynamoFileTransferNotificationRepository from "./repositories/dynamo-file-transfer-notification-repository";
 import DynamoFormatRepository from "./repositories/dynamo-format-repository";
 import KinesisEventRepository from "./repositories/kinesis-event-repository";
@@ -165,4 +166,8 @@ export function getUploadCredentialsService() {
 
 export function getFormatRepository() {
   return new DynamoFormatRepository(getMetadataService(), getDocumentClient());
+}
+
+export function getDemoEventRepository() {
+  return new DynamoDemoEventRepository(getMetadataService(), getDocumentClient());
 }

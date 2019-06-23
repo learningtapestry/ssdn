@@ -1,0 +1,44 @@
+.Producer {
+  width: 100%;
+}
+
+.Producer section,
+section#video {
+  text-align: center;
+  margin: 1rem auto;
+  width: 100%;
+  padding: 1rem;
+  border: 3px dotted #000;
+}
+
+.Producer section h1,
+section#video h1 {
+  font-size: 1rem;
+}
+
+.Producer input[type="text"] {
+  margin-top: 0.5rem;
+  width: 270px;
+  border: 2px solid #ccc;
+  padding: 0.25rem;
+}
+
+.Producer .upload-wrapper {
+  position: relative;
+  margin: 1rem 0 0 10rem;
+  display: inline-block;
+}
+
+.Producer .upload-wrapper input[type="file"] {
+  position: absolute;
+  width: 110px;
+  left: 0;
+  top: 0;
+  opacity: 0;
+}
+
+.Producer .upload-success {
+  position: absolute;
+  top: 3px;
+  left: -36px;
+}

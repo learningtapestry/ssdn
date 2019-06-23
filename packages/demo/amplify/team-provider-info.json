@@ -1,0 +1,53 @@
+{
+    "dev": {
+        "awscloudformation": {
+            "AuthRoleName": "demo-dev-20190620124250-authRole",
+            "UnauthRoleArn": "arn:aws:iam::264441468378:role/demo-dev-20190620124250-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::264441468378:role/demo-dev-20190620124250-authRole",
+            "Region": "us-east-1",
+            "DeploymentBucketName": "demo-dev-20190620124250-deployment",
+            "UnauthRoleName": "demo-dev-20190620124250-unauthRole",
+            "StackName": "demo-dev-20190620124250",
+            "StackId": "arn:aws:cloudformation:us-east-1:264441468378:stack/demo-dev-20190620124250/2724ead0-9348-11e9-bcbe-0e8cd4caae34"
+        },
+        "categories": {
+            "auth": {
+                "demof10598d6": {}
+            }
+        }
+    },
+    "consumer": {
+        "awscloudformation": {
+            "AuthRoleName": "demo-consumer-20190622165344-authRole",
+            "UnauthRoleArn": "arn:aws:iam::671027141136:role/demo-consumer-20190622165344-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::671027141136:role/demo-consumer-20190622165344-authRole",
+            "Region": "us-east-1",
+            "DeploymentBucketName": "demo-consumer-20190622165344-deployment",
+            "UnauthRoleName": "demo-consumer-20190622165344-unauthRole",
+            "StackName": "demo-consumer-20190622165344",
+            "StackId": "arn:aws:cloudformation:us-east-1:671027141136:stack/demo-consumer-20190622165344/886f40e0-94fd-11e9-a6f3-0a20b68b404c"
+        },
+        "categories": {
+            "auth": {
+                "demo45a0dd0c": {}
+            }
+        }
+    },
+    "provider": {
+        "awscloudformation": {
+            "AuthRoleName": "demo-provider-20190622172152-authRole",
+            "UnauthRoleArn": "arn:aws:iam::800125605585:role/demo-provider-20190622172152-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::800125605585:role/demo-provider-20190622172152-authRole",
+            "Region": "us-east-1",
+            "DeploymentBucketName": "demo-provider-20190622172152-deployment",
+            "UnauthRoleName": "demo-provider-20190622172152-unauthRole",
+            "StackName": "demo-provider-20190622172152",
+            "StackId": "arn:aws:cloudformation:us-east-1:800125605585:stack/demo-provider-20190622172152/7694cd00-9501-11e9-ba92-0a0b50a105f6"
+        },
+        "categories": {
+            "auth": {
+                "demo45a0dd0c": {}
+            }
+        }
+    }
+}
