@@ -63,7 +63,7 @@ describe("S3TransferService", () => {
         },
       });
       const event = buildEvent({
-        content: { key: "red.com/Caliper/test.csv" },
+        content: { key: "red.com/Caliper/test+%28file%29.csv" },
       });
       mocked((fakeS3.getObject as any).impl).mockResolvedValueOnce({
         Body: "TestBody",
@@ -80,12 +80,12 @@ describe("S3TransferService", () => {
       expect(fakeS3Factory).toHaveBeenCalledWith({ credentials: fakeTempCredentials });
       expect(fakeS3.getObject).toHaveBeenCalledWith({
         Bucket: "BlueBucket",
-        Key: "red.com/Caliper/test.csv",
+        Key: "red.com/Caliper/test (file).csv",
       });
       expect(fakeS3.putObject).toHaveBeenCalledWith({
         Body: "TestBody",
         Bucket: "RedBucket",
-        Key: "blue.com/red.com/Caliper/test.csv",
+        Key: "blue.com/red.com/Caliper/test (file).csv",
         Metadata: {
           test: "value",
         },

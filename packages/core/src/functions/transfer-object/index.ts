@@ -1,6 +1,7 @@
 import { KinesisStreamHandler } from "aws-lambda";
 
 import Event from "../../interfaces/event";
+import logger from "../../logger";
 import { getConnectionRepository, getS3TransferService } from "../../services";
 import { parseKinesisData } from "../api-helper";
 
@@ -13,7 +14,11 @@ export const handler: KinesisStreamHandler = async (event) => {
     if (!nucleusEvent.source || nucleusEvent.event.protocol !== "S3") {
       continue;
     }
-    const connection = await connectionRepository.get(nucleusEvent.source.endpoint);
-    await s3TransferService.transferObject(connection, nucleusEvent);
+    try {
+      const connection = await connectionRepository.get(nucleusEvent.source.endpoint);
+      await s3TransferService.transferObject(connection, nucleusEvent);
+    } catch (error) {
+      logger.error(error);
+    }
   }
 };

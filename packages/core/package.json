@@ -42,6 +42,7 @@
     "test:integration": "NODE_ENV=integration jest integration.test.ts --runInBand"
   },
   "devDependencies": {
+    "@babel/core": "^7.4.5",
     "@types/aws-lambda": "^8.10.23",
     "@types/aws-serverless-express": "^3.3.1",
     "@types/aws4": "^1.5.1",
