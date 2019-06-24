@@ -16,26 +16,26 @@ export const handler: KinesisStreamHandler | S3Handler = async (
   callback: any,
 ) => {
   for (const record of event.Records) {
-    let demoEvent: DemoEvent;
+    let demoEvents: DemoEvent[];
     if (record.eventSource === "aws:s3") {
       if (path.extname(record.s3.object.key) === ".csv") {
         const csvData = await readCSV(record.s3.bucket.name, record.s3.object.key);
-        demoEvent = buildCsvUploadEvent(record, csvData);
+        demoEvents = buildCsvUploadEvent(record, csvData);
       } else {
-        demoEvent = buildDirectUploadEvent(record);
+        demoEvents = [buildDirectUploadEvent(record)];
       }
     } else {
       const nucleusEvent = parseKinesisData<Event>(record.kinesis.data);
       if (nucleusEvent.event.protocol === "S3" || !wantedVideoEvent(nucleusEvent)) {
         continue;
       }
-      demoEvent = buildVideoEvent(nucleusEvent);
+      demoEvents = [buildVideoEvent(nucleusEvent)];
     }
-    logger.info(demoEvent);
+    logger.info(demoEvents);
 
-    await demoEventRepository.put(demoEvent);
+    demoEvents.forEach(async (demoEvent) => await demoEventRepository.put(demoEvent));
 
-    callback(null, demoEvent);
+    callback(null, demoEvents);
   }
 };
 
@@ -74,33 +74,40 @@ function buildVideoEvent(nucleusEvent: Event) {
 
 function buildCsvUploadEvent(s3Event: S3EventRecord, csvData: any) {
   const data = parse(csvData);
+  const headers = data[0];
+  data.splice(0, 1);
 
-  logger.info(data[1]);
+  logger.info(data);
 
-  let event;
-  if (data[0].includes("score")) {
-    event = {
-      additionalInfo: {
-        bucket: s3Event.s3.bucket.name,
-        score: data[1][4],
-        scoreDate: data[1][5],
-      },
-      type: DemoEventType.OneRosterResults,
-      user: data[1][2],
-    };
-  } else {
-    event = {
-      additionalInfo: { bucket: s3Event.s3.bucket.name, beginDate: data[1][8] },
-      type: DemoEventType.OneRosterEnrollments,
-      user: data[1][5],
-    };
-  }
-
-  return {
-    ...event,
+  const commonAttrs = {
     creationDate: s3Event.eventTime,
     resource: s3Event.s3.object.key,
   };
+
+  const events: DemoEvent[] = [];
+  data.forEach((item: any) => {
+    if (headers.includes("score")) {
+      events.push({
+        ...commonAttrs,
+        additionalInfo: {
+          bucket: s3Event.s3.bucket.name,
+          score: item[4],
+          scoreDate: item[5],
+        },
+        type: DemoEventType.OneRosterResults,
+        user: item[2],
+      });
+    } else {
+      events.push({
+        ...commonAttrs,
+        additionalInfo: { bucket: s3Event.s3.bucket.name, beginDate: item[8] },
+        type: DemoEventType.OneRosterEnrollments,
+        user: item[5],
+      });
+    }
+  });
+
+  return events;
 }
 
 function buildDirectUploadEvent(s3Event: S3EventRecord) {
