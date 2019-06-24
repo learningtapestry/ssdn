@@ -52,7 +52,7 @@ async function readCSV(bucket: string, file: string) {
   const csvFile = await getS3()
     .getObject({
       Bucket: bucket,
-      Key: file,
+      Key: decodeKey(file),
     })
     .promise();
 
@@ -81,7 +81,7 @@ function buildCsvUploadEvent(s3Event: S3EventRecord, csvData: any) {
 
   const commonAttrs = {
     creationDate: s3Event.eventTime,
-    resource: s3Event.s3.object.key,
+    resource: decodeKey(s3Event.s3.object.key),
   };
 
   const events: DemoEvent[] = [];
@@ -114,12 +114,16 @@ function buildDirectUploadEvent(s3Event: S3EventRecord) {
   return {
     additionalInfo: { bucket: s3Event.s3.bucket.name },
     creationDate: s3Event.eventTime,
-    resource: s3Event.s3.object.key,
+    resource: decodeKey(s3Event.s3.object.key),
     type: DemoEventType.DirectFile,
     user: path
-      .basename(s3Event.s3.object.key)
+      .basename(decodeKey(s3Event.s3.object.key))
       .split(".")[0]
       .split("_")
       .join(" "),
   };
+}
+
+function decodeKey(key: string) {
+  return decodeURIComponent(key.replace(/\+/g, "%20"));
 }

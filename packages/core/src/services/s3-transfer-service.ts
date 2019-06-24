@@ -30,12 +30,13 @@ export default class S3TransferService {
       ),
     });
 
-    logger.info(`Fetching object ${event.content.key} from external upload bucket.`);
+    const objectKey = decodeURIComponent(event.content.key.replace(/\+/g, "%20"));
+    logger.info(`Fetching object ${objectKey} from external upload bucket.`);
     try {
       const object = await externalS3
         .getObject({
           Bucket: connection.metadata.UploadS3Bucket,
-          Key: event.content.key,
+          Key: objectKey,
         })
         .promise();
 
@@ -43,19 +44,19 @@ export default class S3TransferService {
       const downloadBucket = await this.metadata.getMetadataValue(BUCKETS.download);
       const endpointHostname = parse(connection.endpoint).hostname;
 
-      logger.info(`Storing object ${event.content.key} into download bucket.`);
+      logger.info(`Storing object ${objectKey} into download bucket.`);
       await internalS3
         .putObject({
           Body: object.Body,
           Bucket: downloadBucket.value,
-          Key: `${endpointHostname}/${event.content.key}`,
+          Key: `${endpointHostname}/${objectKey}`,
           Metadata: object.Metadata,
         })
         .promise();
 
       await this.sendNotification({
         bucket: downloadBucket.value,
-        file: event.content.key,
+        file: objectKey,
         message: "File has been successfully transferred to the download bucket",
         subject: "Transfer success",
         type: FileTransferNotificationType.Info,
@@ -70,7 +71,7 @@ export default class S3TransferService {
       await this.sendNotification({
         bucket: connection.metadata.UploadS3Bucket,
         details: errorDetails,
-        file: event.content.key,
+        file: objectKey,
         message: "There was a problem transferring the file",
         subject: error.message,
         type: FileTransferNotificationType.Error,
