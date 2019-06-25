@@ -1,3 +1,4 @@
+import isEmpty from "lodash/fp/isEmpty";
 import React, { useCallback, useEffect, useState } from "react";
 import { Dropdown, DropdownButton, Table } from "react-bootstrap";
 
@@ -18,7 +19,7 @@ export default function Logs() {
   useEffect(() => {
     const fetchData = async () => {
       const retrievedGroups = await AWSService.retrieveLogGroups();
-      if (retrievedGroups) {
+      if (retrievedGroups && !isEmpty(retrievedGroups)) {
         setLogGroups(retrievedGroups);
         setSelectedLogGroup(retrievedGroups[0]);
         await fetchLogEvents(retrievedGroups[0]);
