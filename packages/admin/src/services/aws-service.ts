@@ -200,7 +200,9 @@ export default class AWSService {
     return AWSService.withCredentials(async () => {
       const cloudWatchLogs = new CloudWatchLogs();
       const logGroupsData = await cloudWatchLogs
-        .describeLogGroups({ logGroupNamePrefix: `/aws/lambda/${awsconfiguration.Auth.stackName}` })
+        .describeLogGroups({
+          logGroupNamePrefix: `/aws/lambda/${awsconfiguration.Auth.stackName.substring(0, 15)}`,
+        })
         .promise();
 
       return map("logGroupName")(logGroupsData.logGroups);
