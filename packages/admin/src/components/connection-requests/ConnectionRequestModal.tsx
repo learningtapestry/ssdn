@@ -46,14 +46,10 @@ export default function ConnectionRequestModal(props: ConnectionRequestModalProp
             {capitalize(props.connectionRequest.status)}
           </ConnectionAttribute>
           <ConnectionAttribute name="Consumer Endpoint URL">
-            <a href={props.connectionRequest.consumerEndpoint}>
-              {props.connectionRequest.consumerEndpoint}
-            </a>
+            {props.connectionRequest.consumerEndpoint}
           </ConnectionAttribute>
           <ConnectionAttribute name="Provider Endpoint URL">
-            <a href={props.connectionRequest.providerEndpoint}>
-              {props.connectionRequest.providerEndpoint}
-            </a>
+            {props.connectionRequest.providerEndpoint}
           </ConnectionAttribute>
           <ConnectionAttribute name="Creation Date">
             {displayDate(props.connectionRequest.creationDate)}
