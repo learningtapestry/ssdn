@@ -12,11 +12,17 @@ export const handler: KinesisStreamHandler = async (event) => {
   for (const record of event.Records) {
     const nucleusEvent = parseKinesisData<Event>(record.kinesis.data);
     if (!nucleusEvent.source || nucleusEvent.event.protocol !== "S3") {
+      logger.info(`Skipping event [source: null | protocol: ${nucleusEvent.event.protocol}]`);
       continue;
     }
     try {
       const connection = await connectionRepository.get(nucleusEvent.source.endpoint);
       await s3TransferService.transferObject(connection, nucleusEvent);
+      logger.info(
+        `Processed event [source: ${nucleusEvent.source.endpoint} | protocol: ${
+          nucleusEvent.event.protocol
+        }]`,
+      );
     } catch (error) {
       logger.error(error);
     }

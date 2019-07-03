@@ -47,6 +47,12 @@ export default class AwsConnectionService implements ConnectionService {
   public async createForConsumerRequest(connectionRequest: ConnectionRequest) {
     await this.connectionRequestService.assertConnectionRequestUpdatable(connectionRequest);
 
+    logger.info(
+      `Processing connection request ${connectionRequest.consumerEndpoint} - ${
+        connectionRequest.id
+      }`,
+    );
+
     let connection;
     let isNew;
     [connection, isNew] = await this.findOrInitializeConnection(
@@ -56,6 +62,8 @@ export default class AwsConnectionService implements ConnectionService {
         nucleusId: connectionRequest.connection.nucleusId,
       },
     );
+
+    logger.info(`Initialized connection request.`);
 
     const awsAccountId = await this.metadata.getMetadataValue(AWS_NUCLEUS.awsAccountId);
     const nucleusId = await this.metadata.getMetadataValue(AWS_NUCLEUS.nucleusId);
@@ -73,6 +81,8 @@ export default class AwsConnectionService implements ConnectionService {
         metadata: await this.metadata.getPublicMetadata(),
       },
     });
+
+    logger.info(`Sent request acceptance.`);
 
     connection = {
       ...connection,
@@ -103,6 +113,8 @@ export default class AwsConnectionService implements ConnectionService {
       connection.endpoint,
     );
 
+    logger.info(`Updated connection policies.`);
+
     await this.repository.put(connection);
 
     await this.connectionRequestRepository.updateIncomingStatus(
@@ -110,6 +122,8 @@ export default class AwsConnectionService implements ConnectionService {
       connectionRequest.id,
       ConnectionRequestStatus.Accepted,
     );
+
+    logger.info(`Saved connection.`);
 
     return connection;
   }
@@ -136,6 +150,12 @@ export default class AwsConnectionService implements ConnectionService {
     connectionRequest: ConnectionRequest,
     connectionDetails: ProviderIssuedConnection,
   ) {
+    logger.info(
+      `Processing connection request ${connectionRequest.consumerEndpoint} - ${
+        connectionRequest.id
+      }`,
+    );
+
     await this.connectionRequestService.assertConnectionRequestUpdatable(connectionRequest);
 
     let connection;
@@ -147,6 +167,8 @@ export default class AwsConnectionService implements ConnectionService {
         nucleusId: connectionDetails.connection.nucleusId,
       },
     );
+
+    logger.info(`Initialized connection.`);
 
     if (!isNew && !isEqual(connection.externalConnection, connectionDetails.externalConnection)) {
       logger.info(
@@ -191,12 +213,16 @@ export default class AwsConnectionService implements ConnectionService {
       connection.endpoint,
     );
 
+    logger.info(`Updated connection policies.`);
+
     await this.repository.put(connection);
 
     await this.connectionRequestRepository.updateStatus(
       connectionRequest.id,
       ConnectionRequestStatus.Accepted,
     );
+
+    logger.info(`Saved connection.`);
 
     return connection;
   }

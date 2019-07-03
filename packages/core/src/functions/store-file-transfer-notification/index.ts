@@ -1,9 +1,11 @@
 import { SNSEventRecord, SNSHandler } from "aws-lambda";
 import uuid from "uuid/v4";
+
 import {
   FileTransferNotification,
   FileTransferNotificationType,
 } from "../../interfaces/file-transfer-notification";
+import logger from "../../logger";
 import { getFileTransferNotificationRepository } from "../../services";
 
 export const handler: SNSHandler = async (event, context, callback) => {
@@ -12,6 +14,8 @@ export const handler: SNSHandler = async (event, context, callback) => {
       return await getFileTransferNotificationRepository().put(buildNotification(record));
     }),
   );
+
+  logger.info(`Stored notifications for ${notifications.length} records.`);
 
   callback(null, notifications as any);
 };

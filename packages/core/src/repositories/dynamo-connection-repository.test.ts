@@ -138,10 +138,27 @@ describe("DynamoConnectionRepository", () => {
         fakeMetadataService,
         fakeDocumentClient,
       );
-      await connectionRepository.put(buildConnection({ creationDate: "", updateDate: "" }));
+      await connectionRepository.put(
+        buildConnection({ creationDate: "", endpoint: "https://red.com", updateDate: "" }),
+      );
       const item = fakeDocumentClient.impl.put!.mock.calls[0][0].Item;
       expect(new Date(item.creationDate).getTime()).toBeGreaterThan(0);
       expect(new Date(item.updateDate).getTime()).toBeGreaterThan(0);
+    });
+
+    it("inserts a connection updating its create and update time", async () => {
+      const connectionRepository = new DynamoConnectionRepository(
+        fakeMetadataService,
+        fakeDocumentClient,
+      );
+
+      for (const badUrl of ["javascript:alert(1)", "failsvalidation", "localhost:1234"]) {
+        const result = connectionRepository.put(buildConnection({ endpoint: badUrl }));
+        await expect(result).rejects.toHaveProperty(
+          "message",
+          "The endpoint for the connection is not valid.",
+        );
+      }
     });
   });
 });

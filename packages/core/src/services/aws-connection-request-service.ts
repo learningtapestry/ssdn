@@ -35,6 +35,7 @@ export default class AwsConnectionRequestService implements ConnectionRequestSer
   }
 
   public async create(connectionRequest: ConnectionRequest) {
+    logger.info(`Processing connection request for ${connectionRequest.providerEndpoint}.`);
     const awsAccountId = await this.metadata.getMetadataValue(AWS_NUCLEUS.awsAccountId);
     const nucleusId = await this.metadata.getMetadataValue(AWS_NUCLEUS.nucleusId);
     const namespace = await this.metadata.getMetadataValue(AWS_NUCLEUS.namespace);
@@ -50,10 +51,12 @@ export default class AwsConnectionRequestService implements ConnectionRequestSer
     connectionRequest.namespace = connectionRequest.namespace || namespace.value;
     connectionRequest.status = ConnectionRequestStatus.Created;
     connectionRequest.creationDate = isoDate();
+
     await this.validateConnectionRequest(connectionRequest);
     await this.repository.put(connectionRequest);
     try {
       await this.sendConnectionRequest(connectionRequest);
+      logger.info(`Request has been sent and created.`);
     } catch {
       // Could not send the request, let's trigger a lambda so it can get into the
       // dead letter queue if it fails again.
@@ -85,7 +88,9 @@ export default class AwsConnectionRequestService implements ConnectionRequestSer
     }
     connectionRequest.status = ConnectionRequestStatus.Created;
     await this.validateIncomingConnectionRequest(connectionRequest);
-    return this.repository.putIncoming(connectionRequest);
+    const newRequest = await this.repository.putIncoming(connectionRequest);
+    logger.info(`Request ${newRequest.consumerEndpoint} - ${newRequest.id} has been received.`);
+    return newRequest;
   }
 
   public async sendConnectionRequest(connectionRequest: ConnectionRequest) {
@@ -99,6 +104,7 @@ export default class AwsConnectionRequestService implements ConnectionRequestSer
   public async receiveProviderRejection(connectionRequest: ConnectionRequest) {
     await this.assertConnectionRequestUpdatable(connectionRequest);
     await this.repository.updateStatus(connectionRequest.id, ConnectionRequestStatus.Rejected);
+    logger.info(`Request ${connectionRequest.id} status has been updated.`);
   }
 
   public async assertConnectionRequestUpdatable(

@@ -62,15 +62,16 @@ export default class AwsExchangeService implements ExchangeService {
     connectionRequest: ConnectionRequest,
     providerAcceptance: ProviderIssuedAcceptance,
   ) {
-    const response = await Axios.post(
-      connectionRequestsAcceptPath(connectionRequest.consumerEndpoint, connectionRequest.id),
-      providerAcceptance,
-      {
-        headers: {
-          Authorization: `Bearer ${connectionRequest.acceptanceToken}`,
-        },
-      },
+    const acceptancePath = connectionRequestsAcceptPath(
+      connectionRequest.consumerEndpoint,
+      connectionRequest.id,
     );
+    const response = await Axios.post(acceptancePath, providerAcceptance, {
+      headers: {
+        Authorization: `Bearer ${connectionRequest.acceptanceToken}`,
+      },
+    });
+    logger.info(`Sent acceptance response to ${acceptancePath}.`);
 
     return response.data as ConsumerIssuedConnection;
   }
@@ -78,6 +79,7 @@ export default class AwsExchangeService implements ExchangeService {
   public async sendConnectionRequest(connectionRequest: ConnectionRequest) {
     const submitUrl = incomingRequestsPath(connectionRequest.providerEndpoint);
     await Axios.post(submitUrl, connectionRequest);
+    logger.info(`Sent request to ${submitUrl}.`);
   }
 
   public async sendEvents(connection: Connection, events: Event[]) {
@@ -93,12 +95,16 @@ export default class AwsExchangeService implements ExchangeService {
       },
     }));
     await externalRepository.storeBatch(annotatedEvents);
-    logger.info(`Wrote to ${connection.endpoint}'s stream.`);
+    logger.info(`Wrote ${annotatedEvents.length} events to ${connection.endpoint}'s stream.`);
   }
 
   public async sendRejection(connectionRequest: ConnectionRequest) {
+    const acceptancePath = connectionRequestsAcceptPath(
+      connectionRequest.consumerEndpoint,
+      connectionRequest.id,
+    );
     await Axios.post(
-      connectionRequestsAcceptPath(connectionRequest.consumerEndpoint, connectionRequest.id),
+      acceptancePath,
       {
         accepted: false,
       },
@@ -108,30 +114,35 @@ export default class AwsExchangeService implements ExchangeService {
         },
       },
     );
+    logger.info(`Sent rejection to ${acceptancePath}.`);
   }
 
   public async sendStreamUpdate(connection: Connection, streamUpdate: StreamUpdate) {
+    const path = streamsPath(connection.endpoint);
     await this.signedRequest(
       {
         arn: connection.externalConnection.arn,
         externalId: connection.externalConnection.externalId,
       },
       "POST",
-      streamsPath(connection.endpoint),
+      path,
       streamUpdate,
     );
+    logger.info(`Sent stream update to ${path}.`);
   }
 
   public async verifyConnectionRequest(connectionRequest: ConnectionRequest) {
     try {
-      await Axios.get(
-        connectionRequestVerifyPath(connectionRequest.consumerEndpoint, connectionRequest.id),
-        {
-          headers: {
-            Authorization: `Bearer ${connectionRequest.acceptanceToken}`,
-          },
-        },
+      const verifyPath = connectionRequestVerifyPath(
+        connectionRequest.consumerEndpoint,
+        connectionRequest.id,
       );
+      await Axios.get(verifyPath, {
+        headers: {
+          Authorization: `Bearer ${connectionRequest.acceptanceToken}`,
+        },
+      });
+      logger.info(`Verified connection for ${verifyPath}.`);
       return;
     } catch {
       throw new NucleusError("We could not verify the request with the consumer endpoint.", 422);

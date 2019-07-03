@@ -158,13 +158,41 @@ describe("DynamoConnectionRequestRepository", () => {
         fakeDocumentClient,
       );
 
-      await connReqRepo.put(buildConnectionRequest());
+      await connReqRepo.put(
+        buildConnectionRequest({
+          consumerEndpoint: "https://red.com",
+          providerEndpoint: "https://blue.com",
+        }),
+      );
       expect(mocked(fakeDocumentClient.put).mock.calls[0][0]).toMatchObject({
         Item: {
           creationDate: expect.stringMatching(isoRegex()),
         },
         TableName: "NucleusConnectionRequests",
       });
+    });
+
+    it("validates the URL", async () => {
+      const connReqRepo = new DynamoConnectionRequestRepository(
+        fakeMetadataService,
+        fakeDocumentClient,
+      );
+
+      for (const badUrl of ["javascript:alert(1)", "failsvalidation", "localhost:1234"]) {
+        const result = connReqRepo.put(buildConnectionRequest({ consumerEndpoint: badUrl }));
+        await expect(result).rejects.toHaveProperty(
+          "message",
+          "The endpoint for the connection is not valid.",
+        );
+      }
+
+      for (const badUrl of ["javascript:alert(1)", "failsvalidation", "localhost:1234"]) {
+        const result = connReqRepo.put(buildConnectionRequest({ providerEndpoint: badUrl }));
+        await expect(result).rejects.toHaveProperty(
+          "message",
+          "The endpoint for the connection is not valid.",
+        );
+      }
     });
   });
 
@@ -175,13 +203,45 @@ describe("DynamoConnectionRequestRepository", () => {
         fakeDocumentClient,
       );
 
-      await connReqRepo.putIncoming(buildConnectionRequest());
+      await connReqRepo.putIncoming(
+        buildConnectionRequest({
+          consumerEndpoint: "https://red.com",
+          providerEndpoint: "https://blue.com",
+        }),
+      );
       expect(mocked(fakeDocumentClient.put).mock.calls[0][0]).toMatchObject({
         Item: {
           creationDate: expect.stringMatching(isoRegex()),
         },
         TableName: "NucleusIncomingConnectionRequests",
       });
+    });
+
+    it("validates the URL", async () => {
+      const connReqRepo = new DynamoConnectionRequestRepository(
+        fakeMetadataService,
+        fakeDocumentClient,
+      );
+
+      for (const badUrl of ["javascript:alert(1)", "failsvalidation", "localhost:1234"]) {
+        const result = connReqRepo.putIncoming(
+          buildConnectionRequest({ consumerEndpoint: badUrl }),
+        );
+        await expect(result).rejects.toHaveProperty(
+          "message",
+          "The endpoint for the connection is not valid.",
+        );
+      }
+
+      for (const badUrl of ["javascript:alert(1)", "failsvalidation", "localhost:1234"]) {
+        const result = connReqRepo.putIncoming(
+          buildConnectionRequest({ providerEndpoint: badUrl }),
+        );
+        await expect(result).rejects.toHaveProperty(
+          "message",
+          "The endpoint for the connection is not valid.",
+        );
+      }
     });
   });
 });

@@ -1,6 +1,7 @@
 import { APIGatewayProxyHandler } from "aws-lambda";
 
 import { StreamUpdate } from "../../interfaces/exchange";
+import logger from "../../logger";
 import { getConnectionRepository, getConnectionService } from "../../services";
 import { apiResponse, applyMiddlewares, getRoleName } from "../api-helper";
 
@@ -11,12 +12,9 @@ export const handler = applyMiddlewares<APIGatewayProxyHandler>(async (event) =>
 
   const roleName = getRoleName(event);
   if (roleName.isExternal) {
-    await connectionService.updateStream(
-      await connectionRepository.getByConnectionSecret(roleName.name),
-      update.stream,
-      update.streamType,
-      false,
-    );
+    const connection = await connectionRepository.getByConnectionSecret(roleName.name);
+    await connectionService.updateStream(connection, update.stream, update.streamType, false);
+    logger.info(`Updated ${connection.endpoint} stream for external request from ${roleName}.`);
     return apiResponse();
   }
 
@@ -26,5 +24,6 @@ export const handler = applyMiddlewares<APIGatewayProxyHandler>(async (event) =>
     update.streamType,
     true,
   );
+  logger.info(`Updated ${update.endpoint} stream for internal request.`);
   return apiResponse();
 });

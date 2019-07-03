@@ -1,7 +1,9 @@
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 
+import { NucleusError } from "../errors/nucleus-error";
 import { isoDate } from "../helpers/app-helper";
 import { getOrFail } from "../helpers/dynamo-helper";
+import { URL_REGEX } from "../helpers/url-regex";
 import { TABLES } from "../interfaces/aws-metadata-keys";
 import {
   ConnectionRequest,
@@ -80,6 +82,14 @@ export default class DynamoConnectionRequestRepository implements ConnectionRequ
       ...connectionRequest,
       creationDate: connectionRequest.creationDate || isoDate(),
     };
+
+    if (
+      !URL_REGEX.test(connectionRequest.providerEndpoint) ||
+      !URL_REGEX.test(connectionRequest.consumerEndpoint)
+    ) {
+      throw new NucleusError("The endpoint for the connection is not valid.", 400);
+    }
+
     await this.client
       .put({
         Item: connectionRequest,
@@ -94,6 +104,14 @@ export default class DynamoConnectionRequestRepository implements ConnectionRequ
       ...connectionRequest,
       creationDate: connectionRequest.creationDate || isoDate(),
     };
+
+    if (
+      !URL_REGEX.test(connectionRequest.providerEndpoint) ||
+      !URL_REGEX.test(connectionRequest.consumerEndpoint)
+    ) {
+      throw new NucleusError("The endpoint for the connection is not valid.", 400);
+    }
+
     await this.client
       .put({
         Item: connectionRequest,
