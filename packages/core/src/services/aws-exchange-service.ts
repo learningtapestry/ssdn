@@ -4,8 +4,8 @@ import Axios from "axios";
 import { RequestOptions } from "https";
 import { parse } from "url";
 
-import { NucleusError } from "../errors/nucleus-error";
-import { AWS_NUCLEUS } from "../interfaces/aws-metadata-keys";
+import { SSDNError } from "../errors/ssdn-error";
+import { AWS_SSDN } from "../interfaces/aws-metadata-keys";
 import {
   Connection,
   ConsumerIssuedConnection,
@@ -17,8 +17,8 @@ import { ProviderIssuedAcceptance, StreamUpdate } from "../interfaces/exchange";
 import logger from "../logger";
 import KinesisEventRepository from "../repositories/kinesis-event-repository";
 import ExchangeService from "./exchange-service";
-import ExternalNucleusMetadataService from "./external-nucleus-metadata-service";
-import NucleusMetadataService from "./nucleus-metadata-service";
+import ExternalSSDNMetadataService from "./external-ssdn-metadata-service";
+import SSDNMetadataService from "./ssdn-metadata-service";
 import TemporaryCredentialsFactory from "./temporary-credentials-factory";
 
 type SignedRequestOptions = RequestOptions & {
@@ -39,17 +39,17 @@ export const incomingRequestsPath = (endpoint: string) =>
 export const streamsPath = (endpoint: string) => `${endpoint}/connections/streams/update`;
 
 type ExternalRepoFactory = (
-  p1: ConstructorParameters<typeof ExternalNucleusMetadataService>,
+  p1: ConstructorParameters<typeof ExternalSSDNMetadataService>,
   p2: ConstructorParameters<typeof Kinesis>,
 ) => KinesisEventRepository;
 
 export default class AwsExchangeService implements ExchangeService {
-  private metadata: NucleusMetadataService;
+  private metadata: SSDNMetadataService;
   private temporaryCredentialsFactory: TemporaryCredentialsFactory;
   private kinesisEventRepoFactory: ExternalRepoFactory;
 
   constructor(
-    metadata: NucleusMetadataService,
+    metadata: SSDNMetadataService,
     temporaryCredentialsFactory: TemporaryCredentialsFactory,
     kinesisEventRepoFactory: ExternalRepoFactory,
   ) {
@@ -145,7 +145,7 @@ export default class AwsExchangeService implements ExchangeService {
       logger.info(`Verified connection for ${verifyPath}.`);
       return;
     } catch {
-      throw new NucleusError("We could not verify the request with the consumer endpoint.", 422);
+      throw new SSDNError("We could not verify the request with the consumer endpoint.", 422);
     }
   }
 

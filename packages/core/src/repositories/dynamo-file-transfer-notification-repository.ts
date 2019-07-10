@@ -8,12 +8,12 @@ import orderBy from "lodash/fp/orderBy";
 import { TABLES } from "../interfaces/aws-metadata-keys";
 import { FileTransferNotification } from "../interfaces/file-transfer-notification";
 import logger from "../logger";
-import NucleusMetadataService from "../services/nucleus-metadata-service";
+import SSDNMetadataService from "../services/ssdn-metadata-service";
 import FileTransferNotificationRepository from "./file-transfer-notification-repository";
 
 export default class DynamoFileTransferNotificationRepository
   implements FileTransferNotificationRepository {
-  constructor(private metadata: NucleusMetadataService, private client: DocumentClient) {}
+  constructor(private metadata: SSDNMetadataService, private client: DocumentClient) {}
 
   public async findAll(): Promise<FileTransferNotification[]> {
     const items = await this.client.scan({ TableName: await this.getTableName() }).promise();
@@ -54,7 +54,7 @@ export default class DynamoFileTransferNotificationRepository
   }
 
   private async getTableName() {
-    const name = await this.metadata.getMetadataValue(TABLES.nucleusFileTransferNotifications);
+    const name = await this.metadata.getMetadataValue(TABLES.ssdnFileTransferNotifications);
 
     return name.value;
   }

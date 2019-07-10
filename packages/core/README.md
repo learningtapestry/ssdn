@@ -1,4 +1,4 @@
-# Nucleus
+# Secure Student Data Network
 Open source application that provides a non-proprietary, vendor-neutral solution for facilitating 
 data interchange between public school districts and education technology providers.
 
@@ -36,7 +36,7 @@ development workflow.
 root
 ├── src/                                <-- Main source folder
 │   ├── functions/                      <-- Folder containing lambda functions
-│   │   └── hello-nucleus/              <-- Source code for a single lambda function
+│   │   └── hello-ssdn/              <-- Source code for a single lambda function
 │   │      ├── index.js                 <-- Lambda function code
 │   │      └── index.test.js            <-- Unit test for the lambda function
 │   ├── repositories/                   <-- Folder containing repository objects
@@ -96,7 +96,7 @@ yarn start
 This will take care of building your TypeScript code automatically whenever a change is detected.
 
 Now, you can use the regular SAM CLI commands to invoke your lambda functions and start a server
-for your API. For example, to execute the `Hello Nucleus` lambda function that's included in the 
+for your API. For example, to execute the `Hello SSDN` lambda function that's included in the 
 project run:
 
 ```bash
@@ -157,7 +157,7 @@ project. Keep in mind that everything that is outputted to the console inside a 
 be sent to CloudWatch Logs, which is precisely what we want.
 
 By default, the log level is set to `info`, but can be easily tweaked via the environment variable 
-`NUCLEUS_LOG_LEVEL`, which accepts all the levels that Pino does. In tests, the log level is set to 
+`SSDN_LOG_LEVEL`, which accepts all the levels that Pino does. In tests, the log level is set to 
 `fatal` in order to avoid getting any messages that probably just add noise to the tests output.
 
 ## Deployment

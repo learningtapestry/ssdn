@@ -2,7 +2,7 @@
 
 ## Introduction
 In this section we try to describe what we believe is the best approach when dealing with tests in a
-serverless architecture like the one we're using in Nucleus.
+serverless architecture like the one we're using in SSDN.
 
 First of all, let's establish a few points that will make clear our goals:
 - Lambda functions should generally be single-threaded and focused only on dealing with a single 
@@ -19,7 +19,7 @@ Unit tests represent the minimal action a test can encompass. They're usually wr
 specific business logic inside a class or a function. They're called "unit" because their scope is 
 never beyond an individual class.
 
-In the context of Nucleus, unit tests should be used to make assertions about the logic inside the
+In the context of SSDN, unit tests should be used to make assertions about the logic inside the
 lambda functions. They should not bother with specific code that serves to glue up the functions 
 inside the lambda containers, so they should ideally avoid executing the lambda handler. Instead, we 
 want our business logic to be 100% independent of the FaaS provider, so we'll write separate 
@@ -50,7 +50,7 @@ cases is able to detect errors that are missed by either unit or integration tes
 time, they're usually very slow and costly to execute, so it's better to only rely on them to test 
 the more general use cases in the application.
 
-Our recommendation for end-to-end tests is to stick to the public interfaces of the Nucleus 
+Our recommendation for end-to-end tests is to stick to the public interfaces of the SSDN 
 application and avoid making assertions on internal components or temporary state. 
 
 We also discourage the use of log records in order to query the outcome of an operation. Although it
@@ -71,7 +71,7 @@ marks the test as failed after a certain number of retries.
 
 ## Development workflow
 
-When it comes to actual development in a serverless application like Nucleus, we'd like to consider
+When it comes to actual development in a serverless application like SSDN, we'd like to consider
 the following stages from the point of view of a programmer, in relation to testing.
 
 ### Local
@@ -101,7 +101,7 @@ live environment to test your code, so no mocks are really needed, but they run 
 environment, which is much more convenient than pushing changes to the repository and going through 
 the whole CI process.
 
-If you want to deploy your changes to a new stack (`Nucleus-Development` for example), you'll need 
+If you want to deploy your changes to a new stack (`SSDN-Development` for example), you'll need 
 to run the following commands:
 
 ```bash
@@ -114,7 +114,7 @@ _You might want to adapt the above command to include your own KMS Key ID and S3
 
 ```bash
 sam deploy --template-file packaged.yaml \
-           --stack-name Nucleus-Development \
+           --stack-name SSDN-Development \
            --capabilities CAPABILITY_IAM
 ```
 

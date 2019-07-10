@@ -14,7 +14,7 @@ export function buildConnectionRequest(overrides?: Partial<ConnectionRequest>): 
     acceptanceToken: "",
     connection: {
       awsAccountId: "",
-      nucleusId: "",
+      ssdnId: "",
     },
     consumerEndpoint: "",
     creationDate: "",
@@ -40,8 +40,8 @@ export function buildConnection(overrides?: Partial<Connection>): Connection {
       arn: "",
       awsAccountId: "",
       externalId: "",
-      nucleusId: "",
       roleName: "",
+      ssdnId: "",
     },
     creationDate: "",
     endpoint: "",
@@ -131,7 +131,7 @@ export function buildFileTransferNotification(overrides?: Partial<FileTransferNo
     details:
       "aws-service.ts:295 Uncaught (in promise) Error: An unexpected error occurred: " +
       "Network Error at _callee36$ (aws-service.ts:295)",
-    file: "nucleus-test.learningtapestry.com/xAPI/test.txt",
+    file: "ssdn-test.learningtapestry.com/xAPI/test.txt",
     id: "4f331ac9-5d41-4129-ad1b-b704adc80ce2",
     message: "This is a test message for the file transfer notification topic",
     subject: "This is a test message",
@@ -146,7 +146,7 @@ export function buildSNSFileTransferNotification(overrides?: Partial<SNSFileTran
     details:
       "aws-service.ts:295 Uncaught (in promise) Error: An unexpected error occurred: " +
       "Network Error at _callee36$ (aws-service.ts:295)",
-    file: "nucleus-test.learningtapestry.com/xAPI/test.txt",
+    file: "ssdn-test.learningtapestry.com/xAPI/test.txt",
     message: "This is a test message for the file transfer notification topic",
     subject: "This is a test message",
     type: FileTransferNotificationType.Error,

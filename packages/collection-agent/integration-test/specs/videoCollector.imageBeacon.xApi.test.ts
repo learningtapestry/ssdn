@@ -10,11 +10,11 @@ describe("videoCollector.imageBeacon.xApi", () => {
         !!browser.execute(() => {
           const windowAny = window as any;
           return (
-            windowAny.nucleus &&
-            windowAny.nucleus.current &&
-            windowAny.nucleus.current.collectors[1] &&
-            windowAny.nucleus.current.collectors[1].players.length > 0 &&
-            typeof windowAny.nucleus.current.collectors[1].players[0].playVideo === "function"
+            windowAny.ssdn &&
+            windowAny.ssdn.current &&
+            windowAny.ssdn.current.collectors[1] &&
+            windowAny.ssdn.current.collectors[1].players.length > 0 &&
+            typeof windowAny.ssdn.current.collectors[1].players[0].playVideo === "function"
           );
         }),
     );
@@ -26,14 +26,14 @@ describe("videoCollector.imageBeacon.xApi", () => {
     iframe.click();
 
     browser.execute(() => {
-      const player = (window as any).nucleus.current.collectors[1].players[0];
+      const player = (window as any).ssdn.current.collectors[1].players[0];
       player.playVideo();
     });
 
     browser.pause(4000);
 
     browser.execute(() => {
-      const player = (window as any).nucleus.current.collectors[1].players[0];
+      const player = (window as any).ssdn.current.collectors[1].players[0];
       player.pauseVideo();
       window.setTimeout(() => {
         (window as any).videoPlaybackDone = true;

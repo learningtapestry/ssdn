@@ -9,10 +9,10 @@ export enum API_KEYS {
   collectionApiKeyId = "CollectionApiKeyId",
 }
 
-export enum AWS_NUCLEUS {
+export enum AWS_SSDN {
   awsAccountId = "AwsAccountId",
   namespace = "Namespace",
-  nucleusId = "NucleusId",
+  ssdnId = "SSDNId",
 }
 
 export enum BUCKETS {
@@ -57,11 +57,11 @@ export enum STREAMS {
 }
 
 export enum TABLES {
-  nucleusConnectionRequests = "NucleusConnectionRequestsTable",
-  nucleusConnections = "NucleusConnectionsTable",
-  nucleusIncomingConnectionRequests = "NucleusIncomingConnectionRequestsTable",
-  nucleusFormats = "NucleusFormatsTable",
-  nucleusFileTransferNotifications = "NucleusFileTransferNotificationsTable",
+  ssdnConnectionRequests = "SSDNConnectionRequestsTable",
+  ssdnConnections = "SSDNConnectionsTable",
+  ssdnIncomingConnectionRequests = "SSDNIncomingConnectionRequestsTable",
+  ssdnFormats = "SSDNFormatsTable",
+  ssdnFileTransferNotifications = "SSDNFileTransferNotificationsTable",
 }
 
 export enum TOPICS {

@@ -4,7 +4,7 @@ describe("Home", () => {
   });
 
   it("greets with welcome message", () => {
-    cy.contains("h1", "Welcome to Nucleus!");
+    cy.contains("h1", "Welcome to SSDN!");
     cy.contains("p", "This is the main page of the administration panel");
   });
 
@@ -12,7 +12,7 @@ describe("Home", () => {
     cy.contains("a.btn", "Learn more").should(
       "have.attr",
       "href",
-      "https://github.com/learningtapestry/nucleus",
+      "https://github.com/learningtapestry/ssdn",
     );
   });
 });

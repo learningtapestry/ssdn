@@ -7,6 +7,6 @@ describe("<Home />", () => {
   it("renders the main page", () => {
     const { getByText } = render(<Home />);
 
-    getByText(/welcome to nucleus/i);
+    getByText(/welcome to Secure Student Data Network/i);
   });
 });

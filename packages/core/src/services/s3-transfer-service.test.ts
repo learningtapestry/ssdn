@@ -9,11 +9,11 @@ import {
 } from "../../test-support/factories";
 import { fakeAws, fakeImpl, mocked } from "../../test-support/jest-helper";
 import { BUCKETS, TOPICS } from "../interfaces/aws-metadata-keys";
-import NucleusMetadataService from "./nucleus-metadata-service";
 import S3TransferService from "./s3-transfer-service";
+import SSDNMetadataService from "./ssdn-metadata-service";
 import TemporaryCredentialsFactory from "./temporary-credentials-factory";
 
-const fakeMetadata = fakeImpl<NucleusMetadataService>({
+const fakeMetadata = fakeImpl<SSDNMetadataService>({
   getMetadataValue: jest.fn((key: string) =>
     Promise.resolve({
       value: ({
@@ -109,7 +109,7 @@ describe("S3TransferService", () => {
           },
           File: {
             DataType: "String",
-            StringValue: "nucleus-test.learningtapestry.com/xAPI/test.txt",
+            StringValue: "ssdn-test.learningtapestry.com/xAPI/test.txt",
           },
           Type: { DataType: "String", StringValue: "error" },
         },

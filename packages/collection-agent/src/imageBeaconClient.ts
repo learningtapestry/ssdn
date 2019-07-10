@@ -10,7 +10,7 @@ import { Message, MessageEncoder } from "./messages";
  * @param [error]    `true`, if an error happened, or falsy if none occurred.
  * @param [response]  It is never set, since a response cannot be communicated via
  *                    an image beacon.
- * @param [request]   The HTML image element used to ping the Nucleus server.
+ * @param [request]   The HTML image element used to ping the SSDN server.
  *                    Its `src` property will be set with an URL the encodes all
  *                    the message data.
  */
@@ -22,21 +22,21 @@ export type ImageBeaconCallback = (
 
 /**
  * `Client` implementation that uses an [image beacon](https://en.wikipedia.org/wiki/Web_beacon)
- * for sending messages to a Nucleus server.
+ * for sending messages to a SSDN server.
  *
  * Image beacons are created by instantiating a new HTML image object in memory
- * and setting its `src` property with the URL for a Nucleus service and the
+ * and setting its `src` property with the URL for a SSDN service and the
  * encoded message in the query string. Once such an object is initialised,
  * the browser immediately attempts to fetch the 'image' from the server.
  */
 export class ImageBeaconClient implements Client {
   /**
-   * The base URL for the Nucleus server instance.
+   * The base URL for the SSDN server instance.
    */
   public baseUrl: string;
 
   /**
-   * The API key for connecting with the Nucleus server instance.
+   * The API key for connecting with the SSDN server instance.
    */
   public apiKey: string;
 
@@ -46,15 +46,15 @@ export class ImageBeaconClient implements Client {
   public defaultNamespace?: string;
 
   /**
-   * The message encoder for encoding Nucleus messages into the desired format.
+   * The message encoder for encoding SSDN messages into the desired format.
    */
   public encoder: MessageEncoder;
 
   /**
    * Creates an instance for the `ImageBeaconClient`.
-   * @param baseUrl The base URL for the Nucleus server instance.
-   * @param apiKey  The API key for connecting with the Nucleus server instance.
-   * @param encoder The message encoder for encoding Nucleus messages into the
+   * @param baseUrl The base URL for the SSDN server instance.
+   * @param apiKey  The API key for connecting with the SSDN server instance.
+   * @param encoder The message encoder for encoding SSDN messages into the
    *                desired format.
    */
   constructor(baseUrl: string, apiKey: string, encoder: MessageEncoder, defaultNamespace?: string) {
@@ -65,7 +65,7 @@ export class ImageBeaconClient implements Client {
   }
 
   /**
-   * Sends a message to a Nucleus server instance via an image beacon.
+   * Sends a message to a SSDN server instance via an image beacon.
    * @param message    The message.
    * @param [callback] An optional callback for handling responses and errors for
    *                   the network request.

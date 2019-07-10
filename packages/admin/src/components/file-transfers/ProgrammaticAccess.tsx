@@ -22,7 +22,7 @@ const querystring = require("querystring");
         
 const endpoint = $ENDPOINT;
 const apiKey = $API_KEY;
-const client = "nucleus.learningtapestry.com";
+const client = "ssdn.learningtapestry.com";
 const format = "xAPI";
   
 axios.post(endpoint, querystring.stringify({ client, format })).then((response) => {
@@ -41,7 +41,7 @@ axios.post(endpoint, querystring.stringify({ client, format })).then((response) 
 
       <h2>Instance values</h2>
       <p>
-        These are the values that belong to this Nucleus instance. Make sure to replace the
+        These are the values that belong to this SSDN instance. Make sure to replace the
         placeholders with them when you make the actual call.
       </p>
       <p>
@@ -53,12 +53,12 @@ axios.post(endpoint, querystring.stringify({ client, format })).then((response) 
       <hr />
       <h3>Using cURL</h3>
       <SyntaxHighlighter language="bash" style={atom}>
-        curl --data 'client=nucleus.learningtapestry.com' --data 'format=xAPI' --header
+        curl --data 'client=ssdn.learningtapestry.com' --data 'format=xAPI' --header
         'X-Api-Key:$API_KEY' $ENDPOINT
       </SyntaxHighlighter>
       <h3>Using HTTPie</h3>
       <SyntaxHighlighter language="bash" style={atom}>
-        http -f POST $ENDPOINT client=nucleus.learningtapestry.com format=xAPI X-Api-Key:$API_KEY
+        http -f POST $ENDPOINT client=ssdn.learningtapestry.com format=xAPI X-Api-Key:$API_KEY
       </SyntaxHighlighter>
       <h3>Using Node</h3>
       <SyntaxHighlighter language="javascript" style={atom}>

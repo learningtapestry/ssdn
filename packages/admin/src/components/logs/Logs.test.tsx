@@ -21,7 +21,7 @@ describe("<Logs/>", () => {
 
     getByText("Logs");
     await wait(() => {
-      getByText("/aws/lambda/Nucleus-AuthorizeBeaconFunction-1P2GO4YF9VZA7");
+      getByText("/aws/lambda/SSDN-AuthorizeBeaconFunction-1P2GO4YF9VZA7");
     });
   });
 
@@ -40,8 +40,8 @@ describe("<Logs/>", () => {
     const { getByText } = render(<Logs />);
 
     await wait(() => {
-      fireEvent.click(getByText("/aws/lambda/Nucleus-AuthorizeBeaconFunction-1P2GO4YF9VZA7"));
-      fireEvent.click(getByText("/aws/lambda/Nucleus-ProcessXAPIStatementFunction-HCJE3P62QE5P"));
+      fireEvent.click(getByText("/aws/lambda/SSDN-AuthorizeBeaconFunction-1P2GO4YF9VZA7"));
+      fireEvent.click(getByText("/aws/lambda/SSDN-ProcessXAPIStatementFunction-HCJE3P62QE5P"));
     });
 
     expect(AWSService.retrieveLogEvents).toHaveBeenCalled();

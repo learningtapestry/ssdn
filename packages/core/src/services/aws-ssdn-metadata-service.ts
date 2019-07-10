@@ -1,14 +1,14 @@
 import CloudFormation from "aws-sdk/clients/cloudformation";
 
-import { NucleusError } from "../errors/nucleus-error";
+import { SSDNError } from "../errors/ssdn-error";
 import TtlCache from "../helpers/ttl-cache";
 import { API, BUCKETS, STREAMS } from "../interfaces/aws-metadata-keys";
 import { MetadataKey } from "../interfaces/base-types";
-import { PublicNucleusMetadata } from "../interfaces/connection";
+import { PublicSSDNMetadata } from "../interfaces/connection";
 import logger from "../logger";
-import NucleusMetadataService from "./nucleus-metadata-service";
+import SSDNMetadataService from "./ssdn-metadata-service";
 
-export default class AwsNucleusMetadataService implements NucleusMetadataService {
+export default class AwsSSDNMetadataService implements SSDNMetadataService {
   private client: CloudFormation;
 
   private cache = new TtlCache<string, CloudFormation.Stack>(60 * 60 * 1000);
@@ -25,7 +25,7 @@ export default class AwsNucleusMetadataService implements NucleusMetadataService
     const output = stack.Outputs!.find((o) => o.OutputKey === configurationKey);
     if (!output) {
       logger.error(`Looked for configuration key that does not exist: ${configurationKey}`);
-      throw new NucleusError(
+      throw new SSDNError(
         "A fatal error occurred when processing the request. The issue has been reported.",
         500,
       );
@@ -37,7 +37,7 @@ export default class AwsNucleusMetadataService implements NucleusMetadataService
     return await this.getMetadataValue(API.exchange);
   }
 
-  public async getPublicMetadata(): Promise<PublicNucleusMetadata> {
+  public async getPublicMetadata(): Promise<PublicSSDNMetadata> {
     const eventProcessorStreamName = await this.getMetadataValue(STREAMS.eventProcessor);
     const uploadS3BucketName = await this.getMetadataValue(BUCKETS.upload);
     return {

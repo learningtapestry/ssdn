@@ -90,7 +90,7 @@ export default class AWSService {
       const items = await documentClient
         .scan({
           FilterExpression: `attribute_exists(${filterAttr}[0])`,
-          TableName: awsconfiguration.Storage.nucleusConnections,
+          TableName: awsconfiguration.Storage.ssdnConnections,
         })
         .promise();
 
@@ -116,8 +116,8 @@ export default class AWSService {
   public static async retrieveConnectionRequests(type: "incoming" | "submitted") {
     const tableName =
       type === "incoming"
-        ? awsconfiguration.Storage.nucleusIncomingConnectionRequests
-        : awsconfiguration.Storage.nucleusConnectionRequests;
+        ? awsconfiguration.Storage.ssdnIncomingConnectionRequests
+        : awsconfiguration.Storage.ssdnConnectionRequests;
 
     return AWSService.withCredentials(async () => {
       const documentClient = new DynamoDB.DocumentClient();

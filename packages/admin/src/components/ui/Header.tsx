@@ -10,15 +10,15 @@ import logo from "../../logo.svg";
 const Header = () => (
   <header className="App-header">
     <Navbar bg="primary" variant="dark">
-      <Navbar.Brand href="https://github.com/learningtapestry/nucleus">
+      <Navbar.Brand href="https://github.com/learningtapestry/ssdn">
         <img
-          alt="Nucleus logo"
+          alt="SSDN logo"
           src={logo}
           width="30"
           height="30"
           className="Header-logo d-inline-block align-top"
         />
-        {"Nucleus"}
+        {"SSDN"}
       </Navbar.Brand>
       <Nav className="mr-auto">
         <LinkContainer to="/" exact={true}>

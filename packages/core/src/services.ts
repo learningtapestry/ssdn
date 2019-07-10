@@ -22,8 +22,8 @@ import AwsConnectionRequestService from "./services/aws-connection-request-servi
 import AwsConnectionService from "./services/aws-connection-service";
 import AwsEventRouter from "./services/aws-event-router";
 import AwsExchangeService from "./services/aws-exchange-service";
-import AwsNucleusMetadataService from "./services/aws-nucleus-metadata-service";
-import ExternalNucleusMetadataService from "./services/external-nucleus-metadata-service";
+import AwsSSDNMetadataService from "./services/aws-ssdn-metadata-service";
+import ExternalSSDNMetadataService from "./services/external-ssdn-metadata-service";
 import IamService from "./services/iam-service";
 import LambdaService from "./services/lambda-service";
 import S3TransferService from "./services/s3-transfer-service";
@@ -95,8 +95,8 @@ export function getExchangeService() {
 
 export function getMetadataService() {
   return singleton(
-    "AwsNucleusMetadataService",
-    () => new AwsNucleusMetadataService(getCloudFormation(), readEnv("NUCLEUS_STACK_ID")),
+    "AwsSSDNMetadataService",
+    () => new AwsSSDNMetadataService(getCloudFormation(), readEnv("SSDN_STACK_ID")),
   );
 }
 
@@ -133,7 +133,7 @@ export function getEventRouter() {
 }
 
 export function getExternalEventRepository(
-  metadataParams: ConstructorParameters<typeof ExternalNucleusMetadataService>,
+  metadataParams: ConstructorParameters<typeof ExternalSSDNMetadataService>,
   kinesisParams: ConstructorParameters<typeof Kinesis>,
 ) {
   return new KinesisEventRepository(
@@ -147,7 +147,7 @@ export function getTemporaryCredentialsFactory() {
 }
 
 export function getExternalMetadataService(connection: Connection) {
-  return new ExternalNucleusMetadataService(connection);
+  return new ExternalSSDNMetadataService(connection);
 }
 
 export function getS3TransferService() {

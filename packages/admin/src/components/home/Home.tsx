@@ -6,12 +6,12 @@ function Home() {
     <Row>
       <Col>
         <Jumbotron>
-          <h1>Welcome to Nucleus!</h1>
+          <h1>Welcome to Secure Student Data Network!</h1>
           <p>
             This is the <strong>main page</strong> of the administration panel.
           </p>
           <p>
-            <Button href="https://github.com/learningtapestry/nucleus" variant="primary">
+            <Button href="https://github.com/learningtapestry/ssdn" variant="primary">
               Learn more
             </Button>
           </p>
@@ -30,8 +30,8 @@ function Home() {
               </thead>
               <tbody>
                 <tr>
-                  <td>Nucleus ID</td>
-                  <td>{process.env.REACT_APP_NUCLEUS_ID}</td>
+                  <td>SSDN ID</td>
+                  <td>{process.env.REACT_APP_SSDN_ID}</td>
                 </tr>
                 <tr>
                   <td>Endpoint</td>

@@ -6,13 +6,13 @@ import XAPIBeaconParser from "./xapi-beacon-parser";
 
 describe("XAPIBeaconParser", () => {
   describe("parse", () => {
-    it("generates a nucleus event structured object", async () => {
-      const nucleusEvent = new XAPIBeaconParser(
+    it("generates a ssdn event structured object", async () => {
+      const ssdnEvent = new XAPIBeaconParser(
         (beaconEventInput as unknown) as APIGatewayProxyEvent,
-        "nucleus-test.learningtapestry.com",
+        "ssdn-test.learningtapestry.com",
       ).parse();
 
-      expect(nucleusEvent).toEqual(beaconEventSample);
+      expect(ssdnEvent).toEqual(beaconEventSample);
     });
 
     it("allows user to specify a custom namespace", async () => {
@@ -24,21 +24,21 @@ describe("XAPIBeaconParser", () => {
         },
       };
 
-      const nucleusEvent = new XAPIBeaconParser(
+      const ssdnEvent = new XAPIBeaconParser(
         (customNamespaceEvent as unknown) as APIGatewayProxyEvent,
-        "nucleus-test.learningtapestry.com",
+        "ssdn-test.learningtapestry.com",
       ).parse();
 
-      expect(nucleusEvent.event.namespace).toEqual("custom.learningtapestry.com");
+      expect(ssdnEvent.event.namespace).toEqual("custom.learningtapestry.com");
     });
 
     it("generates an UUID when none is provided", async () => {
-      const nucleusEvent = new XAPIBeaconParser(
+      const ssdnEvent = new XAPIBeaconParser(
         (beaconEventInput as unknown) as APIGatewayProxyEvent,
-        "nucleus-test.learningtapestry.com",
+        "ssdn-test.learningtapestry.com",
       ).parse();
 
-      expect(nucleusEvent.content).toHaveProperty("id");
+      expect(ssdnEvent.content).toHaveProperty("id");
     });
   });
 });

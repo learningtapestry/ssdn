@@ -1,6 +1,6 @@
-export class NucleusError extends Error {
+export class SSDNError extends Error {
   public statusCode?: string;
-  public name = "NucleusError";
+  public name = "SSDNError";
 
   constructor(message: string, statusCode?: number) {
     super(message);

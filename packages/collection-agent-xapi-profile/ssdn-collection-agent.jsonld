@@ -1,23 +1,23 @@
 {
   "@context": "https://w3id.org/xapi/profiles/context",
-  "id": "https://learningtapestry.github.io/xapi/nucleus/collection/schema",
+  "id": "https://learningtapestry.github.io/xapi/ssdn/collection/schema",
   "type": "Profile",
   "conformsTo": "https://w3id.org/xapi/profiles#1.0",
   "prefLabel": {
-    "en": "Nucleus Browser Collection Agent Vocabulary"
+    "en": "SSDN Browser Collection Agent Vocabulary"
   },
   "definition": {
-    "en": "A list of concepts for the Nucleus solution's browser collection agent."
+    "en": "A list of concepts for the SSDN solution's browser collection agent."
   },
-  "seeAlso": "https://github.com/learningtapestry/nucleus",
+  "seeAlso": "https://github.com/learningtapestry/ssdn",
   "author": {
     "type": "Organization",
     "name": "Learning Tapestry"
   },
   "concepts": [
     {
-      "id": "https://learningtapestry.github.io/xapi/nucleus/collection/verbs/heartbeat",
-      "inScheme": "https://learningtapestry.github.io/xapi/nucleus/collection/schema/1.0.0",
+      "id": "https://learningtapestry.github.io/xapi/ssdn/collection/verbs/heartbeat",
+      "inScheme": "https://learningtapestry.github.io/xapi/ssdn/collection/schema/1.0.0",
       "type": "Verb",
       "definition": {
         "en": "A 'heartbeat' by the collection agent in a website. It means the browser tab is currently active for that website. Heartbeats are sent periodically."
@@ -27,8 +27,8 @@
       }
     },
     {
-      "id": "https://learningtapestry.github.io/xapi/nucleus/collection/activities/page",
-      "inScheme": "https://learningtapestry.github.io/xapi/nucleus/collection/schema/1.0.0",
+      "id": "https://learningtapestry.github.io/xapi/ssdn/collection/activities/page",
+      "inScheme": "https://learningtapestry.github.io/xapi/ssdn/collection/schema/1.0.0",
       "type": "ActivityType",
       "definition": {
         "en": "A page in a website that the browser user has visited."
@@ -38,8 +38,8 @@
       }
     },
     {
-      "id": "https://learningtapestry.github.io/xapi/nucleus/collection/extensions/timeSpentOnPage",
-      "inScheme": "https://learningtapestry.github.io/xapi/nucleus/collection/schema/1.0.0",
+      "id": "https://learningtapestry.github.io/xapi/ssdn/collection/extensions/timeSpentOnPage",
+      "inScheme": "https://learningtapestry.github.io/xapi/ssdn/collection/schema/1.0.0",
       "type": "ContextExtension",
       "prefLabel": {
         "en": "timeSpentOnPage"
@@ -49,8 +49,8 @@
       }
     },
     {
-      "id": "https://learningtapestry.github.io/xapi/nucleus/collection/extensions/heartbeatId",
-      "inScheme": "https://learningtapestry.github.io/xapi/nucleus/collection/schema/1.0.0",
+      "id": "https://learningtapestry.github.io/xapi/ssdn/collection/extensions/heartbeatId",
+      "inScheme": "https://learningtapestry.github.io/xapi/ssdn/collection/schema/1.0.0",
       "type": "ContextExtension",
       "prefLabel": {
         "en": "heartbeatId"
@@ -60,8 +60,8 @@
       }
     },
     {
-      "id": "https://learningtapestry.github.io/xapi/nucleus/collection/extensions/pageTitle",
-      "inScheme": "https://learningtapestry.github.io/xapi/nucleus/collection/schema/1.0.0",
+      "id": "https://learningtapestry.github.io/xapi/ssdn/collection/extensions/pageTitle",
+      "inScheme": "https://learningtapestry.github.io/xapi/ssdn/collection/schema/1.0.0",
       "type": "ContextExtension",
       "prefLabel": {
         "en": "pageTitle"
@@ -71,8 +71,8 @@
       }
     },
     {
-      "id": "https://learningtapestry.github.io/xapi/nucleus/collection/extensions/pageUrl",
-      "inScheme": "https://learningtapestry.github.io/xapi/nucleus/collection/schema/1.0.0",
+      "id": "https://learningtapestry.github.io/xapi/ssdn/collection/extensions/pageUrl",
+      "inScheme": "https://learningtapestry.github.io/xapi/ssdn/collection/schema/1.0.0",
       "type": "ContextExtension",
       "prefLabel": {
         "en": "pageUrl"

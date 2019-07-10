@@ -1,6 +1,6 @@
 import { buildConnectionRequest } from "../../../test-support/factories";
 import { buildApiProxyHandlerEvent, fakeImpl, mocked } from "../../../test-support/jest-helper";
-import { NucleusError } from "../../errors/nucleus-error";
+import { SSDNError } from "../../errors/ssdn-error";
 import { getConnectionRequestService, getExchangeService } from "../../services";
 import AwsConnectionRequestService from "../../services/aws-connection-request-service";
 import AwsExchangeService from "../../services/aws-exchange-service";
@@ -22,7 +22,7 @@ mocked(getExchangeService).mockImplementation(() => fakeExchangeService);
 describe("ConnectionRequestAcceptFunction", () => {
   it("verifies connection requests before accepting", async () => {
     mocked(fakeExchangeService.verifyConnectionRequest).mockImplementationOnce(() =>
-      Promise.reject(new NucleusError("Rejected!")),
+      Promise.reject(new SSDNError("Rejected!")),
     );
     const response = handler(
       buildApiProxyHandlerEvent()
@@ -30,7 +30,7 @@ describe("ConnectionRequestAcceptFunction", () => {
         .build(),
     );
     await expect(response).resolves.toEqual({
-      body: JSON.stringify({ errors: [{ detail: "Rejected!", title: "NucleusError" }] }),
+      body: JSON.stringify({ errors: [{ detail: "Rejected!", title: "SSDNError" }] }),
       statusCode: 500,
     });
   });

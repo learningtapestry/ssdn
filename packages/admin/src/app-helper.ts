@@ -42,7 +42,7 @@ export function nullConnectionRequest(
     connection: {
       awsAccountId: uuid(),
       externalId: uuid(),
-      nucleusId: uuid(),
+      ssdnId: uuid(),
     },
     consumerEndpoint: "https://example.org/register",
     creationDate: new Date(),

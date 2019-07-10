@@ -41,19 +41,19 @@ export class VideoCollector implements Collector {
   private previousYTReady: (() => void) | undefined;
 
   /**
-   * The Nucleus agent client.
+   * The SSDN agent client.
    */
   private client: Client;
 
   /**
-   * The Nucleus message user.
+   * The SSDN message user.
    */
   private user: User;
 
   /**
    * Builds a new `VideoCollector`.
-   * @param client The Nucleus agent client.
-   * @param user   The Nucleus message user.
+   * @param client The SSDN agent client.
+   * @param user   The SSDN message user.
    */
   constructor(client: Client, user: User) {
     this.client = client;
@@ -77,7 +77,7 @@ export class VideoCollector implements Collector {
 
   /**
    * The global initialisation handler for the YouTube API.
-   * Looks for embedded YT videos and hooks into them for generating Nucleus
+   * Looks for embedded YT videos and hooks into them for generating SSDN
    * messages.
    * Every time the video is played, paused, etc, a new message is created and
    * sent to the server.

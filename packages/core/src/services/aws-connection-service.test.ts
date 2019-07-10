@@ -2,8 +2,8 @@ import sortBy from "lodash/fp/sortBy";
 
 import { buildConnection, buildConnectionRequest } from "../../test-support/factories";
 import { fakeImpl, mocked } from "../../test-support/jest-helper";
-import { NucleusError } from "../errors/nucleus-error";
-import { AWS_NUCLEUS, POLICIES } from "../interfaces/aws-metadata-keys";
+import { SSDNError } from "../errors/ssdn-error";
+import { AWS_SSDN, POLICIES } from "../interfaces/aws-metadata-keys";
 import { ConsumerIssuedConnection } from "../interfaces/connection";
 import {
   ConnectionRequestStatus,
@@ -16,7 +16,7 @@ import AwsConnectionService from "./aws-connection-service";
 import ConnectionRequestService from "./connection-request-service";
 import ExchangeService from "./exchange-service";
 import IamService from "./iam-service";
-import NucleusMetadataService from "./nucleus-metadata-service";
+import SSDNMetadataService from "./ssdn-metadata-service";
 
 const fakeConnectionRepository = fakeImpl<ConnectionRepository>({
   get: jest.fn(),
@@ -44,15 +44,15 @@ const fakeIamService = fakeImpl<IamService>({
   updateEndpointRoleInlinePolicy: jest.fn(),
 });
 
-const fakeMetadata = fakeImpl<NucleusMetadataService>({
+const fakeMetadata = fakeImpl<SSDNMetadataService>({
   getEndpoint: jest.fn(() => Promise.resolve({ value: "https://red.com" })),
   getMetadataValue: jest.fn((key: string) =>
     Promise.resolve({
       value: ({
         [POLICIES.consumerPolicy]: "ConsumerPolicyArn",
         [POLICIES.providerPolicy]: "ProviderPolicyArn",
-        [AWS_NUCLEUS.awsAccountId]: "RedAccountId",
-        [AWS_NUCLEUS.nucleusId]: "RedNucleusId",
+        [AWS_SSDN.awsAccountId]: "RedAccountId",
+        [AWS_SSDN.ssdnId]: "RedSSDNId",
       } as any)[key],
     }),
   ),
@@ -82,7 +82,7 @@ describe("AwsConnectionService", () => {
   describe("createForConsumerRequest", () => {
     it("ensures the connection request can be updated", async () => {
       mocked(fakeConnectionRequestService.assertConnectionRequestUpdatable).mockRejectedValueOnce(
-        new NucleusError("Cannot be updated"),
+        new SSDNError("Cannot be updated"),
       );
       const connectionRequest = buildConnectionRequest();
       const service = buildConnectionService();
@@ -97,7 +97,7 @@ describe("AwsConnectionService", () => {
       const connectionRequest = buildConnectionRequest({
         connection: {
           awsAccountId: "BlueAccountId",
-          nucleusId: "BlueNucleusId",
+          ssdnId: "BlueSSDNId",
         },
         consumerEndpoint: "https://blue.com",
         formats: ["Caliper", "xAPI"],
@@ -118,7 +118,7 @@ describe("AwsConnectionService", () => {
       mocked(fakeIamService.findOrCreateEndpointRole).mockResolvedValueOnce({
         arn: "RedBlueArn",
         externalId: "RedBlueExternalId",
-        name: "nucleus_ex_red_blue",
+        name: "ssdn_ex_red_blue",
       });
       mocked(fakeExchangeService.sendAcceptance).mockResolvedValueOnce(acceptanceResponse);
 
@@ -129,8 +129,8 @@ describe("AwsConnectionService", () => {
         arn: "RedBlueArn",
         awsAccountId: "BlueAccountId",
         externalId: "RedBlueExternalId",
-        nucleusId: "BlueNucleusId",
-        roleName: "nucleus_ex_red_blue",
+        roleName: "ssdn_ex_red_blue",
+        ssdnId: "BlueSSDNId",
       });
       expect(newConnection.externalConnection).toEqual({
         arn: "BlueRedExternalArn",
@@ -181,7 +181,7 @@ describe("AwsConnectionService", () => {
       expect(fakeExchangeService.sendAcceptance).toHaveBeenCalledWith(connectionRequest, {
         accepted: true,
         details: {
-          connection: { awsAccountId: "RedAccountId", nucleusId: "RedNucleusId" },
+          connection: { awsAccountId: "RedAccountId", ssdnId: "RedSSDNId" },
           externalConnection: { arn: "RedBlueArn", externalId: "RedBlueExternalId" },
           metadata: {
             EventProcessorStream: "RedProcessorStream",
@@ -203,8 +203,8 @@ describe("AwsConnectionService", () => {
           arn: "123456",
           awsAccountId: "123456",
           externalId: "123456",
-          nucleusId: "123456",
           roleName: "123456",
+          ssdnId: "123456",
         },
         creationDate: new Date(2019, 10, 1).toISOString(),
         endpoint: "https://blue.com",
@@ -228,7 +228,7 @@ describe("AwsConnectionService", () => {
       const connectionRequest = buildConnectionRequest({
         connection: {
           awsAccountId: "BlueAccountId",
-          nucleusId: "BlueNucleusId",
+          ssdnId: "BlueSSDNId",
         },
         consumerEndpoint: "https://blue.com",
         formats: ["Caliper", "xAPI"],
@@ -283,7 +283,7 @@ describe("AwsConnectionService", () => {
       expect(fakeExchangeService.sendAcceptance).toHaveBeenCalledWith(connectionRequest, {
         accepted: true,
         details: {
-          connection: { awsAccountId: "RedAccountId", nucleusId: "RedNucleusId" },
+          connection: { awsAccountId: "RedAccountId", ssdnId: "RedSSDNId" },
           externalConnection: { arn: "123456", externalId: "123456" },
           metadata: {
             EventProcessorStream: "RedProcessorStream",
@@ -303,12 +303,12 @@ describe("AwsConnectionService", () => {
   describe("createForProviderAcceptance", () => {
     it("ensures the connection request can be updated", async () => {
       mocked(fakeConnectionRequestService.assertConnectionRequestUpdatable).mockRejectedValueOnce(
-        new NucleusError("Cannot be updated"),
+        new SSDNError("Cannot be updated"),
       );
       const connectionRequest = buildConnectionRequest();
       const service = buildConnectionService();
       const result = service.createForProviderAcceptance(connectionRequest, {
-        connection: { awsAccountId: "123456", nucleusId: "123456" },
+        connection: { awsAccountId: "123456", ssdnId: "123456" },
         externalConnection: { arn: "123456", externalId: "123456" },
         metadata: { EventProcessorStream: "123456", UploadS3Bucket: "123456" },
       });
@@ -328,7 +328,7 @@ describe("AwsConnectionService", () => {
       const acceptanceDetails = {
         connection: {
           awsAccountId: "BlueAccountId",
-          nucleusId: "BlueNucleusId",
+          ssdnId: "BlueSSDNId",
         },
         externalConnection: {
           arn: "RedBlueExternalArn",
@@ -354,7 +354,7 @@ describe("AwsConnectionService", () => {
         arn: "BlueRedArn",
         awsAccountId: "BlueAccountId",
         externalId: "BlueRedExternalId",
-        nucleusId: "BlueNucleusId",
+        ssdnId: "BlueSSDNId",
       });
       expect(newConnection.externalConnection).toEqual({
         arn: "RedBlueExternalArn",
@@ -399,8 +399,8 @@ describe("AwsConnectionService", () => {
           arn: "123456",
           awsAccountId: "123456",
           externalId: "123456",
-          nucleusId: "123456",
           roleName: "123456",
+          ssdnId: "123456",
         },
         creationDate: new Date(2019, 10, 1).toISOString(),
         endpoint: "https://blue.com",
@@ -433,7 +433,7 @@ describe("AwsConnectionService", () => {
       const newConnection = await service.createForProviderAcceptance(connectionRequest, {
         connection: {
           awsAccountId: "654321",
-          nucleusId: "654321",
+          ssdnId: "654321",
         },
         externalConnection: {
           arn: "654321",
@@ -485,7 +485,7 @@ describe("AwsConnectionService", () => {
   describe("rejectConsumerRequest", () => {
     it("ensures the connection request can be updated", async () => {
       mocked(fakeConnectionRequestService.assertConnectionRequestUpdatable).mockRejectedValueOnce(
-        new NucleusError("Cannot be updated"),
+        new SSDNError("Cannot be updated"),
       );
       const connectionRequest = buildConnectionRequest();
       const service = buildConnectionService();

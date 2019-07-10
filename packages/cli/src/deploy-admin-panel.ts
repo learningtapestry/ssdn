@@ -5,7 +5,7 @@
 import execa from "execa";
 import { execute, printBright, printSuccess } from "./app-helper";
 import logger from "./logger";
-import NucleusConfig from "./nucleus-config";
+import SSDNConfig from "./ssdn-config";
 
 export default class DeployAdminPanel {
   private static async amplifyCommand(parameters: string[]) {
@@ -24,17 +24,17 @@ export default class DeployAdminPanel {
     await DeployAdminPanel.amplifyCommand(["status"]);
   }
 
-  private nucleusConfig: NucleusConfig;
+  private ssdnConfig: SSDNConfig;
   private readonly environment: string;
 
-  constructor(nucleusConfig: NucleusConfig) {
-    this.nucleusConfig = nucleusConfig;
+  constructor(ssdnConfig: SSDNConfig) {
+    this.ssdnConfig = ssdnConfig;
     const options: { [key: string]: string } = {
       Development: "dev",
       Production: "prod",
       Test: "test",
     };
-    this.environment = options[this.nucleusConfig.environment];
+    this.environment = options[this.ssdnConfig.environment];
   }
 
   public async run() {
@@ -60,16 +60,16 @@ export default class DeployAdminPanel {
   private amplifyConfiguration() {
     return JSON.stringify({
       envName: this.environment,
-      projectName: "nucleus-admin",
+      projectName: "ssdn-admin",
     });
   }
 
   private cloudFormationConfiguration() {
     return JSON.stringify({
       awscloudformation: {
-        accessKeyId: this.nucleusConfig.accessKeyId,
-        region: this.nucleusConfig.region,
-        secretAccessKey: this.nucleusConfig.secretAccessKey,
+        accessKeyId: this.ssdnConfig.accessKeyId,
+        region: this.ssdnConfig.region,
+        secretAccessKey: this.ssdnConfig.secretAccessKey,
         useProfile: false,
       },
     });

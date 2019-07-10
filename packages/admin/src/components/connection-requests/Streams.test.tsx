@@ -32,16 +32,16 @@ describe("<Streams />", () => {
 
       getByText("Consumer Streams");
       await wait(() => {
-        getByText("https://nucleus.adam.acme.org/");
-        getByText("nucleus.adam.acme.org");
+        getByText("https://ssdn.adam.acme.org/");
+        getByText("ssdn.adam.acme.org");
         getByText("Active");
 
-        getByText("https://nucleus.jonah.acme.org/");
-        getByText("nucleus.jonah.acme.org");
+        getByText("https://ssdn.jonah.acme.org/");
+        getByText("ssdn.jonah.acme.org");
         getByText("Paused");
 
-        getByText("https://nucleus.mickey.acme.org/");
-        getByText("nucleus.mickey.acme.org");
+        getByText("https://ssdn.mickey.acme.org/");
+        getByText("ssdn.mickey.acme.org");
         getByText("Paused (External)");
       });
     });
@@ -64,9 +64,9 @@ describe("<Streams />", () => {
       await waitForElementToBeRemoved(() => getByRole("dialog"));
       expect(AWSService.updateStream).toHaveBeenCalledTimes(1);
       expect(AWSService.updateStream).toHaveBeenCalledWith(
-        "https://nucleus.adam.acme.org/",
+        "https://ssdn.adam.acme.org/",
         "xAPI",
-        "nucleus.adam.acme.org",
+        "ssdn.adam.acme.org",
         "paused",
         "output",
       );
@@ -81,9 +81,9 @@ describe("<Streams />", () => {
       await waitForElementToBeRemoved(() => getByRole("dialog"));
       expect(AWSService.updateStream).toHaveBeenCalledTimes(1);
       expect(AWSService.updateStream).toHaveBeenCalledWith(
-        "https://nucleus.jonah.acme.org/",
+        "https://ssdn.jonah.acme.org/",
         "xAPI",
-        "nucleus.jonah.acme.org",
+        "ssdn.jonah.acme.org",
         "active",
         "output",
       );

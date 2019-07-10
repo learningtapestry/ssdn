@@ -1,6 +1,6 @@
 import "./polyfills/objectAssign";
 
-import { BuildNucleusOptions, Nucleus } from "./nucleus";
+import { BuildSSDNOptions, SSDN } from "./ssdn";
 
 /**
  * This file is the entry point for the browser collection agent.
@@ -9,75 +9,75 @@ import { BuildNucleusOptions, Nucleus } from "./nucleus";
  * components for the
  * library.
  *
- * If initialisation arguments have been provided with the `nucleus.configure`
- * method, the entry point will automatically build a `Nucleus` collection agent
+ * If initialisation arguments have been provided with the `ssdn.configure`
+ * method, the entry point will automatically build a `SSDN` collection agent
  * instance.
  */
 
 declare global {
   interface Window {
     /**
-     * The `nucleus-collection-agent` browser namespace.
+     * The `ssdn-collection-agent` browser namespace.
      */
-    nucleus: NucleusNamespace;
+    ssdn: SSDNNamespace;
   }
 }
 
 /**
- * The `nucleus-collection-agent` browser namespace.
+ * The `ssdn-collection-agent` browser namespace.
  */
-interface NucleusNamespace {
+interface SSDNNamespace {
   /**
-   * If a previous object was registered under `window.nucleus`, we store it
+   * If a previous object was registered under `window.ssdn`, we store it
    * here.
    */
-  _previousNucleus?: NucleusNamespace;
+  _previousSSDN?: SSDNNamespace;
   /**
-   * Initialisation arguments for building a new `Nucleus` instance when the
+   * Initialisation arguments for building a new `SSDN` instance when the
    * page loads.
    */
   args: unknown[][];
   /**
-   * The current `Nucleus` instance, if one was created by `bootstrap`.
+   * The current `SSDN` instance, if one was created by `bootstrap`.
    */
-  current?: Nucleus;
+  current?: SSDN;
   /**
-   * The `Nucleus` class.
-   * This is the primary `nucleus-collection-agent` class. It provides a wrapper
-   * around the various components used in the library, such as the Nucleus
+   * The `SSDN` class.
+   * This is the primary `ssdn-collection-agent` class. It provides a wrapper
+   * around the various components used in the library, such as the SSDN
    * client and the agent data collectors.
    */
-  Nucleus: typeof Nucleus;
+  SSDN: typeof SSDN;
   /**
-   * Collects configuration options for initialising a `Nucleus` instance with
-   * the `Nucleus` method.
+   * Collects configuration options for initialising a `SSDN` instance with
+   * the `SSDN` method.
    *
    * This is a simple method that allows free-form options. It gives library
    * developers flexibility to add additional options in the future, and is
    * small enough to appear in the library bootstrap snippet.
    *
-   * At the moment, options are passed as-is to the `Nucleus` instance static
+   * At the moment, options are passed as-is to the `SSDN` instance static
    * builder method.
    *
    * Currently the following options are required:
-   *  - server: URL for the Nucleus server instance.
-   *  - apiKey: API key for authenticating with Nucleus.
-   *  - collectors: Data collectors to be registered (see the `Nucleus` static builder).
-   *  - user: The Nucleus message user.
+   *  - server: URL for the SSDN server instance.
+   *  - apiKey: API key for authenticating with SSDN.
+   *  - collectors: Data collectors to be registered (see the `SSDN` static builder).
+   *  - user: The SSDN message user.
    */
   configure: (optionName: string, ...args: any[]) => void;
   /**
-   * Builds a new `Nucleus` instance. It will use the options previously
+   * Builds a new `SSDN` instance. It will use the options previously
    * provided by `configure`.
    * Usually this method will run automatically once the page loads, but it may
    * be invoked manually.
    */
-  bootstrap: () => Nucleus;
+  bootstrap: () => SSDN;
 }
 
 /**
- * Builds a hash from an array of `Nucleus.build` configuration options.
- * @param args An array of `Nucleus.build` options.
+ * Builds a hash from an array of `SSDN.build` configuration options.
+ * @param args An array of `SSDN.build` options.
  */
 const buildOptions = (args: unknown[][]) => {
   const options: any = {};
@@ -98,31 +98,31 @@ const buildOptions = (args: unknown[][]) => {
 
   if (errors.length > 0) {
     throw new Error(
-      `Nucleus options are invalid. Please review the following problems: ${errors.join(",")}`,
+      `SSDN options are invalid. Please review the following problems: ${errors.join(",")}`,
     );
   }
 
-  return options as BuildNucleusOptions;
+  return options as BuildSSDNOptions;
 };
 
-// Assign the `window.nucleus` namespace, respecting the user-provided bootstrap
+// Assign the `window.ssdn` namespace, respecting the user-provided bootstrap
 // configuration and preserving old values if any existed.
-const nucleus: NucleusNamespace = (window.nucleus = {
-  Nucleus,
-  _previousNucleus: window.nucleus,
-  args: window.nucleus ? window.nucleus.args || [] : [],
+const ssdn: SSDNNamespace = (window.ssdn = {
+  SSDN,
+  _previousSSDN: window.ssdn,
+  args: window.ssdn ? window.ssdn.args || [] : [],
   configure(...args: any[]) {
     (this.args = this.args || []).push(args);
   },
-  bootstrap(options?: BuildNucleusOptions) {
+  bootstrap(options?: BuildSSDNOptions) {
     options = options || buildOptions(this.args);
-    this.current = Nucleus.build(options);
+    this.current = SSDN.build(options);
     return this.current;
   },
 });
 
 // If any initialisation args have been provided by the user, build a new
-// `Nucleus` instance.
-if (nucleus.args.length) {
-  nucleus.bootstrap();
+// `SSDN` instance.
+if (ssdn.args.length) {
+  ssdn.bootstrap();
 }

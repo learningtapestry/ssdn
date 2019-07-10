@@ -15,7 +15,7 @@ export default class ChainableTemporaryCredentialsFactory {
           params: {
             ExternalId: externalId,
             RoleArn: roleArn,
-            RoleSessionName: `Nucleus-${new Date().getTime()}`,
+            RoleSessionName: `SSDN-${new Date().getTime()}`,
           },
         }),
     );

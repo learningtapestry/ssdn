@@ -1,6 +1,6 @@
 /*
   This convenience file for library developers configures the parameters for
-  the Nucleus collection agent static builder.
+  the SSDN collection agent static builder.
 
   It fetches values from the node environment at first, and overrides them with
   URL query string values if any are provided.

@@ -1,8 +1,8 @@
 /**
- * nucleus-config.ts: Defines the type that stores the Nucleus configuration on install
+ * ssdn-config.ts: Defines the type that stores the SSDN configuration on install
  */
 
-export default interface NucleusConfig {
+export default interface SSDNConfig {
   organization: string;
   instanceId: string;
   email: string;

@@ -1,6 +1,6 @@
 import { APIGatewayProxyEvent, APIGatewayProxyHandler } from "aws-lambda";
 
-import { NucleusError } from "../errors/nucleus-error";
+import { SSDNError } from "../errors/ssdn-error";
 import {
   apiResponse,
   applyMiddlewares,
@@ -28,19 +28,19 @@ describe("ApiHelper", () => {
       });
     });
 
-    describe("nucleus-error", () => {
-      it("forwards non-nucleus errors", async () => {
+    describe("ssdn-error", () => {
+      it("forwards non-ssdn errors", async () => {
         const handler = () => Promise.reject(new Error("Test"));
         const wrappedResponse = applyMiddlewares(handler)({});
         await expect(wrappedResponse).rejects.toBeTruthy();
       });
 
-      it("transforms nucleus errors", async () => {
-        const handler = () => Promise.reject(new NucleusError("NotFound", 404));
+      it("transforms ssdn errors", async () => {
+        const handler = () => Promise.reject(new SSDNError("NotFound", 404));
         const wrappedResponse = applyMiddlewares(handler)({});
         await expect(wrappedResponse).resolves.toBeTruthy();
         await expect(wrappedResponse).resolves.toEqual({
-          body: '{"errors":[{"detail":"NotFound","status":"404","title":"NucleusError"}]}',
+          body: '{"errors":[{"detail":"NotFound","status":"404","title":"SSDNError"}]}',
           statusCode: 404,
         });
       });
@@ -64,7 +64,7 @@ describe("ApiHelper", () => {
             {
               detail: "The authorization token could not be validated.",
               status: "403",
-              title: "NucleusError",
+              title: "SSDNError",
             },
           ],
         }),
@@ -96,7 +96,7 @@ describe("ApiHelper", () => {
     it("throws when there's no arn", () => {
       expect(() =>
         getRoleName({ requestContext: { identity: { userArn: null } } } as APIGatewayProxyEvent),
-      ).toThrowError(NucleusError);
+      ).toThrowError(SSDNError);
     });
 
     it("throws when it can't extract the role name", () => {
@@ -106,7 +106,7 @@ describe("ApiHelper", () => {
             identity: { userArn: "arn:aws:sts::123456:assumed-role//TestFunction" },
           },
         } as APIGatewayProxyEvent),
-      ).toThrowError(NucleusError);
+      ).toThrowError(SSDNError);
     });
 
     it("finds an internal role", () => {
@@ -123,12 +123,12 @@ describe("ApiHelper", () => {
       const roleName = getRoleName({
         requestContext: {
           identity: {
-            userArn: "arn:aws:sts::123456:assumed-role/nucleus_ex_test_test/TestFunction",
+            userArn: "arn:aws:sts::123456:assumed-role/ssdn_ex_test_test/TestFunction",
           },
         },
       } as APIGatewayProxyEvent);
       expect(roleName.isExternal).toBeTruthy();
-      expect(roleName.name).toEqual("nucleus_ex_test_test");
+      expect(roleName.name).toEqual("ssdn_ex_test_test");
     });
   });
 

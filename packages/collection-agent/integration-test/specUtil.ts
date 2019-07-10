@@ -11,7 +11,7 @@ export function baseUrl(testName: string, base: string = "http://localhost:3000"
 }
 
 /**
- * Builds an URL for the example script page, overriding the Nucleus agent
+ * Builds an URL for the example script page, overriding the SSDN agent
  * backend address setting to provide the test backend URL.
  * @param testName
  * @returns

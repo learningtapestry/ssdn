@@ -1,8 +1,8 @@
 import { PUBLIC_METADATA } from "../interfaces/aws-metadata-keys";
 import { Connection } from "../interfaces/connection";
-import NucleusMetadataService from "./nucleus-metadata-service";
+import SSDNMetadataService from "./ssdn-metadata-service";
 
-export default class ExternalNucleusMetadataService implements NucleusMetadataService {
+export default class ExternalSSDNMetadataService implements SSDNMetadataService {
   private connection: Connection;
 
   constructor(connection: Connection) {

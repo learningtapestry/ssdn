@@ -1,12 +1,12 @@
-# Nucleus
+# Secure Student Data Network (SSDN)
 
-This is the root project for Amazon Nucleus. Head to the corresponding sub-project README to know
+This is the root project for the Secure Student Data Network. Head to the corresponding sub-project README to know
 more:
 
-- [Nucleus Core](packages/core#readme)
-- [Nucleus Administration Panel](packages/admin#readme)
-- [Nucleus Browser Collection Agent](packages/collection-agent#readme)
-- [Nucleus CLI (installer)](packages/cli#readme)
+- [SSDN Core](packages/core#readme)
+- [SSDN Administration Panel](packages/admin#readme)
+- [SSDN Browser Collection Agent](packages/collection-agent#readme)
+- [SSDN CLI (installer)](packages/cli#readme)
 
 ## Additional documentation
 

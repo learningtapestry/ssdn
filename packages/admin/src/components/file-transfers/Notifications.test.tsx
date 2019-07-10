@@ -29,13 +29,13 @@ describe("<Notifications/>", () => {
       getByText("This is a test message");
       getByText("Network error has occurred");
       getByText("example-bucket");
-      getByText("nucleus-test.learningtapestry.com/xAPI/test.txt");
+      getByText("ssdn-test.learningtapestry.com/xAPI/test.txt");
       getByText("Info");
       getByText("7/7/2019, 6:55:08 AM");
       getByText("This is another test message");
       getByText("File was successfully transferred");
       getByText("another-bucket");
-      getByText("nucleus-test.learningtapestry.com/Caliper/file.pdf");
+      getByText("ssdn-test.learningtapestry.com/Caliper/file.pdf");
     });
   });
 

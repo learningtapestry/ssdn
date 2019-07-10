@@ -5,22 +5,22 @@ import { XApiEncoder } from "./messages/xApiEncoder";
 import { User } from "./user";
 
 /**
- * Options for the static Nucleus builder method.
+ * Options for the static SSDN builder method.
  */
-export interface BuildNucleusOptions {
+export interface BuildSSDNOptions {
   /**
-   * URL for the Nucleus server instance.
+   * URL for the SSDN server instance.
    * @example http://example.com
    */
   server: string;
 
   /**
-   * API key for authenticating with Nucleus.
+   * API key for authenticating with SSDN.
    */
   apiKey: string;
 
   /**
-   * Convenience option for registering data collectors with the Nucleus agent.
+   * Convenience option for registering data collectors with the SSDN agent.
    *
    * It is possible to simply specify the collector, by using a string, or if
    * necessary to pass in constructor arguments by using an array.
@@ -44,7 +44,7 @@ export interface BuildNucleusOptions {
   collectors: Array<string | any[]>;
 
   /**
-   * The Nucleus message user.
+   * The SSDN message user.
    */
   user: User;
 
@@ -55,17 +55,17 @@ export interface BuildNucleusOptions {
 }
 
 /**
- * The primary `nucleus-collection-agent` class. It provides a wrapper around
- * the various components used in the library, such as the Nucleus client and
+ * The primary `ssdn-collection-agent` class. It provides a wrapper around
+ * the various components used in the library, such as the SSDN client and
  * the agent data collectors.
  */
-export class Nucleus {
+export class SSDN {
   /**
-   * Convenience method for building a Nucleus instance. It takes care of
+   * Convenience method for building a SSDN instance. It takes care of
    * building agent components such as the client and the data collectors.
-   * @param options Options for building a new Nucleus instance.
+   * @param options Options for building a new SSDN instance.
    */
-  public static build(options: BuildNucleusOptions) {
+  public static build(options: BuildSSDNOptions) {
     const client = new ImageBeaconClient(
       options.server,
       options.apiKey,
@@ -95,12 +95,12 @@ export class Nucleus {
   }
 
   /**
-   * Client used for connecting with the Nucleus server.
+   * Client used for connecting with the SSDN server.
    */
   public client: Client;
 
   /**
-   * The user or actor, _in the context of a Nucleus message_.
+   * The user or actor, _in the context of a SSDN message_.
    */
   public user: User;
 
@@ -110,12 +110,12 @@ export class Nucleus {
   public collectors: Collector[];
 
   /**
-   * Constructs a new Nucleus instance. This is considered a low-level method;
+   * Constructs a new SSDN instance. This is considered a low-level method;
    * we recommend using the static `.builder` method instead.
    *
-   * @param client Client used for connecting with the Nucleus server.
+   * @param client Client used for connecting with the SSDN server.
    * @param collectors Collectors registered for this agent instance.
-   * @param user The user or actor, _in the context of a Nucleus message_.
+   * @param user The user or actor, _in the context of a SSDN message_.
    */
   constructor(client: Client, collectors: Collector[], user: User) {
     this.client = client;

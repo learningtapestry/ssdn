@@ -1,6 +1,6 @@
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios/index";
-import { nucleusStack, uploadCredentials } from "../../test-support/factories";
+import { ssdnStack, uploadCredentials } from "../../test-support/factories";
 import AWSService from "./aws-service";
 import UploadCredentialsService from "./upload-credentials-service";
 
@@ -23,21 +23,21 @@ describe("UploadCredentialsService", () => {
 
   describe("generate", () => {
     beforeEach(() => {
-      AWSService.retrieveStack = jest.fn().mockResolvedValue(nucleusStack);
+      AWSService.retrieveStack = jest.fn().mockResolvedValue(ssdnStack);
       AWSService.retrieveApiKey = jest
         .fn()
         .mockResolvedValue("K4I8vkxjRz3OUZ8HBPKdS9Y8hCIh4fjY5F4JPFfn");
       mock
         .onPost(
-          "https://nucleus.example.org/Production/upload-credentials",
-          "client=nucleus-test.learningtapestry.com%2Ffoo%2Fbar&format=Caliper",
+          "https://ssdn.example.org/Production/upload-credentials",
+          "client=ssdn-test.learningtapestry.com%2Ffoo%2Fbar&format=Caliper",
         )
         .reply(200, uploadCredentials());
     });
 
     it("generates upload credentials for the bucket", async () => {
       const credentials = await service.generate(
-        "nucleus-test.learningtapestry.com/foo/bar",
+        "ssdn-test.learningtapestry.com/foo/bar",
         "Caliper",
       );
 

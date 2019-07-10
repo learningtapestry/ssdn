@@ -1,7 +1,7 @@
 {
-  "name": "nucleus",
+  "name": "ssdn",
   "private": true,
-  "bin": "bin/nucleus",
+  "bin": "bin/ssdn",
   "dependencies": {
     "@sindresorhus/slugify": "^0.9.1",
     "aws-sdk": "^2.470.0",

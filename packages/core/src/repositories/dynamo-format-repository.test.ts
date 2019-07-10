@@ -3,13 +3,13 @@ import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { buildFormat } from "../../test-support/factories";
 import { fakeAws, fakeImpl } from "../../test-support/jest-helper";
 import { isoDate } from "../helpers/app-helper";
-import NucleusMetadataService from "../services/nucleus-metadata-service";
+import SSDNMetadataService from "../services/ssdn-metadata-service";
 import DynamoFormatRepository from "./dynamo-format-repository";
 
-const fakeMetadataService = fakeImpl<NucleusMetadataService>({
+const fakeMetadataService = fakeImpl<SSDNMetadataService>({
   getMetadataValue: jest.fn((k: string) =>
-    k === "NucleusFormatsTable"
-      ? Promise.resolve({ value: "NucleusFormats" })
+    k === "SSDNFormatsTable"
+      ? Promise.resolve({ value: "SSDNFormats" })
       : Promise.reject(new Error("Does not exist")),
   ),
 });
@@ -41,7 +41,7 @@ describe("DynamoFormatRepository", () => {
       expect(result[1].name).toEqual("Test");
       expect(result[2].name).toEqual("xAPI");
       expect(fakeDocumentClient.impl.scan!).toHaveBeenCalledWith({
-        TableName: "NucleusFormats",
+        TableName: "SSDNFormats",
       });
     });
 
@@ -67,7 +67,7 @@ describe("DynamoFormatRepository", () => {
         Key: {
           name: "xAPI",
         },
-        TableName: "NucleusFormats",
+        TableName: "SSDNFormats",
       });
     });
 
@@ -109,7 +109,7 @@ describe("DynamoFormatRepository", () => {
           name: "test",
           updateDate: expect.anything(),
         },
-        TableName: "NucleusFormats",
+        TableName: "SSDNFormats",
       });
     });
   });
@@ -125,14 +125,14 @@ describe("DynamoFormatRepository", () => {
         Key: {
           name: "xAPI",
         },
-        TableName: "NucleusFormats",
+        TableName: "SSDNFormats",
       });
 
       expect(fakeDocumentClient.impl.delete!).toHaveBeenCalledWith({
         Key: {
           name: "xAPI",
         },
-        TableName: "NucleusFormats",
+        TableName: "SSDNFormats",
       });
     });
   });

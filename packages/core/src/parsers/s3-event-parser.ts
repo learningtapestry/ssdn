@@ -1,6 +1,6 @@
 /**
  * s3-event-parser.ts: Parses an S3 creation event as obtained from the lambda function and
- * returns an internal Nucleus event representation
+ * returns an internal SSDN event representation
  */
 
 import { S3EventRecord } from "aws-lambda";
@@ -19,7 +19,7 @@ export default class S3EventParser {
   }
 
   public parse(): Event {
-    logger.debug("Generating Nucleus event from Lambda: %j", this.event);
+    logger.debug("Generating SSDN event from Lambda: %j", this.event);
 
     return {
       content: get("s3.object")(this.event),

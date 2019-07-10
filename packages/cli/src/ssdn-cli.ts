@@ -1,5 +1,5 @@
 /**
- * nucleus-cli.ts: Entry point for all commands related to Nucleus install and maintenance
+ * ssdn-c-l-i.ts: Entry point for all commands related to SSDN install and maintenance
  */
 
 import slugify from "@sindresorhus/slugify";
@@ -12,10 +12,10 @@ import { promisify } from "util";
 import { getStackValues } from "./app-helper";
 import DeployAdminPanel from "./deploy-admin-panel";
 import DeployCore from "./deploy-core";
-import NucleusConfig from "./nucleus-config";
+import SSDNConfig from "./ssdn-config";
 
-class NucleusCLI {
-  private static readonly configFilePath = ".nucleus-config.json";
+class SSDNCLI {
+  private static readonly configFilePath = ".ssdn-config.json";
   private static readonly hostingParametersFilePath =
     "packages/admin/amplify/backend/hosting/S3AndCloudFront/parameters.json";
 
@@ -25,16 +25,16 @@ class NucleusCLI {
     return `${slugify(organization)}-${id}`;
   }
 
-  private nucleusConfig!: NucleusConfig;
+  private ssdnConfig!: SSDNConfig;
 
   public async install() {
-    if (!existsSync(NucleusCLI.configFilePath)) {
+    if (!existsSync(SSDNCLI.configFilePath)) {
       await this.configure();
     }
     await this.readConfiguration();
-    await new DeployCore(this.nucleusConfig).run();
+    await new DeployCore(this.ssdnConfig).run();
     await this.exportStackConfiguration();
-    await new DeployAdminPanel(this.nucleusConfig).run();
+    await new DeployAdminPanel(this.ssdnConfig).run();
   }
 
   private configure() {
@@ -69,19 +69,19 @@ class NucleusCLI {
         choices: ["Development", "Production", "Test"],
         default: "Production",
         message:
-          "Choose the environment for your Nucleus instance (this will affect some resource names)",
+          "Choose the environment for your SSDN instance (this will affect some resource names)",
         name: "environment",
         type: "list",
       },
       {
-        default: "nucleus.learningtapestry.com",
+        default: "ssdn.learningtapestry.com",
         message: "Choose the namespace that will be used to identify data from this instance",
         name: "namespace",
         type: "input",
       },
       {
         default: async (answers: Answers) =>
-          `nucleus-installer-${await NucleusCLI.instanceId(answers.organization)}`,
+          `ssdn-installer-${await SSDNCLI.instanceId(answers.organization)}`,
         message: `Choose the name of the S3 bucket that will be used to deploy the application.
                   If it does not exist, it will be created.`,
         name: "bucket",
@@ -94,11 +94,11 @@ class NucleusCLI {
       },
     ];
     return inquirer.prompt(questions).then(async (answers: Answers) => {
-      const id = await NucleusCLI.instanceId(answers.organization);
+      const id = await SSDNCLI.instanceId(answers.organization);
       const config = {
         ...answers,
         instanceId: id,
-        stackName: `Nucleus-${id}-${answers.environment}`,
+        stackName: `SSDN-${id}-${answers.environment}`,
       };
       await this.storeConfiguration(JSON.stringify(config, null, 2));
       await this.regenerateBucketName();
@@ -106,35 +106,35 @@ class NucleusCLI {
   }
 
   private async storeConfiguration(configuration: string) {
-    await promisify(writeFile)(NucleusCLI.configFilePath, configuration, { mode: 0o600 });
+    await promisify(writeFile)(SSDNCLI.configFilePath, configuration, { mode: 0o600 });
   }
 
   private async regenerateBucketName() {
     const bucket = {
-      bucketName: `nucleus-admin-${moment().format("YYYYMMDDHHmmss")}-hostingbucket`,
+      bucketName: `ssdn-admin-${moment().format("YYYYMMDDHHmmss")}-hostingbucket`,
     };
-    await promisify(writeFile)(NucleusCLI.hostingParametersFilePath, JSON.stringify(bucket));
+    await promisify(writeFile)(SSDNCLI.hostingParametersFilePath, JSON.stringify(bucket));
   }
 
   private async readConfiguration() {
-    const settings = await promisify(readFile)(NucleusCLI.configFilePath);
-    this.nucleusConfig = JSON.parse(settings.toString());
-    awsConfig.loadFromPath(NucleusCLI.configFilePath);
+    const settings = await promisify(readFile)(SSDNCLI.configFilePath);
+    this.ssdnConfig = JSON.parse(settings.toString());
+    awsConfig.loadFromPath(SSDNCLI.configFilePath);
   }
 
   private async exportStackConfiguration() {
-    const outputs: any = await getStackValues(this.nucleusConfig.stackName);
+    const outputs: any = await getStackValues(this.ssdnConfig.stackName);
     process.env.REACT_APP_ENDPOINT = outputs.ExchangeApi;
     process.env.REACT_APP_ENTITIES_ENDPOINT = outputs.EntitiesApi;
     process.env.REACT_APP_FILE_TRANSFER_NOTIFICATIONS_ENDPOINT =
       outputs.FileTransferNotificationsApi;
     process.env.REACT_APP_IDENTITY_POOL_ID = outputs.CognitoIdentityPoolId;
-    process.env.REACT_APP_NUCLEUS_ID = outputs.NucleusId;
-    process.env.REACT_APP_AWS_REGION = this.nucleusConfig.region;
-    process.env.REACT_APP_STACK_NAME = this.nucleusConfig.stackName;
+    process.env.REACT_APP_SSDN_ID = outputs.SSDNId;
+    process.env.REACT_APP_AWS_REGION = this.ssdnConfig.region;
+    process.env.REACT_APP_STACK_NAME = this.ssdnConfig.stackName;
     process.env.REACT_APP_USER_POOL_ID = outputs.CognitoUserPoolId;
     process.env.REACT_APP_USER_POOL_WEB_CLIENT_ID = outputs.CognitoUserPoolClientWebId;
   }
 }
 
-export = NucleusCLI;
+export = SSDNCLI;

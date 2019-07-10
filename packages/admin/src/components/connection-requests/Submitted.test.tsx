@@ -25,7 +25,7 @@ describe("<Submitted />", () => {
 
     getByText("Submitted Requests");
     await wait(() => {
-      expect(getAllByText("https://nucleus.ajax.org")).toHaveLength(3);
+      expect(getAllByText("https://ssdn.ajax.org")).toHaveLength(3);
 
       queryByText("2/13/2019");
       getByText("Accepted");

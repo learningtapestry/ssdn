@@ -2,9 +2,9 @@ import "react-testing-library/cleanup-after-each";
 
 process.env.REACT_APP_ENDPOINT = "https://localhost";
 process.env.REACT_APP_IDENTITY_POOL_ID = "us-east-1:test-test-test-test-test";
-process.env.REACT_APP_NUCLEUS_ID = "Nucleus";
+process.env.REACT_APP_SSDN_ID = "SSDN";
 process.env.REACT_APP_AWS_REGION = "us-east-1";
-process.env.REACT_APP_STACK_NAME = "Nucleus";
+process.env.REACT_APP_STACK_NAME = "SSDN";
 process.env.REACT_APP_USER_POOL_ID = "us-east-1_asdfghj";
 process.env.REACT_APP_USER_POOL_WEB_CLIENT_ID = "nr927he19e7y9y2918j87gfawoij";
 

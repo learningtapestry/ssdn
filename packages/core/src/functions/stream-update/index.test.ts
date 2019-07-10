@@ -24,7 +24,7 @@ mocked(getConnectionService).mockImplementation(() => fakeConnectionService);
 describe("ConnectionRequestAcceptFunction", () => {
   beforeEach(() => jest.clearAllMocks());
 
-  it("updates streams, for updates issued by the own nucleus instance", async () => {
+  it("updates streams, for updates issued by the own ssdn instance", async () => {
     const update: StreamUpdate = {
       endpoint: "https://test.com",
       stream: {
@@ -61,7 +61,7 @@ describe("ConnectionRequestAcceptFunction", () => {
     );
   });
 
-  it("updates streams, for updates issued by external nucleus instances", async () => {
+  it("updates streams, for updates issued by external ssdn instances", async () => {
     const update: StreamUpdate = {
       stream: {
         format: "xAPI",
@@ -76,7 +76,7 @@ describe("ConnectionRequestAcceptFunction", () => {
         .body(update)
         .requestContext({
           identity: {
-            userArn: "arn:aws:iam::111111111111:role/nucleus_ex_123456_789012",
+            userArn: "arn:aws:iam::111111111111:role/ssdn_ex_123456_789012",
           },
         })
         .build(),
@@ -85,7 +85,7 @@ describe("ConnectionRequestAcceptFunction", () => {
     expect(response).toEqual({ body: "", statusCode: 200 });
     expect(fakeConnectionRepository.get).not.toHaveBeenCalled();
     expect(fakeConnectionRepository.getByConnectionSecret).toHaveBeenCalledWith(
-      "nucleus_ex_123456_789012",
+      "ssdn_ex_123456_789012",
     );
     expect(fakeConnectionService.updateStream).toHaveBeenCalledWith(
       buildConnection(),

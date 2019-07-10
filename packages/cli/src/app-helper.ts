@@ -13,7 +13,7 @@ export async function execute(command: () => any) {
   } catch (error) {
     logger.error(error.stderr);
     printError(
-      "An unexpected error has occurred. Please check the 'nucleus.log' file for more details.",
+      "An unexpected error has occurred. Please check the 'ssdn.log' file for more details.",
     );
     process.exit(1);
   }

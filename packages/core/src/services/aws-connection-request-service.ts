@@ -1,9 +1,9 @@
 import generate from "nanoid/generate";
 import uuid from "uuid/v4";
 
-import { NucleusError } from "../errors/nucleus-error";
+import { SSDNError } from "../errors/ssdn-error";
 import { isoDate } from "../helpers/app-helper";
-import { AWS_NUCLEUS, LAMBDAS } from "../interfaces/aws-metadata-keys";
+import { AWS_SSDN, LAMBDAS } from "../interfaces/aws-metadata-keys";
 import {
   ConnectionRequest,
   ConnectionRequestStatus,
@@ -14,17 +14,17 @@ import { ConnectionRequestRepository } from "../repositories/connection-request-
 import ConnectionRequestService from "./connection-request-service";
 import ExchangeService from "./exchange-service";
 import LambdaService from "./lambda-service";
-import NucleusMetadataService from "./nucleus-metadata-service";
+import SSDNMetadataService from "./ssdn-metadata-service";
 
 export default class AwsConnectionRequestService implements ConnectionRequestService {
   private repository: ConnectionRequestRepository;
-  private metadata: NucleusMetadataService;
+  private metadata: SSDNMetadataService;
   private exchangeService: ExchangeService;
   private lambdaService: LambdaService;
 
   constructor(
     repository: ConnectionRequestRepository,
-    metadata: NucleusMetadataService,
+    metadata: SSDNMetadataService,
     exchangeService: ExchangeService,
     lambdaService: LambdaService,
   ) {
@@ -36,14 +36,14 @@ export default class AwsConnectionRequestService implements ConnectionRequestSer
 
   public async create(connectionRequest: ConnectionRequest) {
     logger.info(`Processing connection request for ${connectionRequest.providerEndpoint}.`);
-    const awsAccountId = await this.metadata.getMetadataValue(AWS_NUCLEUS.awsAccountId);
-    const nucleusId = await this.metadata.getMetadataValue(AWS_NUCLEUS.nucleusId);
-    const namespace = await this.metadata.getMetadataValue(AWS_NUCLEUS.namespace);
+    const awsAccountId = await this.metadata.getMetadataValue(AWS_SSDN.awsAccountId);
+    const ssdnId = await this.metadata.getMetadataValue(AWS_SSDN.ssdnId);
+    const namespace = await this.metadata.getMetadataValue(AWS_SSDN.namespace);
     connectionRequest.id = uuid();
     connectionRequest.acceptanceToken = uuid();
     connectionRequest.connection = {
       awsAccountId: awsAccountId.value,
-      nucleusId: nucleusId.value,
+      ssdnId: ssdnId.value,
     };
     connectionRequest.verificationCode = generate("0123456789", 6);
     const endpoint = await this.metadata.getEndpoint();
@@ -79,7 +79,7 @@ export default class AwsConnectionRequestService implements ConnectionRequestSer
     try {
       await this.repository.getIncoming(connectionRequest.consumerEndpoint, connectionRequest.id);
       alreadySubmitted = true;
-      throw new NucleusError("The connection request has already been submitted.");
+      throw new SSDNError("The connection request has already been submitted.");
     } catch (e) {
       // Otherwise, continue as usual; a connection request has not been found
       if (alreadySubmitted) {
@@ -117,21 +117,21 @@ export default class AwsConnectionRequestService implements ConnectionRequestSer
     ],
   ) {
     if (!pendingStatuses.includes(connectionRequest.status)) {
-      throw new NucleusError("The connection request cannot be updated.", 400);
+      throw new SSDNError("The connection request cannot be updated.", 400);
     }
   }
 
   private async validateConnectionRequest(connectionRequest: ConnectionRequest) {
     const ownEndpoint = await this.metadata.getEndpoint();
     if (connectionRequest.providerEndpoint === ownEndpoint.value) {
-      throw new NucleusError("An instance cannot create an stream to itself.", 400);
+      throw new SSDNError("An instance cannot create an stream to itself.", 400);
     }
   }
 
   private async validateIncomingConnectionRequest(connectionRequest: ConnectionRequest) {
     const ownEndpoint = await this.metadata.getEndpoint();
     if (connectionRequest.consumerEndpoint === ownEndpoint.value) {
-      throw new NucleusError("An instance cannot create an stream to itself.", 400);
+      throw new SSDNError("An instance cannot create an stream to itself.", 400);
     }
   }
 }

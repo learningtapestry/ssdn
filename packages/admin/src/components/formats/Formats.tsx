@@ -71,7 +71,7 @@ function Formats() {
   return (
     <section id={`admin-formats`}>
       <h1>Formats</h1>
-      <p>This section displays the data formats that are available for this Nucleus instance.</p>
+      <p>This section displays the data formats that are available for this SSDN instance.</p>
       <ButtonToolbar>
         <LinkContainer to="/formats/create" exact={true}>
           <Button variant="outline-primary">Create New Format</Button>

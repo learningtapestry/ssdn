@@ -26,7 +26,7 @@ describe("AWSService", () => {
       ]);
 
       expect(DynamoDB.DocumentClient.prototype.scan).toHaveBeenCalledWith({
-        TableName: awsconfiguration.Storage.nucleusIncomingConnectionRequests,
+        TableName: awsconfiguration.Storage.ssdnIncomingConnectionRequests,
       });
     });
 
@@ -42,7 +42,7 @@ describe("AWSService", () => {
       ]);
 
       expect(DynamoDB.DocumentClient.prototype.scan).toHaveBeenCalledWith({
-        TableName: awsconfiguration.Storage.nucleusConnectionRequests,
+        TableName: awsconfiguration.Storage.ssdnConnectionRequests,
       });
     });
   });
@@ -50,28 +50,28 @@ describe("AWSService", () => {
   describe("retrieveStreams", () => {
     const mockFormats = [
       {
-        endpoint: "https://nucleus.adam.acme.org/",
+        endpoint: "https://ssdn.adam.acme.org/",
         format: "xAPI",
-        namespace: "nucleus.ajax.org",
+        namespace: "ssdn.ajax.org",
         status: "active",
       },
       {
-        endpoint: "https://nucleus.jonah.acme.org/",
+        endpoint: "https://ssdn.jonah.acme.org/",
         format: "xAPI",
-        namespace: "nucleus.ajax.org",
+        namespace: "ssdn.ajax.org",
         status: "paused",
       },
       {
-        endpoint: "https://nucleus.mickey.acme.org/",
+        endpoint: "https://ssdn.mickey.acme.org/",
         format: "xAPI",
-        namespace: "nucleus.ajax.org",
+        namespace: "ssdn.ajax.org",
         status: "paused_external",
       },
     ];
     const mockOutputFormats = [
-      { ...mockFormats[0], namespace: "nucleus.adam.acme.org" },
-      { ...mockFormats[1], namespace: "nucleus.jonah.acme.org" },
-      { ...mockFormats[2], namespace: "nucleus.mickey.acme.org" },
+      { ...mockFormats[0], namespace: "ssdn.adam.acme.org" },
+      { ...mockFormats[1], namespace: "ssdn.jonah.acme.org" },
+      { ...mockFormats[2], namespace: "ssdn.mickey.acme.org" },
     ];
 
     it("finds inputs", async () => {
@@ -80,7 +80,7 @@ describe("AWSService", () => {
       expect(streams).toEqual(mockFormats);
       expect(DynamoDB.DocumentClient.prototype.scan).toHaveBeenCalledWith({
         FilterExpression: "attribute_exists(inputStreams[0])",
-        TableName: awsconfiguration.Storage.nucleusConnections,
+        TableName: awsconfiguration.Storage.ssdnConnections,
       });
     });
 
@@ -90,7 +90,7 @@ describe("AWSService", () => {
       expect(streams).toEqual(mockOutputFormats);
       expect(DynamoDB.DocumentClient.prototype.scan).toHaveBeenCalledWith({
         FilterExpression: "attribute_exists(outputStreams[0])",
-        TableName: awsconfiguration.Storage.nucleusConnections,
+        TableName: awsconfiguration.Storage.ssdnConnections,
       });
     });
   });
@@ -99,7 +99,7 @@ describe("AWSService", () => {
     it("retrieves the available stacks and return instances", async () => {
       CloudFormation.prototype.describeStacks = mockWithPromise(responses.cloudFormationStacks());
       const currentStack = await AWSService.retrieveStack();
-      expect(currentStack).toEqual(factories.nucleusStack);
+      expect(currentStack).toEqual(factories.ssdnStack);
     });
   });
 
@@ -122,7 +122,7 @@ describe("AWSService", () => {
       CloudWatchLogs.prototype.getLogEvents = mockWithPromise(responses.logEvents());
 
       const logEvents = await AWSService.retrieveLogEvents(
-        "/aws/lambda/Nucleus-AuthorizeBeaconFunction-1P2GO4YF9VZA7",
+        "/aws/lambda/SSDN-AuthorizeBeaconFunction-1P2GO4YF9VZA7",
       );
 
       expect(logEvents).toEqual(factories.logEvents());

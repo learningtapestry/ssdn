@@ -91,7 +91,7 @@ export CYPRESS_REGISTER_ENDPOINT=https://z0krjz1z0l.execute-api.us-east-1.amazon
 As you can see, all variables must start with `CYPRESS_` in order to be properly recognized.
 Besides that, we're declaring the username and password we defined in the previous step, as well as
 the register endpoint for consumer requests. If you don't know where this value comes from, you can
-use your instance's own endpoint. Check the home page in your Nucleus administration panel or the
+use your instance's own endpoint. Check the home page in your SSDN administration panel or the
 CloudFormation stack in your AWS account to get the endpoint's URL.
 
 - Lastly, you can launch the end-to-end tests with these two commands:

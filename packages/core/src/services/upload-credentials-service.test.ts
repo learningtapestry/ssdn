@@ -5,18 +5,18 @@ import { fakeAws, fakeImpl } from "../../test-support/jest-helper";
 import { assumeRole } from "../../test-support/service-responses";
 import * as appHelper from "../helpers/app-helper";
 import { BUCKETS, ROLES } from "../interfaces/aws-metadata-keys";
-import NucleusMetadataService from "./nucleus-metadata-service";
+import SSDNMetadataService from "./ssdn-metadata-service";
 import UploadCredentialsService from "./upload-credentials-service";
 
 describe("UploadCredentialsService", () => {
-  const nucleusMetadataMock = fakeImpl<NucleusMetadataService>({
+  const ssdnMetadataMock = fakeImpl<SSDNMetadataService>({
     getMetadataValue: jest.fn((key: string) =>
       Promise.resolve({
         value: ({
-          [BUCKETS.upload]: "nucleus-test-uploads3bucket-g38l0vvghtff",
+          [BUCKETS.upload]: "ssdn-test-uploads3bucket-g38l0vvghtff",
           [ROLES.uploadFile]:
             "arn:aws:iam::264441468378:role/" +
-            "Nucleus-learning-tapestry-as25vydn3ekjn2e-UploadFileRole",
+            "SSDN-learning-tapestry-as25vydn3ekjn2e-UploadFileRole",
         } as any)[key],
       }),
     ),
@@ -36,25 +36,25 @@ describe("UploadCredentialsService", () => {
       {
         Action: ["s3:listBucket"],
         Effect: "Allow",
-        Resource: ["arn:aws:s3:::nucleus-test-uploads3bucket-g38l0vvghtff"],
+        Resource: ["arn:aws:s3:::ssdn-test-uploads3bucket-g38l0vvghtff"],
       },
       {
         Action: ["s3:PutObject"],
         Effect: "Allow",
         Resource: [
-          "arn:aws:s3:::nucleus-test-uploads3bucket-g38l0vvghtff/" +
-            "nucleus.learningtapestry.com/xAPI/*",
+          "arn:aws:s3:::ssdn-test-uploads3bucket-g38l0vvghtff/" +
+            "ssdn.learningtapestry.com/xAPI/*",
         ],
       },
     ],
     Version: "2012-10-17",
   });
 
-  const uploadCredentials = new UploadCredentialsService(nucleusMetadataMock, stsMock, s3Mock);
+  const uploadCredentials = new UploadCredentialsService(ssdnMetadataMock, stsMock, s3Mock);
 
   describe("generate", () => {
     it("returns temporary permissions and instructions", async () => {
-      const response = await uploadCredentials.generate("nucleus.learningtapestry.com", "xAPI");
+      const response = await uploadCredentials.generate("ssdn.learningtapestry.com", "xAPI");
       expect(response.credentials).toHaveProperty("accessKeyId", "AKIAIOSFODNN7EXAMPLE");
       expect(response.credentials).toHaveProperty(
         "secretAccessKey",
@@ -70,14 +70,14 @@ describe("UploadCredentialsService", () => {
     it("builds the assumed role with the right values", async () => {
       jest.spyOn(appHelper, "timeIdentifier").mockReturnValue("20190524123456");
 
-      await uploadCredentials.generate("nucleus.learningtapestry.com", "xAPI");
+      await uploadCredentials.generate("ssdn.learningtapestry.com", "xAPI");
 
       await expect(stsMock.assumeRole).toHaveBeenCalledWith({
         DurationSeconds: 3600,
         Policy: sessionPolicy,
         RoleArn:
-          "arn:aws:iam::264441468378:role/Nucleus-learning-tapestry-as25vydn3ekjn2e-UploadFileRole",
-        RoleSessionName: "Nucleus-UploadFile-20190524123456",
+          "arn:aws:iam::264441468378:role/SSDN-learning-tapestry-as25vydn3ekjn2e-UploadFileRole",
+        RoleSessionName: "SSDN-UploadFile-20190524123456",
       });
     });
 
@@ -90,11 +90,11 @@ describe("UploadCredentialsService", () => {
         },
       });
 
-      await uploadCredentials.generate("nucleus.learningtapestry.com", "xAPI");
+      await uploadCredentials.generate("ssdn.learningtapestry.com", "xAPI");
 
       await expect(s3Mock.putObject).toHaveBeenCalledWith({
-        Bucket: "nucleus-test-uploads3bucket-g38l0vvghtff",
-        Key: "nucleus.learningtapestry.com/xAPI/",
+        Bucket: "ssdn-test-uploads3bucket-g38l0vvghtff",
+        Key: "ssdn.learningtapestry.com/xAPI/",
       });
     });
   });

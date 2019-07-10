@@ -27,7 +27,7 @@ describe("<FileTransfersHome />", () => {
     });
     getByText(
       "Here you can generate temporary AWS credentials that will allow you to upload and share " +
-        "files with other Nucleus instances.",
+        "files with other SSDN instances.",
     );
   });
 });

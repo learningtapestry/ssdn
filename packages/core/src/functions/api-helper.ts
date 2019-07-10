@@ -3,13 +3,13 @@ import { APIGatewayProxyEvent, APIGatewayProxyResult, Context, Handler } from "a
 import middy from "@middy/core";
 import cors from "@middy/http-cors";
 
-import { NucleusError } from "../errors/nucleus-error";
+import { SSDNError } from "../errors/ssdn-error";
 import { decode64 } from "../helpers/app-helper";
 import logger from "../logger";
 
 const errorMiddleware: middy.IMiddyMiddlewareObject = {
   onError: (h, next) => {
-    if (h.error instanceof NucleusError) {
+    if (h.error instanceof SSDNError) {
       // as per JSON spec http://jsonapi.org/examples/#error-objects-basics
       (h as any).response = {
         ...h.response,
@@ -48,7 +48,7 @@ export function verifyAuthorization(event: APIGatewayProxyEvent, value: string) 
   if (token === value) {
     return;
   }
-  throw new NucleusError("The authorization token could not be validated.", 403);
+  throw new SSDNError("The authorization token could not be validated.", 403);
 }
 
 export function apiResponse(content: any = "", statusCode: number = 200): APIGatewayProxyResult {
@@ -65,17 +65,17 @@ export function getRoleName(event: APIGatewayProxyEvent) {
   const arn = event.requestContext.identity.userArn;
   if (!arn) {
     logger.error("Could not figure out the ARN for a request.");
-    throw new NucleusError("An unrecoverable error occurred.", 500);
+    throw new SSDNError("An unrecoverable error occurred.", 500);
   }
 
   const name = arn.split(":")[5].split("/")[1];
   if (!name) {
     logger.error(`A name for the role ${arn} could not be extracted.`);
-    throw new NucleusError("An unrecoverable error occurred.", 500);
+    throw new SSDNError("An unrecoverable error occurred.", 500);
   }
 
   return {
-    isExternal: name.startsWith("nucleus_ex"),
+    isExternal: name.startsWith("ssdn_ex"),
     name,
   };
 }

@@ -10,7 +10,7 @@ import {
 } from "../../services";
 import AwsConnectionRequestService from "../../services/aws-connection-request-service";
 import AwsConnectionService from "../../services/aws-connection-service";
-import AwsNucleusMetadataService from "../../services/aws-nucleus-metadata-service";
+import AwsSSDNMetadataService from "../../services/aws-ssdn-metadata-service";
 import { handler } from "./";
 
 jest.mock("../../services");
@@ -35,15 +35,15 @@ const fakeConnectionService = fakeImpl<AwsConnectionService>({
           arn: "TestArn",
           awsAccountId: "123456",
           externalId: "123456",
-          nucleusId: "123456",
           roleName: "123456",
+          ssdnId: "123456",
         },
       }),
     ),
   ),
 });
 
-const fakeMetadataService = fakeImpl<AwsNucleusMetadataService>({
+const fakeMetadataService = fakeImpl<AwsSSDNMetadataService>({
   getPublicMetadata: jest.fn(() =>
     Promise.resolve({
       EventProcessorStream: "TestArn",
@@ -70,7 +70,7 @@ describe("ConnectionRequestAcceptFunction", () => {
           {
             detail: "The authorization token could not be validated.",
             status: "403",
-            title: "NucleusError",
+            title: "SSDNError",
           },
         ],
       }),

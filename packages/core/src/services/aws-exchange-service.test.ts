@@ -9,8 +9,8 @@ import { ProviderIssuedAcceptance, StreamUpdate } from "../interfaces/exchange";
 import { StreamStatus, StreamType } from "../interfaces/stream";
 import KinesisEventRepository from "../repositories/kinesis-event-repository";
 import AwsExchangeService from "./aws-exchange-service";
-import ExternalNucleusMetadataService from "./external-nucleus-metadata-service";
-import NucleusMetadataService from "./nucleus-metadata-service";
+import ExternalSSDNMetadataService from "./external-ssdn-metadata-service";
+import SSDNMetadataService from "./ssdn-metadata-service";
 import TemporaryCredentialsFactory from "./temporary-credentials-factory";
 
 jest.mock("axios", () => ({
@@ -19,9 +19,9 @@ jest.mock("axios", () => ({
   request: jest.fn(),
 }));
 
-const fakeMetadata = fakeImpl<NucleusMetadataService>({
+const fakeMetadata = fakeImpl<SSDNMetadataService>({
   getEndpoint: jest.fn(() => Promise.resolve({ value: "https://red.com" })),
-  getMetadataValue: jest.fn(() => Promise.resolve({ value: "RedNucleusId" })),
+  getMetadataValue: jest.fn(() => Promise.resolve({ value: "RedSSDNId" })),
 });
 
 const fakeEventRepo = fakeImpl<KinesisEventRepository>({
@@ -41,7 +41,7 @@ const fakeTempCredentialsFactory = fakeImpl<TemporaryCredentialsFactory>({
 
 const fakeEventRepoFactory = jest.fn(
   (
-    p1: ConstructorParameters<typeof ExternalNucleusMetadataService>,
+    p1: ConstructorParameters<typeof ExternalSSDNMetadataService>,
     p2: ConstructorParameters<typeof Kinesis>,
   ) => fakeEventRepo,
 );
@@ -54,7 +54,7 @@ const buildProviderAcceptance: () => ProviderIssuedAcceptance = () => ({
   details: {
     connection: {
       awsAccountId: "test",
-      nucleusId: "test",
+      ssdnId: "test",
     },
     externalConnection: {
       arn: "test",

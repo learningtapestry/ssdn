@@ -1,0 +1,14 @@
+#!/usr/bin/env node
+
+const { argv } = process;
+const ssdn = require("commander");
+const SSDNCLI = require("../packages/cli/dist/ssdn-cli");
+
+ssdn.version("1.0.0", "-v, --version");
+ssdn
+  .command("install")
+  .description("Installs a new SSDN instance on your AWS account")
+  .action(async () => {
+    await new SSDNCLI().install();
+  });
+ssdn.parse(argv);

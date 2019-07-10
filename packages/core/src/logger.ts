@@ -5,7 +5,7 @@
 import Pino from "pino";
 
 const logger = Pino({
-  level: process.env.NUCLEUS_LOG_LEVEL || "info",
+  level: process.env.SSDN_LOG_LEVEL || "info",
   prettyPrint: { colorize: true, translateTime: true },
 });
 

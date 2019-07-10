@@ -44,5 +44,5 @@ awsconfiguration.json
 
 # Releases
 releases
-.nucleus-config.json
+.ssdn-config.json
 packaged.yaml

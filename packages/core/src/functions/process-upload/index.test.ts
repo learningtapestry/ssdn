@@ -13,7 +13,7 @@ const validResult = {
 const invalidResult = { error: "Unexpected error when storing file" };
 
 describe("ProcessUploadFunction", () => {
-  it("stores a nucleus event when a file is uploaded", async () => {
+  it("stores a ssdn event when a file is uploaded", async () => {
     FileUploadService.process = jest.fn().mockReturnValueOnce(validResult);
 
     await handler((processUploadEvent as unknown) as S3Event, {} as Context, (error, result) => {

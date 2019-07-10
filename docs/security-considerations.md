@@ -2,7 +2,7 @@
 
 ## Introduction
 
-In this document, we're trying to describe the major components in the Nucleus application, as well as its interactions,
+In this document, we're trying to describe the major components in the SSDN application, as well as its interactions,
 from the point of view of the security. To achieve that, we'll detail the flow of events that happen in every sub-system
 and outline the security measures used in every step.
 
@@ -13,7 +13,7 @@ parenthesis.
 
 ### xAPI event collection & processing
 
-This is perhaps the most important sub-system in the entire Nucleus application, because it covers the vast majority of
+This is perhaps the most important sub-system in the entire SSDN application, because it covers the vast majority of
 components and, thus, interrelates with many security-related aspects.
 
 These are the steps that are involved in the collection and processing of an xAPI event:
@@ -61,7 +61,7 @@ In this case it's not a web browser that's sending the requests, but an external
 
 Points 3 and 4 are the same as in scenario A.
 
-### Data sharing between Nucleus instances
+### Data sharing between SSDN instances
 
 This process comprises the scenario where a given instance wants to establish a permanent data sharing agreement with
 another one. These are the main steps involved in such a process:
@@ -100,13 +100,13 @@ another one. These are the main steps involved in such a process:
    authorization mechanism, which is IAM roles (identified as `AWS_IAM` in API Gateway). This authorization scheme
    demands using actual AWS credentials (access key id and secret key) to access the endpoint.
 
-   - In all cases, these endpoints are meant to be called internally by trusted Nucleus instances, which implies the IAM
+   - In all cases, these endpoints are meant to be called internally by trusted SSDN instances, which implies the IAM
      credentials that are used never reach anything beyond the AWS servers.
 
 ### Raw file upload & transfer
 
 This component allows uploading files to S3 using a set of generated temporary credentials, as well as automatically
-sharing them with other Nucleus instances that have already established a trust relationship with us.
+sharing them with other SSDN instances that have already established a trust relationship with us.
 
 Let's see what steps are involved security-wise:
 
@@ -116,7 +116,7 @@ Let's see what steps are involved security-wise:
 
    - The endpoint only accepts a `POST` request.
    - A specific bucket (`UploadS3Bucket`) is created, its sole purpose being to store the files that are to be shared
-     with other Nucleus instances.
+     with other SSDN instances.
    - The uploaded files are automatically deleted after 7 days.
    - The returned temporary credentials are only valid for 1 hour, and only give access to a specific folder inside the
      upload S3 bucket.
@@ -125,15 +125,15 @@ Let's see what steps are involved security-wise:
      After some discussion, we agreed that API keys provided a good enough balance.
 
 2. After the user has finished uploading a file to the upload S3 bucket, a Lambda function (`ProcessUploadFunction`) is
-   triggered. This function is responsible for processing the file and generating an internal Nucleus event that
+   triggered. This function is responsible for processing the file and generating an internal SSDN event that
    describes the file upload.
 
    - The actual file is never opened or manipulated by the Lambda function. It only deals with the metadata that
      is provided by S3.
 
-3. If the file upload processing is successful, the generated Nucleus event (it's actually a simple JSON structure) is
+3. If the file upload processing is successful, the generated SSDN event (it's actually a simple JSON structure) is
    inserted into the event processor stream, just as any regular xAPI collection event.
-4. Everything after this step is basically the same that is described in the "Data sharing between Nucleus instances"
+4. Everything after this step is basically the same that is described in the "Data sharing between SSDN instances"
    section. The event processor Kinesis stream stores the event describing the file upload and shares it with those
    instances that are subscribed to receive it.
 5. Once the file upload event arrives to the target entity, an additional Lambda function (`TransferObjectFunction`) is
@@ -161,7 +161,7 @@ Also as part of the administration panel, we set up a few API Gateway endpoints 
 they leverage the IAM credentials that are managed by Amplify. This effectively means these endpoints use Cognito User
 Pools as the only valid method of authentication.
 
-### Nucleus CLI & installer
+### SSDN CLI & installer
 
 This is a separate application component that offers a basic CLI utility, mostly useful to perform the initial
 installation of both the core CloudFormation template and the Amplify application that builds the administration panel.
@@ -174,7 +174,7 @@ points worth mentioning:
   [execa](https://github.com/sindresorhus/execa) library, which by default should prevent against command injection.
   Additionally, commands and arguments are always split when executing the system calls.
 - After the first execution of the installer, the configuration values set up by the user are stored in disk, so that in
-  next executions we can omit this step. The values are stored as a JSON structure in the `.nucleus-config.json` file.
+  next executions we can omit this step. The values are stored as a JSON structure in the `.ssdn-config.json` file.
   It is created with strict permissions (`0400`) that only allow the user to read & write the file.
 
 ## Other considerations

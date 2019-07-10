@@ -5,15 +5,15 @@
 import Kinesis, { PutRecordsInput } from "aws-sdk/clients/kinesis";
 import { STREAMS } from "../interfaces/aws-metadata-keys";
 import logger from "../logger";
-import NucleusMetadataService from "../services/nucleus-metadata-service";
+import SSDNMetadataService from "../services/ssdn-metadata-service";
 import { Content, EventRepository } from "./event-repository";
 
 export default class KinesisEventRepository implements EventRepository {
   public client: Kinesis;
 
-  public metadata: NucleusMetadataService;
+  public metadata: SSDNMetadataService;
 
-  constructor(metadata: NucleusMetadataService, client: Kinesis) {
+  constructor(metadata: SSDNMetadataService, client: Kinesis) {
     this.metadata = metadata;
     this.client = client;
   }

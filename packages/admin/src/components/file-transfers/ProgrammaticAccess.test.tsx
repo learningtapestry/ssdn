@@ -8,7 +8,7 @@ describe("<ProgrammaticAccess />", () => {
   beforeAll(() => {
     UploadCredentialsService.prototype.endpoint = jest
       .fn()
-      .mockResolvedValue("http://nucleus.example.org/upload-credentials");
+      .mockResolvedValue("http://ssdn.example.org/upload-credentials");
     UploadCredentialsService.prototype.apiKey = jest.fn().mockResolvedValue("TEST-API-KEY");
   });
 
@@ -17,7 +17,7 @@ describe("<ProgrammaticAccess />", () => {
 
     getByText("Programmatic Access");
     await wait(() => {
-      getByText("http://nucleus.example.org/upload-credentials");
+      getByText("http://ssdn.example.org/upload-credentials");
       getByText("TEST-API-KEY");
     });
   });

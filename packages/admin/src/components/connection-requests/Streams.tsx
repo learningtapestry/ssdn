@@ -136,14 +136,14 @@ export default function Streams(props: StreamsProps) {
       <Fragment>
         <h1>Provider Streams</h1>
         <p>
-          This section displays streams where data flows from other Nucleus instances into this one.
+          This section displays streams where data flows from other SSDN instances into this one.
         </p>
       </Fragment>
     ) : (
       <Fragment>
         <h1>Consumer Streams</h1>
         <p>
-          This section displays streams where data flows from this Nucleus instance into external
+          This section displays streams where data flows from this SSDN instance into external
           instances.
         </p>
       </Fragment>

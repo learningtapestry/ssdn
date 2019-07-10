@@ -34,17 +34,17 @@ describe("<Incoming />", () => {
 
     getByText("Incoming Requests");
     await wait(() => {
-      getByText("https://nucleus.adam.acme.org/");
+      getByText("https://ssdn.adam.acme.org/");
       getByText("Stoltenberg-Harvey");
       queryByText("2/13/2019");
       getByText("Accepted");
 
-      getByText("https://nucleus.jonah.acme.org/");
+      getByText("https://ssdn.jonah.acme.org/");
       getByText("Disney");
       queryByText("4/14/2019");
       getByText("Created");
 
-      getByText("https://nucleus.mickey.acme.org/");
+      getByText("https://ssdn.mickey.acme.org/");
       getByText("Heaney, Hackett and Jacobson");
       queryByText("4/14/2019");
       getByText("Rejected");
@@ -76,7 +76,7 @@ describe("<Incoming />", () => {
     await waitForElementToBeRemoved(() => getByRole("dialog"));
     expect(AWSService.acceptConnectionRequest).toHaveBeenCalledTimes(1);
     expect(AWSService.acceptConnectionRequest).toHaveBeenCalledWith(
-      "https://nucleus.jonah.acme.org/",
+      "https://ssdn.jonah.acme.org/",
       "ConnReqIdJonah",
       true,
     );
@@ -102,7 +102,7 @@ describe("<Incoming />", () => {
     await waitForElementToBeRemoved(() => getByRole("dialog"));
     expect(AWSService.acceptConnectionRequest).toHaveBeenCalledTimes(1);
     expect(AWSService.acceptConnectionRequest).toHaveBeenCalledWith(
-      "https://nucleus.jonah.acme.org/",
+      "https://ssdn.jonah.acme.org/",
       "ConnReqIdJonah",
       false,
     );

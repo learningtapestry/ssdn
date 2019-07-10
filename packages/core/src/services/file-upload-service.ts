@@ -1,5 +1,5 @@
 /**
- * file-upload-service.ts: Receives a file transfer Nucleus event representation and puts it into
+ * file-upload-service.ts: Receives a file transfer SSDN event representation and puts it into
  * the repository.
  */
 

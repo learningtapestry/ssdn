@@ -2,19 +2,19 @@ import { APIGatewayProxyEvent, APIGatewayProxyResult, Context } from "aws-lambda
 
 import { fakeImpl, mocked } from "../../../test-support/jest-helper";
 import beaconEvent from "../../../test-support/lambda-events/get-xapi-beacon-event.json";
-import { AWS_NUCLEUS } from "../../interfaces/aws-metadata-keys";
+import { AWS_SSDN } from "../../interfaces/aws-metadata-keys";
 import { EventRepository } from "../../repositories/event-repository";
 import { getEventRepository, getMetadataService } from "../../services";
-import AwsNucleusMetadataService from "../../services/aws-nucleus-metadata-service";
+import AwsSSDNMetadataService from "../../services/aws-ssdn-metadata-service";
 import { handler } from "./index";
 
 jest.mock("../../services");
 
-const fakeMetadataService = fakeImpl<AwsNucleusMetadataService>({
+const fakeMetadataService = fakeImpl<AwsSSDNMetadataService>({
   getMetadataValue: jest.fn((k: string) =>
     Promise.resolve(
       ({
-        [AWS_NUCLEUS.namespace]: "Test",
+        [AWS_SSDN.namespace]: "Test",
       } as any)[k],
     ),
   ),

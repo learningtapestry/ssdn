@@ -9,14 +9,14 @@ import STS from "aws-sdk/clients/sts";
 import { timeIdentifier } from "../helpers/app-helper";
 import { BUCKETS, ROLES } from "../interfaces/aws-metadata-keys";
 import logger from "../logger";
-import NucleusMetadataService from "./nucleus-metadata-service";
+import SSDNMetadataService from "./ssdn-metadata-service";
 
 export default class UploadCredentialsService {
   private folder!: string;
   private uploadBucket!: string;
 
   constructor(
-    private metadata: NucleusMetadataService,
+    private metadata: SSDNMetadataService,
     private stsClient: STS,
     private s3Client: S3,
   ) {}
@@ -33,7 +33,7 @@ export default class UploadCredentialsService {
         DurationSeconds: 3600,
         Policy: this.bucketPolicy(),
         RoleArn: uploadFileRole,
-        RoleSessionName: `Nucleus-UploadFile-${timeIdentifier()}`,
+        RoleSessionName: `SSDN-UploadFile-${timeIdentifier()}`,
       })
       .promise();
 

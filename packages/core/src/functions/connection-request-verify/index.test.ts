@@ -30,7 +30,7 @@ describe("ConnectionRequestVerifyFunction", () => {
           {
             detail: "The authorization token could not be validated.",
             status: "403",
-            title: "NucleusError",
+            title: "SSDNError",
           },
         ],
       }),

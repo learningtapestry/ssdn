@@ -21,10 +21,10 @@ describe("<Settings/>", () => {
     await wait(() => {
       getByText("EventProcessorStreamName");
       getByText("Name of the Event Processor Kinesis Data Stream");
-      getByText("Nucleus-Production-EventProcessor");
-      getByText("Hello Nucleus Lambda Function ARN");
-      getByText("HelloNucleusFunction");
-      getByText(/Nucleus-HelloNucleusFunction-60K87QSYCYTJ/i);
+      getByText("SSDN-Production-EventProcessor");
+      getByText("Hello SSDN Lambda Function ARN");
+      getByText("HelloSSDNFunction");
+      getByText(/SSDN-HelloSSDNFunction-60K87QSYCYTJ/i);
     });
   });
 });

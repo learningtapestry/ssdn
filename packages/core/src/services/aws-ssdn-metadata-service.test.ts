@@ -2,7 +2,7 @@ import CloudFormation from "aws-sdk/clients/cloudformation";
 
 import { fakeAws } from "../../test-support/jest-helper";
 import { STREAMS } from "../interfaces/aws-metadata-keys";
-import AwsNucleusMetadataService from "./aws-nucleus-metadata-service";
+import AwsSSDNMetadataService from "./aws-ssdn-metadata-service";
 
 const fakeCloudFormation = fakeAws<CloudFormation>({
   describeStacks: jest.fn(() =>
@@ -34,10 +34,10 @@ const fakeCloudFormation = fakeAws<CloudFormation>({
 });
 
 const buildMetadataService = () => {
-  return new AwsNucleusMetadataService(fakeCloudFormation, "nucleus-test");
+  return new AwsSSDNMetadataService(fakeCloudFormation, "ssdn-test");
 };
 
-describe("AwsNucleusMetadataService", () => {
+describe("AwsSSDNMetadataService", () => {
   describe("getConfigurationValue", () => {
     it("returns the value for an output key", async () => {
       const value = await buildMetadataService().getMetadataValue(STREAMS.eventProcessor);

@@ -58,7 +58,7 @@
   "event": {
     "date": "2015-04-09T12:34:56.000Z",
     "format": "xAPI",
-    "namespace": "nucleus-test.learningtapestry.com",
+    "namespace": "ssdn-test.learningtapestry.com",
     "operation": "PUT",
     "origin": "1234567890.execute-api.us-east-1.amazonaws.com/prod/xAPI/statements",
     "protocol": "HTTP/1.1",

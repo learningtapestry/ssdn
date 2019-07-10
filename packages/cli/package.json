@@ -1,13 +1,13 @@
 {
-  "name": "nucleus-cli",
+  "name": "ssdn-cli",
   "version": "1.0.0",
-  "description": "Amazon Nucleus CLI",
+  "description": "Amazon SSDN CLI",
   "author": {
     "name": "Learning Tapestry",
     "email": "social@learningtapestry.com",
     "url": "http://learningtapestry.com/"
   },
-  "homepage": "https://github.com/learningtapestry/nucleus/tree/master/packages/cli",
+  "homepage": "https://github.com/learningtapestry/ssdn/tree/master/packages/cli",
   "contributors": [
     "Steve Midgley <steve@learningtapestry.com>",
     "Abraham Sánchez <abraham@learningtapestry.com>",
@@ -15,7 +15,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/learningtapestry/nucleus"
+    "url": "https://github.com/learningtapestry/ssdn"
   },
   "license": "Apache-2.0",
   "private": true,

@@ -6,7 +6,7 @@ Overall, our main focus for the MVP version of the application is guaranteeing t
 * **Simple:** we shouldn’t use any system or service unless it’s vital for the application 
 operation. Anything that we might consider useful or convenient but not vital can be treated as a 
 project extension or an enhancement for future versions.
-* **Secure by default:** when dealing with sensitive data, we want the users of the Nucleus platform 
+* **Secure by default:** when dealing with sensitive data, we want the users of the SSDN platform 
 to be confident that the system will always default to a configuration that has the least chance of 
 exposing unintended information or provoking side effects. This means, for example, using whitelists 
 to grant access, denying connections over insecure channels, encrypting data whenever possible, etc.
@@ -19,7 +19,7 @@ of events simultaneously. This is especially relevant for the Collection APIs. T
 must take into account minimizing the number of data processing steps as well as using the most 
 adequate technologies and services.
 * **Multi-tenant:** Our plan is to support multi-tenancy at the “partner” level, but not at the 
-“Ed Tech vendor” level. So a Nucleus node can collect data for multiple partners (aka Districts) 
+“Ed Tech vendor” level. So a SSDN node can collect data for multiple partners (aka Districts) 
 for a single vendor. But it cannot collect data for multiple Ed Tech vendors on a single node. 
 Future versions may support more advanced multi-tenancy.
 
@@ -61,7 +61,7 @@ so it does not miss any collection event.
 
 #### Committed solution
 * Incoming events received from the collection endpoint are written to the `Event Processor Stream`.
-* Data can have many potential consumers, which represent other Nucleus nodes that are authorized 
+* Data can have many potential consumers, which represent other SSDN nodes that are authorized 
 to receive it.
 * The data event, regardless of its possible sharing outcomes, is finally pushed to the data store 
 component to be persisted in a permanent way.
@@ -86,15 +86,15 @@ Its main purpose is acting as a proxy for the Firehose stream while avoiding its
 Splunk. The final user can decide what storage destinations he/she wants to enable (either one or 
 all of them).
 * Data can be encrypted, processed, compressed, etc. prior to being sent to the final data stores.
-* RedShift enables any Nucleus instance to create its own data lake if desired.
+* RedShift enables any SSDN instance to create its own data lake if desired.
 * Additional data stores or destinations like DynamoDB, RDS, a third party LRS, analytics tools, 
-etc. will be addressed by plugins that are able to extract the data from our Nucleus data store.
+etc. will be addressed by plugins that are able to extract the data from our SSDN data store.
 
 
 ### Data exchange & Routing
 
 #### Main characteristics
-* Called when a Nucleus instance wants to share data with another one.
+* Called when a SSDN instance wants to share data with another one.
 * Identifies what destinations are valid and filters out data according to the consumer preferences.
 * Must incorporate some kind of retry mechanism and fail gracefully in case the destination instance 
 is not available.
@@ -109,7 +109,7 @@ easier to perform at the routing step, as well as more economical.
 In its execution, it will apply the required filters and perform any other required processing, and 
 eventually will push the record to every consumer's storage stream.
 * Authorization will be managed via cross-account IAM roles. When a consumer is granted access, it
-means a trust relationship between the Nucleus instances is established. IAM roles will be created 
+means a trust relationship between the SSDN instances is established. IAM roles will be created 
 and, from that moment on, the producer will be able to push records into the consumer's storage 
 stream.
 * Since we consider data sharing between instances an internal step, it will be accomplished by 
@@ -120,7 +120,7 @@ in the form of REST/GraphQL APIs.
 ### Data export interface & DynamoDB plugin
 
 #### Main characteristics
-* Exports the data inside a Nucleus instance to an external target.
+* Exports the data inside a SSDN instance to an external target.
 * Must not be tied to a specific storage engine or platform.
 * The reference implementation of the design will be based on the DynamoDB plugin.
 
@@ -181,7 +181,7 @@ their administration panel.
 ### S3 file transfer
 
 #### Main characteristics
-* The purpose of this feature is to allow Nucleus instances to exchange binary data, in the form of S3 files.
+* The purpose of this feature is to allow SSDN instances to exchange binary data, in the form of S3 files.
 * Instances that have established a relationship are able to exchange files associated to the namespaces and formats that were authorized during door-knocking.
 * It should be trivial for a user to store files in the instance's S3 bucket, preferably using standard S3 tools and libraries.
 * Once a file is stored, it will eventually be mirrored by consumer instances.
@@ -203,7 +203,7 @@ their administration panel.
 * Allows reviewing and managing the requests made by other instances.
 * Allows managing the administrator users that can access the panel.
 * Allows browsing through all the generated logs to detect problems or misconfigurations.
-* Allows tweaking the configuration of the running Nucleus instance.
+* Allows tweaking the configuration of the running SSDN instance.
 
 #### Committed solution
 * Application architecture is based on the Single Page Application (SPA) approach. 
@@ -230,18 +230,18 @@ component in the application, irrespective of the technology or language used.
 
 ### Collection agent
 
-See this [GitHub issue](https://github.com/learningtapestry/nucleus/issues/1) for details.
+See this [GitHub issue](https://github.com/learningtapestry/ssdn/issues/1) for details.
 
 
 ## High level diagram
 
 
-![Nucleus - High Level Architecture](https://user-images.githubusercontent.com/1306310/57625133-8dbb1080-7593-11e9-9b81-7325dee03923.png)
+![SSDN - High Level Architecture](https://user-images.githubusercontent.com/1306310/57625133-8dbb1080-7593-11e9-9b81-7325dee03923.png)
 
 
 ## Tools & Frameworks
 
-Below you'll find the frameworks and tools we use in order to implement the Nucleus application. 
+Below you'll find the frameworks and tools we use in order to implement the SSDN application. 
 
 * **Main development language:** [TypeScript](https://www.typescriptlang.org/)
 * **Testing frameworks:** 
