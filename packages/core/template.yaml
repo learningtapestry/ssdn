@@ -1600,6 +1600,8 @@ Resources:
       IsLogging: true
       IsMultiRegionTrail: true
       S3BucketName: !Ref CloudTrailLoggingS3Bucket
+    DependsOn:
+      - CloudTrailLoggingS3BucketPolicy
   CloudTrailLoggingS3Bucket:
     Type: AWS::S3::Bucket
     Properties:
