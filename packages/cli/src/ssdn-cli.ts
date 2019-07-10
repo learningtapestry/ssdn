@@ -5,7 +5,7 @@
 import slugify from "@sindresorhus/slugify";
 import { config as awsConfig } from "aws-sdk/global";
 import { existsSync, readFile, writeFile } from "fs";
-import inquirer, { Answers } from "inquirer";
+import inquirer, { Answers, Questions } from "inquirer";
 import moment from "moment";
 import generate from "nanoid/generate";
 import { promisify } from "util";
@@ -93,7 +93,7 @@ class SSDNCLI {
         },
       },
     ];
-    return inquirer.prompt(questions).then(async (answers: Answers) => {
+    return inquirer.prompt(questions as Questions).then(async (answers: Answers) => {
       const id = await SSDNCLI.instanceId(answers.organization);
       const config = {
         ...answers,

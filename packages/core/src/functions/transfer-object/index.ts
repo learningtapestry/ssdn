@@ -19,9 +19,8 @@ export const handler: KinesisStreamHandler = async (event) => {
       const connection = await connectionRepository.get(ssdnEvent.source.endpoint);
       await s3TransferService.transferObject(connection, ssdnEvent);
       logger.info(
-        `Processed event [source: ${ssdnEvent.source.endpoint} | protocol: ${
-          ssdnEvent.event.protocol
-        }]`,
+        // tslint:disable-next-line:max-line-length
+        `Processed event [source: ${ssdnEvent.source.endpoint} | protocol: ${ssdnEvent.event.protocol}]`,
       );
     } catch (error) {
       logger.error(error);

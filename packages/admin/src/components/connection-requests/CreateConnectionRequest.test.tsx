@@ -1,7 +1,7 @@
-import "jest-dom/extend-expect";
+import "@testing-library/jest-dom/extend-expect";
 
 import React from "react";
-import { fireEvent, render, wait, waitForElement } from "react-testing-library";
+import { fireEvent, render, wait, waitForElement } from "@testing-library/react";
 
 import * as factories from "../../../test-support/factories";
 import { nullConnectionRequest } from "../../app-helper";

@@ -9,9 +9,8 @@ export const handler = applyMiddlewares<APIGatewayProxyHandler>(async (event) =>
   const connectionRequest = JSON.parse(event.body!) as ConnectionRequest;
   await getConnectionRequestService().create(connectionRequest);
   logger.info(
-    `Created connection request from ${connectionRequest.consumerEndpoint} to ${
-      connectionRequest.providerEndpoint
-    }.`,
+    // tslint:disable-next-line:max-line-length
+    `Created connection request from ${connectionRequest.consumerEndpoint} to ${connectionRequest.providerEndpoint}.`,
   );
   return apiResponse(connectionRequest);
 });

@@ -48,9 +48,8 @@ export default class AwsConnectionService implements ConnectionService {
     await this.connectionRequestService.assertConnectionRequestUpdatable(connectionRequest);
 
     logger.info(
-      `Processing connection request ${connectionRequest.consumerEndpoint} - ${
-        connectionRequest.id
-      }`,
+      // tslint:disable-next-line:max-line-length
+      `Processing connection request ${connectionRequest.consumerEndpoint} - ${connectionRequest.id}`,
     );
 
     let connection;
@@ -151,9 +150,8 @@ export default class AwsConnectionService implements ConnectionService {
     connectionDetails: ProviderIssuedConnection,
   ) {
     logger.info(
-      `Processing connection request ${connectionRequest.consumerEndpoint} - ${
-        connectionRequest.id
-      }`,
+      // tslint:disable-next-line:max-line-length
+      `Processing connection request ${connectionRequest.consumerEndpoint} - ${connectionRequest.id}`,
     );
 
     await this.connectionRequestService.assertConnectionRequestUpdatable(connectionRequest);
@@ -172,9 +170,8 @@ export default class AwsConnectionService implements ConnectionService {
 
     if (!isNew && !isEqual(connection.externalConnection, connectionDetails.externalConnection)) {
       logger.info(
-        `The external connection details for ${
-          connection.endpoint
-        } have been updated and are being reassigned.`,
+        // tslint:disable-next-line:max-line-length
+        `The external connection details for ${connection.endpoint} have been updated and are being reassigned.`,
       );
     }
 

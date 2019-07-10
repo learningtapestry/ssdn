@@ -1,4 +1,4 @@
-import "jest-dom/extend-expect";
+import "@testing-library/jest-dom/extend-expect";
 
 import React from "react";
 import {
@@ -7,7 +7,7 @@ import {
   wait,
   waitForElement,
   waitForElementToBeRemoved,
-} from "react-testing-library";
+} from "@testing-library/react";
 
 import * as factories from "../../../test-support/factories";
 import AWSService from "../../services/aws-service";

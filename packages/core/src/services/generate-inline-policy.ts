@@ -22,9 +22,8 @@ export default class GenerateInlinePolicy {
           Action: ["s3:GetObject"],
           Effect: "Allow",
           Resource: [
-            `arn:aws:s3:::${metadata.UploadS3Bucket}/${outputStream.namespace}/${
-              outputStream.format
-            }/*`,
+            // tslint:disable-next-line:max-line-length
+            `arn:aws:s3:::${metadata.UploadS3Bucket}/${outputStream.namespace}/${outputStream.format}/*`,
           ],
         });
       }

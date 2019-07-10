@@ -1,5 +1,5 @@
 import React from "react";
-import { wait } from "react-testing-library";
+import { wait } from "@testing-library/react";
 import { renderWithRouter } from "../../../test-support/test-helper";
 import UploadCredentialsService from "../../services/upload-credentials-service";
 import ProgrammaticAccess from "./ProgrammaticAccess";

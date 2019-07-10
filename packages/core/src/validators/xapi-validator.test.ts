@@ -17,7 +17,7 @@ describe("XAPIValidator", () => {
     it("returns a falsy response and errors when document is invalid", () => {
       const validator = new XAPIValidator();
       const invalidXAPIJson = omit(["statement_base.verb"])(xAPIJson);
-      invalidXAPIJson.about.version = "INVALID";
+      invalidXAPIJson.about!.version = "INVALID";
 
       const result = validator.validate(invalidXAPIJson);
       const errors = validator.errors();
