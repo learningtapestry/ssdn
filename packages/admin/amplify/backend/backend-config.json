@@ -1,12 +1,8 @@
 {
-	"hosting": {
-		"S3AndCloudFront": {
-			"service": "S3AndCloudFront",
-			"providerPlugin": "awscloudformation"
-		}
-	},
-	"auth": {},
-	"storage": {},
-	"function": {},
-	"api": {}
+  "hosting": {
+    "S3AndCloudFront": {
+      "service": "S3AndCloudFront",
+      "providerPlugin": "awscloudformation"
+    }
+  }
 }
