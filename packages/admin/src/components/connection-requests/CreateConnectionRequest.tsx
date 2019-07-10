@@ -87,8 +87,6 @@ function CreateConnectionRequestForm(props: FormikProps<NewConnectionRequest>) {
     );
   });
 
-  console.log(errors);
-
   return (
     <section id="admin-create-user">
       <h1>Data Provider Request Form</h1>
