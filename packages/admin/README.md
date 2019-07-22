@@ -1,49 +1,132 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# SSDN Administration Panel
 
-## Available Scripts
+Thic component provides a front-end web application that lets you manage and configure a running SSDN instance.
 
-In the project directory, you can run:
+## Main dependencies and tools
 
-### `npm start`
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app). Other tools used
+alongside this framework are:
 
-Runs the app in the development mode.<br>
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+- [Yarn](https://yarnpkg.com/en/): manages dependencies and project scripts.
+- [TypeScript](https://www.typescriptlang.org/): is used as the default implementation language.
+- [AWS Amplify](https://aws-amplify.github.io/): provides the backbone for the back-end services and AWS integrations.
 
-The page will reload if you make edits.<br>
-You will also see any lint errors in the console.
+## Requirements
 
-### `npm test`
+As with every JavaScript front-end project, make sure you have installed an up-to-date version of
+[Node.js](https://nodejs.org/en/download/), preferably version 10.16 or higher, as well
+as [Yarn](https://yarnpkg.com/en/).
 
-Launches the test runner in the interactive watch mode.<br>
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Next, you need to install the AWS Amplify CLI package globally in your system.
 
-### `npm run build`
+```bash
+yarn global add @aws-amplify/cli
+```
 
-Builds the app for production to the `build` folder.<br>
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Project layout
 
-The build is minified and the filenames include the hashes.<br>
-Your app is ready to be deployed!
+```bash
+admin
+├── amplify/                            <-- Settings created and managed by Amplify
+├── build/                              <-- Output folder that contains the generated build
+├── cypress/                            <-- Contains the end-to-end tests
+├── public/                             <-- Basic files to boostrap the application inside the browser
+├── src/                                <-- Main source folder
+│   ├── components/                     <-- Contains the React UI components
+│   ├── interfaces/                     <-- TypeScript definitions for application objects
+│   ├── services/                       <-- Service objects that usually communicate with external resources
+│   ├── types/                          <-- Specific TypeScript types for libraries that do not include them
+│   ├── App.tsx                         <-- Main application React component
+│   ├── app-helper.ts                   <-- Main application helper with utility functions
+│   ├── aws-configuration.ts            <-- Sets up the main admin panel configuration
+│   ├── aws-exports.js                  <-- Auto-generated file by AWS Amplify that contains the current configuration
+│   └── setupTests.ts                   <-- Prepares the environment to run the tests
+├── test-support/                       <-- Support files and code useful for testing
+├── .env.template                       <-- Template file that declares environment variables for the project
+├── cypress.json                        <-- Configuration file for the Cypress test runner
+├── package.json                        <-- Node.js dependencies
+├── README.md                           <-- This file
+├── tsconfig.json                       <-- Configuration file for the TypeScript compiler
+└── tslint.json                         <-- Configuration file for the TypeScript linter
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Setup
 
-### `npm run eject`
+Run the following command to install the project dependencies:
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+```bash
+yarn install
+```
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Next, create a local copy of the configuration file.
 
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+```bash
+cp .env.template .env
+```
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+We've developed the admin panel application in a way that it can easily point to any running SSDN instance. This
+integration is performed via environment variables, so you'll need to enter the correct values from your SSDN instance.
+Most of them can be obtained from the CloudFormation template associated with the SSDN Core.
 
-## Learn More
+Here is a brief description of the environment variables you'll need to configure. Inside parenthesis you'll find the
+actual CloudFormation resource used by the SSDN Core stack:
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+- **`REACT_APP_ENDPOINT`**: points to the Exchange API endpoint. It's used for door-knocking and sharing
+  data (`ExchangeApi`).
+- **`REACT_APP_ENTITIES_ENDPOINT`**: points to the Entities API endpoint. (`EntitiesApi`).
+- **`REACT_APP_FILE_TRANSFER_NOTIFICATIONS_ENDPOINT`**: points to the File Transfer Notifications API endpoint
+  (`FileTransferNotificationsApi`).
+- **`REACT_APP_IDENTITY_POOL_ID`**: The Cognito Identity Pool ID (`CognitoIdentityPool`).
+- **`REACT_APP_SSDN_ID`**: The SSDN ID. It's usually assigned by you, or the CLI installer (`SSDNId`).
+- **`REACT_APP_AWS_REGION`**: The AWS region, usually `us-east-1`.
+- **`REACT_APP_STACK_NAME`**: The name of the SSDN Core stack.
+- **`REACT_APP_USER_POOL_ID`**: The ID of the Cognito User Pool (`CognitoUserPool`).
+- **`REACT_APP_USER_POOL_WEB_CLIENT_ID`**: The ID of the web client in the user pool (`CognitoUserPoolClientWeb`).
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+The last step involves configuring and initializing the Amplify environment. Run:
 
-## End-to-end tests
+```bash
+amplify configure
+```
+
+Follow the steps that will guide you through the creation of a suitable AWS account, as well as setting up your
+preferred environment.
+
+Next, run:
+
+```bash
+amplify init
+```
+
+When it asks whether you want to use an existing environment, choose `No` unless you're sure that you want to reuse the
+development environment available in the code repository. In almost all cases, the safest choice is setting up a new
+environment in your AWS account.
+
+To learn more about the many options to set up an Amplify project, feel free to look at the official documentation on
+[Environments & Teams](https://aws-amplify.github.io/docs/cli-toolchain/quickstart#environments--teams).
+
+## Usage
+
+Since this is a regular Amplify project, you can use the expected commands to manage the project:
+
+- `amplify push` to provision the AWS resources in the cloud.
+- `amplify publish` to generate a production-ready build of the admin panel and upload it to S3.
+- `amplify serve` to start a local instance of the application.
+- `amplify status` to get a general overview of the project and its resources.
+
+## Testing
+
+Create React Application uses `jest` as the default test runner.
+
+### Unit tests
+
+```bash
+yarn test
+```
+
+This will run all the unit tests. By default they are started in `watch` mode.
+
+### End-to-end tests
 
 We use [Cypress](https://www.cypress.io/) to execute the tests that check the behaviour of the
 admin panel from the point of view of an external user. In order to run them properly, we make some

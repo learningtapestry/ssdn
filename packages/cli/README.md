@@ -14,12 +14,23 @@ infrastructure we use for development/testing purposes._
 Before you're able to start the installation process, you need to make sure to install the following
 software packages on your system:
 
-- [Node.js](https://nodejs.org/en/). We recommend using version 10.15 or higher.
+- [Node.js](https://nodejs.org/en/). We recommend using version 10.16 or higher.
 - [Yarn](https://yarnpkg.com/en/). Any version equal or higher than 1.15.x should work fine.
 - [AWS CLI](https://aws.amazon.com/cli/). This is necessary to package and deploy the CloudFormation
   templates.
 - [Amplify CLI](https://github.com/aws-amplify/amplify-cli). After you have installed Node.js and
   Yarn, you can execute `yarn global add @aws-amplify/cli`.
+
+### Caveat regarding S3 bucket policy
+
+The installer, more specifically the AWS Amplify initializer, needs to create a new S3 bucket containing the files
+that serve the admin panel front-end application. For obvious reasons, this bucket needs to enable public access to make
+the web application accessible to users.
+
+If you happen to have a global S3 policy enabled in your account that forbids any form of public access to your S3
+buckets, you'll receive an error. In order to avoid it, make sure you are enabling S3 public access in your account
+while the installer is executing. Go to the `AWS Console` > `Services` > `Amazon S3` >
+`Block public access (account settings)` and uncheck `Block all public access`.
 
 ### Deployment steps
 
@@ -53,3 +64,22 @@ you've addressed the problem, you can run the installer again and it will rememb
 the installer questions (they are stored in the file `.ssdn-config.json` in case you want to edit
 them manually). Besides, even if you've already deployed the resources previously, running the
 installer again will just update the CloudFormation stacks, and should not produce any side effect.
+
+## Upgrading to a new release
+
+Once a new release is published, you have the possibility to update an existing SSDN installation to the new release by
+following these steps:
+
+1. Download the new release and uncompress it into a new folder (**don't** use the existing installation folder
+   containing the previous release!).
+2. Locate the `.ssdn-config.json` file from your current SSDN installation and copy it over to the folder that contains
+   the new release. This file stores the settings that point to the AWS resources currently used by your existing
+   installation, as well as other important configuration details.
+3. From the root of the new release folder, run `yarn install` to install the required dependencies.
+4. Run `bin/ssdn install` as if it was a regular new installation. It will detect the settings in `.ssdn-config.json`
+   and update the CloudFormation stack instead of generating a fresh new one.
+
+Keep in mind that, in some scenarios, it won't be possible to use this upgrade path, specially in those cases where
+there are changes that heavily affect the AWS resources or the CloudFormation stack. However, for most regular upgrades
+that involve changes in the code, this method should work fine until we decide to implement a more robust upgrade
+mechanism.

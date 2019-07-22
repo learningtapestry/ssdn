@@ -1,8 +1,11 @@
-# ssdn-collection-agent
+# SSDN Browser Collection Agent
 
 ## Introduction
 
-_ssdn-collection-agent_ is a browser library for sending messages to a [SSDN](https://github.com/learningtapestry/ssdn) instance. By default, it encodes messages in the [xAPI](https://xapi.com/overview/) format and pushes them via [image beacons](https://en.wikipedia.org/wiki/Web_beacon). It features two data collection strategies out of the box: one for tracking user visits, and one for tracking user interactions with embedded videos.
+_ssdn-collection-agent_ is a browser library for sending messages to a [SSDN](https://github.com/learningtapestry/ssdn)
+instance. By default, it encodes messages in the [xAPI](https://xapi.com/overview/) format and pushes them via
+[image beacons](https://en.wikipedia.org/wiki/Web_beacon). It features two data collection strategies out of the box:
+one for tracking user visits, and one for tracking user interactions with embedded videos.
 
 ## Usage
 
@@ -50,7 +53,8 @@ If necessary, it is also possible to postpone agent initialisation:
 
 ## Implementation
 
-_ssdn-collection-agent_ is written in [TypeScript](https://www.typescriptlang.org/) and relies on the `Node.js` tooling ecosystem to test and build its browser component. The following tools are used in the project:
+_ssdn-collection-agent_ is written in [TypeScript](https://www.typescriptlang.org/) and relies on the `Node.js`
+tooling ecosystem to test and build its browser component. The following tools are used in the project:
 
 - [Yarn](https://yarnpkg.com/en/): manages dependencies and project scripts.
 - [Parcel](https://parceljs.org/): provides a zero-config application bundler.
@@ -58,13 +62,16 @@ _ssdn-collection-agent_ is written in [TypeScript](https://www.typescriptlang.or
   production builds.
 - [Jest](https://jestjs.io/): runs unit and integration tests.
 - [WebdriverIO](https://webdriver.io): runs end-to-end tests.
-- [TSLint](https://palantir.github.io/tslint/) and [Prettier](https://prettier.io/): provide linting rules and formatting automation to enforce conventions across the codebase.
+- [TSLint](https://palantir.github.io/tslint/) and [Prettier](https://prettier.io/): provide linting rules and
+  formatting automation to enforce conventions across the codebase.
 
 ## Requirements
 
-In order to build the project, you'll need [Node.js](https://nodejs.org/en/download/) (version 10.15 or higher) and [Yarn](https://yarnpkg.com/en/).
+In order to build the project, you'll need [Node.js](https://nodejs.org/en/download/) (version 10.15 or higher) and
+[Yarn](https://yarnpkg.com/en/).
 
-To run end-to-end tests in the default configuration, you should have a recent version of [Google Chrome](https://www.google.com/chrome/) installed.
+To run end-to-end tests in the default configuration, you should have a recent version of
+[Google Chrome](https://www.google.com/chrome/) installed.
 
 ## Project layout
 

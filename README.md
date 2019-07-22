@@ -1,12 +1,15 @@
 # Secure Student Data Network (SSDN)
 
+Open source application that provides a non-proprietary, vendor-neutral solution for facilitating
+data interchange between public school districts and education technology providers.
+
 This is the root project for the Secure Student Data Network. Head to the corresponding sub-project README to know
-more:
+more.
 
 - [SSDN Core](packages/core#readme)
 - [SSDN Administration Panel](packages/admin#readme)
 - [SSDN Browser Collection Agent](packages/collection-agent#readme)
-- [SSDN CLI (installer)](packages/cli#readme)
+- [SSDN CLI (installation and upgrade)](packages/cli#readme)
 
 ## Additional documentation
 
