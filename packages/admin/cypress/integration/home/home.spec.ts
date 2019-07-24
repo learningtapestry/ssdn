@@ -4,7 +4,7 @@ describe("Home", () => {
   });
 
   it("greets with welcome message", () => {
-    cy.contains("h1", "Welcome to SSDN!");
+    cy.contains("h1", "Welcome to Secure Student Data Network!");
     cy.contains("p", "This is the main page of the administration panel");
   });
 
