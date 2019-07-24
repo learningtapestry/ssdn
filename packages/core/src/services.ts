@@ -95,10 +95,10 @@ export function getExchangeService() {
   );
 }
 
-export function getMetadataService() {
+export function getMetadataService(stackId = readEnv("SSDN_STACK_ID")) {
   return singleton(
     "AwsSSDNMetadataService",
-    () => new AwsSSDNMetadataService(getCloudFormation(), readEnv("SSDN_STACK_ID")),
+    () => new AwsSSDNMetadataService(getCloudFormation(), stackId),
   );
 }
 

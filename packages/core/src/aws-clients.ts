@@ -1,5 +1,7 @@
 import APIGateway from "aws-sdk/clients/apigateway";
 import CloudFormation from "aws-sdk/clients/cloudformation";
+import CloudWatchLogs from "aws-sdk/clients/cloudwatchlogs";
+import CodePipeline from "aws-sdk/clients/codepipeline";
 import DynamoDB from "aws-sdk/clients/dynamodb";
 import IAM from "aws-sdk/clients/iam";
 import Kinesis from "aws-sdk/clients/kinesis";
@@ -9,6 +11,14 @@ import SNS from "aws-sdk/clients/sns";
 import STS from "aws-sdk/clients/sts";
 
 import { readEnv } from "./helpers/app-helper";
+
+export function getCloudWatchLogs(clientSettings = {}) {
+  return new CloudWatchLogs({
+    apiVersion: "2014-03-28",
+    endpoint: readEnv("SSDN_CLOUDWATCH_LOGS_ENDPOINT", undefined),
+    ...clientSettings,
+  });
+}
 
 export function getDocumentClient(clientSettings = {}) {
   return new DynamoDB.DocumentClient(
@@ -32,6 +42,14 @@ export function getApiGateway(clientSettings = {}) {
       clientSettings,
     ),
   );
+}
+
+export function getCodePipeline(clientSettings = {}) {
+  return new CodePipeline({
+    apiVersion: "2015-07-09",
+    endpoint: readEnv("SSDN_CODE_PIPELINE_ENDPOINT", undefined),
+    ...clientSettings,
+  });
 }
 
 export function getIam(clientSettings = {}) {

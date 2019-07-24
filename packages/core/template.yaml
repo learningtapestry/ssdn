@@ -28,7 +28,67 @@ Globals:
         SSDN_LOG_LEVEL: info
         SSDN_NAMESPACE: !Ref Namespace
         SSDN_STACK_ID: !Ref AWS::StackId
+        SSDN_STACK_NAME: !Ref AWS::StackName
 Resources:
+  #
+  # Stack clean-up
+  #
+  DeleteStackDependenciesFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub SSDN-${SSDNId}-DeleteStackDependenciesFunction
+      CodeUri: ./dist/delete-stack-dependencies
+      Timeout: 900
+      Policies:
+        - Version: 2012-10-17
+          Statement:
+            - Effect: Allow
+              Action:
+                - cloudformation:DescribeStacks
+              Resource:
+                - "*"
+            - Effect: Allow
+              Action:
+                - iam:*
+              Resource:
+                - arn:aws:iam::*:role/ssdn*
+                - !Sub arn:aws:iam::*:policy/SSDN-${SSDNId}*
+            - Effect: Allow
+              Action:
+                - "s3:*"
+              Resource:
+                - !Sub arn:aws:s3:::${DeliveryS3Bucket}
+                - !Sub arn:aws:s3:::${DeliveryS3Bucket}/*
+                - !Sub arn:aws:s3:::${UploadS3Bucket}
+                - !Sub arn:aws:s3:::${UploadS3Bucket}/*
+                - !Sub arn:aws:s3:::${DownloadS3Bucket}
+                - !Sub arn:aws:s3:::${DownloadS3Bucket}/*
+            - Effect: Allow
+              Action:
+                - "codepipeline:PutJobSuccessResult"
+                - "codepipeline:PutJobFailureResult"
+              Resource:
+                - "*"
+            - Effect: Allow
+              Action:
+                - "s3:*"
+              Resource:
+                - !Sub arn:aws:s3:::${DeliveryS3Bucket}
+                - !Sub arn:aws:s3:::${DeliveryS3Bucket}/*
+                - !Sub arn:aws:s3:::${UploadS3Bucket}
+                - !Sub arn:aws:s3:::${UploadS3Bucket}/*
+                - !Sub arn:aws:s3:::${DownloadS3Bucket}
+                - !Sub arn:aws:s3:::${DownloadS3Bucket}/*
+            - Effect: Allow
+              Action:
+                - "logs:describeLogGroups"
+              Resource:
+                - !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:*
+            - Effect: Allow
+              Action:
+                - "logs:deleteLogGroup"
+              Resource:
+                - !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${AWS::StackName}*
   #
   # Auth
   #

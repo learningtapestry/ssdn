@@ -12,11 +12,16 @@ export enum API_KEYS {
 export enum AWS_SSDN {
   awsAccountId = "AwsAccountId",
   awsRegion = "AwsRegion",
+  clientId = "CognitoUserPoolClientId",
+  clientWebId = "CognitoUserPoolClientWebId",
+  identityPoolId = "CognitoIdentityPoolId",
   namespace = "Namespace",
   ssdnId = "SSDNId",
+  userPoolId = "CognitoUserPoolId",
 }
 
 export enum BUCKETS {
+  delivery = "DeliveryS3Bucket",
   download = "DownloadS3Bucket",
   upload = "UploadS3Bucket",
 }
@@ -36,7 +41,7 @@ export enum LAMBDAS {
   processXAPIBeacon = "ProcessXAPIBeaconFunction",
   processXAPIStatement = "ProcessXAPIStatementFunction",
   routeEvents = "RouteEventsFunction",
-  streamUpdate = "StreamUpdate",
+  streamUpdate = "StreamUpdateFunction",
   generateUploadCredentials = "GenerateUploadCredentialsFunction",
 }
 
