@@ -10,7 +10,7 @@ const useAlert = (): [
   AlertState,
   Dispatch<SetStateAction<AlertState>>,
   (...args: any[]) => any,
-  (...args: any[]) => any
+  (...args: any[]) => any,
 ] => {
   const [alertContent, setAlertContent] = useState<AlertState>(undefined);
 

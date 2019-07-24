@@ -8,7 +8,7 @@ const useModal = (
   boolean,
   Dispatch<SetStateAction<boolean>>,
   (...args: any[]) => any,
-  (...args: any[]) => any
+  (...args: any[]) => any,
 ] => {
   const [visible, setVisible] = useState(false);
   const openFn = useCallback((...args) => {
