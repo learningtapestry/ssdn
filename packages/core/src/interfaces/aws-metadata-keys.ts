@@ -11,6 +11,7 @@ export enum API_KEYS {
 
 export enum AWS_SSDN {
   awsAccountId = "AwsAccountId",
+  awsRegion = "AwsRegion",
   namespace = "Namespace",
   ssdnId = "SSDNId",
 }
@@ -49,6 +50,7 @@ export enum POLICIES {
 }
 
 export enum PUBLIC_METADATA {
+  AwsRegion = "AwsRegion",
   EventProcessorStream = "EventProcessorStream",
 }
 

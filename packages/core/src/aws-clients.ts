@@ -7,6 +7,7 @@ import Lambda from "aws-sdk/clients/lambda";
 import S3 from "aws-sdk/clients/s3";
 import SNS from "aws-sdk/clients/sns";
 import STS from "aws-sdk/clients/sts";
+
 import { readEnv } from "./helpers/app-helper";
 
 export function getDocumentClient(clientSettings = {}) {
@@ -58,15 +59,11 @@ export function getCloudFormation(clientSettings = {}) {
 }
 
 export function getKinesis(clientSettings = {}) {
-  return new Kinesis(
-    Object.assign(
-      {
-        apiVersion: "2013-12-02",
-        endpoint: readEnv("SSDN_KINESIS_ENDPOINT", undefined),
-      },
-      clientSettings,
-    ),
-  );
+  return new Kinesis({
+    apiVersion: "2013-12-02",
+    endpoint: readEnv("SSDN_KINESIS_ENDPOINT", undefined),
+    ...clientSettings,
+  });
 }
 
 export function getLambda(clientSettings = {}) {

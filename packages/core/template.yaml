@@ -1777,6 +1777,9 @@ Outputs:
   AwsAccountId:
     Description: The AWS account ID
     Value: !Ref AWS::AccountId
+  AwsRegion:
+    Description: The AWS region
+    Value: !Ref AWS::Region
   SSDNId:
     Description: An identifier for this particular SSDN installation. Used in resource names.
     Value: !Ref SSDNId
