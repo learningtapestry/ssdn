@@ -75,8 +75,10 @@ following these steps:
 2. Locate the `.ssdn-config.json` file from your current SSDN installation and copy it over to the folder that contains
    the new release. This file stores the settings that point to the AWS resources currently used by your existing
    installation, as well as other important configuration details.
-3. From the root of the new release folder, run `yarn install` to install the required dependencies.
-4. Run `bin/ssdn install` as if it was a regular new installation. It will detect the settings in `.ssdn-config.json`
+3. Locate the `packages/admin/amplify` folder from your current SSDN installation and copy it over to the same path in
+   the new release folder.
+4. From the root of the new release folder, run `yarn install` to install the required dependencies.
+5. Run `bin/ssdn install` as if it was a regular new installation. It will detect the settings in `.ssdn-config.json`
    and update the CloudFormation stack instead of generating a fresh new one.
 
 Keep in mind that, in some scenarios, it won't be possible to use this upgrade path, specially in those cases where

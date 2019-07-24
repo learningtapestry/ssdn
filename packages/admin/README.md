@@ -159,6 +159,9 @@ aws cognito-idp admin-create-user \
                       Name=phone_number_verified,Value=true
 ```
 
+_Note: Make sure you use the same values as shown above when you create your test user. Otherwise some tests might
+fail._
+
 - Next step is passing Cypress some configuration values that are needed for the actual tests. We
   use environment variables for that. Please check the
   [official documentation](https://docs.cypress.io/guides/guides/environment-variables.html#Setting)
