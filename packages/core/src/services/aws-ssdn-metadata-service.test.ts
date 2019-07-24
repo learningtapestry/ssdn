@@ -11,6 +11,10 @@ const fakeCloudFormation = fakeAws<CloudFormation>({
         {
           Outputs: [
             {
+              OutputKey: "AwsRegion",
+              OutputValue: "TestValue",
+            },
+            {
               OutputKey: "EventProcessorStream",
               OutputValue: "TestValue",
             },
@@ -56,6 +60,7 @@ describe("AwsSSDNMetadataService", () => {
     it("returns public metadata for the instance", async () => {
       const metadata = await buildMetadataService().getPublicMetadata();
       expect(metadata).toEqual({
+        AwsRegion: "TestValue",
         EventProcessorStream: "TestValue",
         UploadS3Bucket: "TestValue",
       });

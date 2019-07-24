@@ -1,6 +1,7 @@
 import { Stream } from "./stream";
 
 export interface PublicSSDNMetadata {
+  AwsRegion: string;
   EventProcessorStream: string;
   UploadS3Bucket: string;
 }
