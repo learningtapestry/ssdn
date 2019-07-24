@@ -2,7 +2,7 @@ import CloudFormation from "aws-sdk/clients/cloudformation";
 
 import { SSDNError } from "../errors/ssdn-error";
 import TtlCache from "../helpers/ttl-cache";
-import { API, AWS_SSDN, BUCKETS, STREAMS } from "../interfaces/aws-metadata-keys";
+import { API, BUCKETS, STREAMS } from "../interfaces/aws-metadata-keys";
 import { MetadataKey } from "../interfaces/base-types";
 import { PublicSSDNMetadata } from "../interfaces/connection";
 import logger from "../logger";
@@ -38,10 +38,11 @@ export default class AwsSSDNMetadataService implements SSDNMetadataService {
   }
 
   public async getPublicMetadata(): Promise<PublicSSDNMetadata> {
+    const eventProcessorStreamName = await this.getMetadataValue(STREAMS.eventProcessor);
+    const uploadS3BucketName = await this.getMetadataValue(BUCKETS.upload);
     return {
-      AwsRegion: (await this.getMetadataValue(AWS_SSDN.awsRegion)).value,
-      EventProcessorStream: (await this.getMetadataValue(STREAMS.eventProcessor)).value,
-      UploadS3Bucket: (await this.getMetadataValue(BUCKETS.upload)).value,
+      EventProcessorStream: eventProcessorStreamName.value,
+      UploadS3Bucket: uploadS3BucketName.value,
     };
   }
 

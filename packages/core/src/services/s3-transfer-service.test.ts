@@ -58,7 +58,6 @@ describe("S3TransferService", () => {
         endpoint: "https://blue.com",
         externalConnection: { arn: "BlueRedArn", externalId: "BlueRedExternalId" },
         metadata: {
-          AwsRegion: "BlueRegion",
           EventProcessorStream: "BlueStream",
           UploadS3Bucket: "BlueBucket",
         },

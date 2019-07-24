@@ -15,7 +15,6 @@ describe("GenerateInlinePolicy", () => {
       expect(
         GenerateInlinePolicy.generate(
           {
-            AwsRegion: "RedRegion",
             EventProcessorStream: "RedStream",
             UploadS3Bucket: "RedUploadS3Bucket",
           },
@@ -49,7 +48,6 @@ describe("GenerateInlinePolicy", () => {
       expect(
         GenerateInlinePolicy.generate(
           {
-            AwsRegion: "RedRegion",
             EventProcessorStream: "RedStream",
             UploadS3Bucket: "RedUploadS3Bucket",
           },

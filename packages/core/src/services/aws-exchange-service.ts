@@ -41,7 +41,7 @@ export const streamsPath = (endpoint: string) => `${endpoint}/connections/stream
 type ExternalRepoFactory = (
   p1: ConstructorParameters<typeof ExternalSSDNMetadataService>,
   p2: ConstructorParameters<typeof Kinesis>,
-) => Promise<KinesisEventRepository>;
+) => KinesisEventRepository;
 
 export default class AwsExchangeService implements ExchangeService {
   private metadata: SSDNMetadataService;
@@ -86,7 +86,7 @@ export default class AwsExchangeService implements ExchangeService {
     logger.info(`Sending events to ${connection.endpoint}`);
     const { arn, externalId } = connection.externalConnection;
     const credentials = await this.temporaryCredentialsFactory.getCredentials(arn, externalId);
-    const externalRepository = await this.kinesisEventRepoFactory([connection], [{ credentials }]);
+    const externalRepository = this.kinesisEventRepoFactory([connection], [{ credentials }]);
     const endpoint = await this.metadata.getEndpoint();
     const annotatedEvents: Event[] = events.map((evt) => ({
       ...evt,

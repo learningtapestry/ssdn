@@ -278,7 +278,6 @@ export default class AwsConnectionService implements ConnectionService {
         isConsumer: false,
         isProvider: false,
         metadata: {
-          AwsRegion: "",
           EventProcessorStream: "",
           UploadS3Bucket: "",
         },

@@ -58,7 +58,6 @@ const fakeMetadata = fakeImpl<SSDNMetadataService>({
   ),
   getPublicMetadata: jest.fn(() =>
     Promise.resolve({
-      AwsRegion: "RedRegion",
       EventProcessorStream: "RedProcessorStream",
       UploadS3Bucket: "RedUploadS3Bucket",
     }),
@@ -111,7 +110,6 @@ describe("AwsConnectionService", () => {
           externalId: "BlueRedExternalId",
         },
         metadata: {
-          AwsRegion: "BlueRegion",
           EventProcessorStream: "BlueStreamArn",
           UploadS3Bucket: "BlueUploadS3Bucket",
         },
@@ -146,7 +144,6 @@ describe("AwsConnectionService", () => {
       expect(newConnection.isConsumer).toBeTruthy();
       expect(newConnection.isProvider).toBeFalsy();
       expect(newConnection.metadata).toEqual({
-        AwsRegion: "BlueRegion",
         EventProcessorStream: "BlueStreamArn",
         UploadS3Bucket: "BlueUploadS3Bucket",
       });
@@ -187,7 +184,6 @@ describe("AwsConnectionService", () => {
           connection: { awsAccountId: "RedAccountId", ssdnId: "RedSSDNId" },
           externalConnection: { arn: "RedBlueArn", externalId: "RedBlueExternalId" },
           metadata: {
-            AwsRegion: "RedRegion",
             EventProcessorStream: "RedProcessorStream",
             UploadS3Bucket: "RedUploadS3Bucket",
           },
@@ -222,7 +218,6 @@ describe("AwsConnectionService", () => {
         isConsumer: false,
         isProvider: true,
         metadata: {
-          AwsRegion: "TestRegion",
           EventProcessorStream: "123456",
           UploadS3Bucket: "123456",
         },
@@ -246,7 +241,6 @@ describe("AwsConnectionService", () => {
           externalId: "BlueRedExternalId",
         },
         metadata: {
-          AwsRegion: "BlueRegion",
           EventProcessorStream: "BlueStreamArn",
           UploadS3Bucket: "BlueUploadS3Bucket",
         },
@@ -275,7 +269,6 @@ describe("AwsConnectionService", () => {
         externalId: "BlueRedExternalId",
       });
       expect(newConnection.metadata).toEqual({
-        AwsRegion: "BlueRegion",
         EventProcessorStream: "BlueStreamArn",
         UploadS3Bucket: "BlueUploadS3Bucket",
       });
@@ -293,7 +286,6 @@ describe("AwsConnectionService", () => {
           connection: { awsAccountId: "RedAccountId", ssdnId: "RedSSDNId" },
           externalConnection: { arn: "123456", externalId: "123456" },
           metadata: {
-            AwsRegion: "RedRegion",
             EventProcessorStream: "RedProcessorStream",
             UploadS3Bucket: "RedUploadS3Bucket",
           },
@@ -318,7 +310,7 @@ describe("AwsConnectionService", () => {
       const result = service.createForProviderAcceptance(connectionRequest, {
         connection: { awsAccountId: "123456", ssdnId: "123456" },
         externalConnection: { arn: "123456", externalId: "123456" },
-        metadata: { AwsRegion: "Test", EventProcessorStream: "123456", UploadS3Bucket: "123456" },
+        metadata: { EventProcessorStream: "123456", UploadS3Bucket: "123456" },
       });
       await expect(result).rejects.toHaveProperty("message", "Cannot be updated");
       expect(fakeConnectionRequestService.assertConnectionRequestUpdatable).toHaveBeenCalledWith(
@@ -343,7 +335,6 @@ describe("AwsConnectionService", () => {
           externalId: "RedBlueExternalId",
         },
         metadata: {
-          AwsRegion: "BlueRegion",
           EventProcessorStream: "BlueStreamArn",
           UploadS3Bucket: "BlueUploadS3Bucket",
         },
@@ -377,7 +368,6 @@ describe("AwsConnectionService", () => {
       expect(newConnection.isConsumer).toBeFalsy();
       expect(newConnection.isProvider).toBeTruthy();
       expect(newConnection.metadata).toEqual({
-        AwsRegion: "BlueRegion",
         EventProcessorStream: "BlueStreamArn",
         UploadS3Bucket: "BlueUploadS3Bucket",
       });
@@ -424,7 +414,6 @@ describe("AwsConnectionService", () => {
         isConsumer: true,
         isProvider: false,
         metadata: {
-          AwsRegion: "Test",
           EventProcessorStream: "123456",
           UploadS3Bucket: "123456",
         },
@@ -451,7 +440,6 @@ describe("AwsConnectionService", () => {
           externalId: "654321",
         },
         metadata: {
-          AwsRegion: "Test",
           EventProcessorStream: "654321",
           UploadS3Bucket: "TestS3Bucket",
         },
@@ -475,7 +463,6 @@ describe("AwsConnectionService", () => {
         externalId: "654321",
       });
       expect(newConnection.metadata).toEqual({
-        AwsRegion: "Test",
         EventProcessorStream: "654321",
         UploadS3Bucket: "TestS3Bucket",
       });
