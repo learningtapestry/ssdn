@@ -1,7 +1,7 @@
 {
   "name": "ssdn-collection-agent",
   "version": "1.0.0",
-  "description": "Amazon SSDN - Browser collection agent",
+  "description": "Secure Student Data Network - Browser Collection Agent",
   "main": "src/agent.ts",
   "author": {
     "name": "Learning Tapestry",
@@ -16,7 +16,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/learningtapestry/ssdn"
+    "url": "https://github.com/awslabs/secure-student-data-network"
   },
   "license": "Apache-2.0",
   "private": true,

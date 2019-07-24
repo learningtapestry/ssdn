@@ -12,7 +12,7 @@ describe("Home", () => {
     cy.contains("a.btn", "Learn more").should(
       "have.attr",
       "href",
-      "https://github.com/learningtapestry/ssdn",
+      "https://github.com/awslabs/secure-student-data-network",
     );
   });
 });

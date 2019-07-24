@@ -1,13 +1,13 @@
 {
   "name": "ssdn-admin",
   "version": "1.0.0",
-  "description": "Amazon SSDN - Administration Panel",
+  "description": "Secure Student Data Network - Administration Panel",
   "author": {
     "name": "Learning Tapestry",
     "email": "social@learningtapestry.com",
     "url": "http://learningtapestry.com/"
   },
-  "homepage": "https://ssdn.learningtapestry.com",
+  "homepage": "https://ssdn.amazon.com",
   "contributors": [
     "Steve Midgley <steve@learningtapestry.com>",
     "Abraham Sánchez <abraham@learningtapestry.com>",
@@ -15,7 +15,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/learningtapestry/ssdn"
+    "url": "https://github.com/awslabs/secure-student-data-network"
   },
   "license": "Apache-2.0",
   "private": true,

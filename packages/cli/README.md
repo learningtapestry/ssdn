@@ -43,7 +43,7 @@ deployment of your SSDN instance:
    required by the SSDN components.
 3. Enable programatic access and don't forget to write down the `Access Key ID` and
    `Secret Access Key` values. You'll need them later when the SSDN installer asks for them.
-4. Go to the [Releases page on GitHub](https://github.com/learningtapestry/ssdn/releases/) and
+4. Go to the [Releases page on GitHub](https://https://github.com/awslabs/secure-student-data-network/releases/) and
    download the latest one.
 5. Unzip the file to a folder of your choice.
 6. Inside the unzipped folder, execute `yarn install`.

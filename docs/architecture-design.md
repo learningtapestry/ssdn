@@ -230,7 +230,7 @@ component in the application, irrespective of the technology or language used.
 
 ### Collection agent
 
-See this [GitHub issue](https://github.com/learningtapestry/ssdn/issues/1) for details.
+See this [GitHub issue](https://github.com/awslabs/secure-student-data-network/issues/1) for details.
 
 
 ## High level diagram

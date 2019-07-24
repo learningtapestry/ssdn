@@ -11,7 +11,7 @@ function Home() {
             This is the <strong>main page</strong> of the administration panel.
           </p>
           <p>
-            <Button href="https://github.com/learningtapestry/ssdn" variant="primary">
+            <Button href="https://github.com/awslabs/secure-student-data-network" variant="primary">
               Learn more
             </Button>
           </p>

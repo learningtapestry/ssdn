@@ -9,7 +9,7 @@
   "definition": {
     "en": "A list of concepts for the SSDN solution's browser collection agent."
   },
-  "seeAlso": "https://github.com/learningtapestry/ssdn",
+  "seeAlso": "https://github.com/awslabs/secure-student-data-network",
   "author": {
     "type": "Organization",
     "name": "Learning Tapestry"
