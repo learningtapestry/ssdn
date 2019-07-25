@@ -33,10 +33,10 @@ Resources:
   #
   # Stack clean-up
   #
-  DeleteStackDependenciesFunction:
+  DeleteDependenciesFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: !Sub SSDN-${SSDNId}-DeleteStackDependenciesFunction
+      FunctionName: !Sub SSDN-${SSDNId}-DeleteDependenciesFunction
       CodeUri: ./dist/delete-stack-dependencies
       Timeout: 900
       Policies:
