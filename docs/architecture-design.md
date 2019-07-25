@@ -230,7 +230,17 @@ component in the application, irrespective of the technology or language used.
 
 ### Collection agent
 
-See this [GitHub issue](https://github.com/awslabs/secure-student-data-network/issues/1) for details.
+#### Main characteristics
+* Collection agents are software libraries designed to wrap data collection activities to simplify data collection from a particular software language. 
+* The collection agent will send data as xAPI messages. It may have some custom API components to enable secure connection to the receiving Nucleus node’s Collection Endpoint (authentication, client identification).
+
+#### Committed solution
+* The initial agent will be written in Javascript, and designed to work from within the range of common web browsers (Chrome, IE, Edge, Firefox, and Safari). The Javascript agent will use “third party library” architecture techniques to ensure it is safely and performantly loadable into arbitrary web pages.
+* The agent will support initially key user event activities, where those activities are supported by individual browsers, such as:
+  * Heartbeat, for browser visits. The browser periodically sends an event, using the xAPI verb heartbeat, to indicate that it is active. A session's duration can be tracked by aggregating events with the same heartbeatId.
+  * Video interactions that happen in the browser. We're collecting messages with the played and paused verbs.
+* The agent will need to be configured by the Node operator for authentication details back to the Node, as well as client and user ID configuration, so that the data collected can be associated to the correct client and user on collection.
+* Due to the public nature of Javascript libraries on browsers, authentication capabilities will be public, and therefore the ability to submit data to the Node will be a public capabilities.
 
 
 ## High level diagram
