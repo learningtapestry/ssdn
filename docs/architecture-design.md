@@ -82,11 +82,11 @@ Stream`) that receives incoming records from collection agents, producers as wel
 and a Kinesis Firehose stream (`Event Delivery Stream`) that permanently persists the data.
 * The `Event Storage Stream` is connected directly, and exclusively, to the `Event Delivery Stream`.
 Its main purpose is acting as a proxy for the Firehose stream while avoiding its external exposure.
-* By default the `Event Delivery Stream` stores automatically to S3, RedShift, ElasticSearch and 
+* By default, the `Event Delivery Stream` stores automatically to S3 with additional capabilities to store in RedShift, ElasticSearch and 
 Splunk. The final user can decide what storage destinations he/she wants to enable (either one or 
 all of them).
 * Data can be encrypted, processed, compressed, etc. prior to being sent to the final data stores.
-* RedShift enables any SSDN instance to create its own data lake if desired.
+* RedShift enables any SSDN instance to create its own data warehouse if desired.
 * Additional data stores or destinations like DynamoDB, RDS, a third party LRS, analytics tools, 
 etc. will be addressed by plugins that are able to extract the data from our SSDN data store.
 
