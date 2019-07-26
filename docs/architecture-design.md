@@ -50,7 +50,7 @@ component to be persisted in a permanent way.
 
 #### Main characteristics
 * It represents the persistence layer in the overall application.
-* It stores the events collected by the agents and the data received from other instances.
+* It stores the events collected by the agents and the data received from other nodes.
 * It can potentially store other relevant data useful to the application.
 
 #### Committed solution
@@ -79,7 +79,7 @@ Splunk. The final user can decide what storage destinations they want to enable.
 * We follow a `push` strategy where the producer inserts the data into the consumer's storage stream, which is part of its data store component. This makes capabilities like filtering easier and more economical to perform at the routing step.
 * The insertion step is performed by a Lambda function residing in the producer. In its execution, the function applies the required filters and performs any other required processing. The function then pushes the record to every consumer's storage stream.
 * Authorization is managed via cross-account IAM roles. When a consumer is granted access, it establishes a trust relationship between the SSDN nodes. IAM roles are created and, from that moment on, the producer is able to push records into the consumer's storage stream.
-* Data sharing between instances is an internal step accomplished by AWS services. For the time being, we don't plan on adding further abstraction layers in the form of REST/GraphQL APIs.
+* Data sharing between nodes is an internal step accomplished by AWS services. For the time being, we don't plan on adding further abstraction layers in the form of REST/GraphQL APIs.
 
 
 ### Data export interface & DynamoDB plugin
@@ -133,18 +133,18 @@ their administration panel.
 
 #### Main characteristics
 * This feature allows SSDN nodes to exchange binary data in the form of S3 files.
-* Instances with established relationships are able to exchange files associated to the namespaces and formats which were authorized during door-knocking.
-* It is trivial for a user to store files in the instance's S3 bucket, preferably using standard S3 tools and libraries.
-* Once a file is stored, it is eventually mirrored by consumer instances.
+* Nodes with established relationships are able to exchange files associated to the namespaces and formats which were authorized during door-knocking.
+* It is trivial for a user to store files in the node's S3 bucket, preferably using standard S3 tools and libraries.
+* Once a file is stored, it is eventually mirrored by consumer nodes.
 * Plugins have insight into metadata information for the exchanged files.
 * Users have visibility into the files that are being exchanged.
 
 #### Committed solution
 * When a file needs to be stored, users invoke an API method that provisions a folder in an S3 bucket. The API method takes in the namespace and format as parameters. It returns temporary credentials for writing to that folder. The credentials can be used by any tool that uses the S3 API.
 * Uploaded files are stored in a dedicated upload bucket organized by namespace and format.
-* Whenever a file is written to the upload bucket, an event is created and sent to the node's processing stream (Kinesis), which contains metadata about the file. This event is then routed to consumer instances.
-* During the door-knocking process for a consumer instance, the consumer is granted read access to a specific folder in the upload S3 bucket of the provider node (corresponding to the door-knocking request). The consumer receives an event for an upload in that folder, then it downloads the file. This happens automatically.
-* Downloaded files are stored in a dedicated download bucket organized by provider instance, namespace, and format.
+* Whenever a file is written to the upload bucket, an event is created and sent to the node's processing stream (Kinesis), which contains metadata about the file. This event is then routed to consumer nodes.
+* During the door-knocking process for a consumer node, the consumer is granted read access to a specific folder in the upload S3 bucket of the provider node (corresponding to the door-knocking request). The consumer receives an event for an upload in that folder, then it downloads the file. This happens automatically.
+* Downloaded files are stored in a dedicated download bucket organized by provider node, namespace, and format.
 * SNS notifications are generated for S3 events.
 
 ### Administration panel	
