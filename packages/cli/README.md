@@ -17,9 +17,9 @@ software packages on your system:
 - [Node.js](https://nodejs.org/en/). We recommend using version 10.16 or higher.
 - [Yarn](https://yarnpkg.com/en/). Any version equal or higher than 1.15.x should work fine.
 - [AWS CLI](https://aws.amazon.com/cli/). This is necessary to package and deploy the CloudFormation
-  templates.
+  templates. Please make sure to run the 'aws configure' after installing the AWS CLI.
 - [Amplify CLI](https://github.com/aws-amplify/amplify-cli). After you have installed Node.js and
-  Yarn, you can execute `yarn global add @aws-amplify/cli`.
+  Yarn, you can execute `sudo yarn global add @aws-amplify/cli`.
 
 ### Caveat regarding S3 bucket policy
 
