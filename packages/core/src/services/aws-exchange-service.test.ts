@@ -43,7 +43,7 @@ const fakeEventRepoFactory = jest.fn(
   (
     p1: ConstructorParameters<typeof ExternalSSDNMetadataService>,
     p2: ConstructorParameters<typeof Kinesis>,
-  ) => Promise.resolve(fakeEventRepo),
+  ) => fakeEventRepo,
 );
 
 const buildExchangeService = () =>
@@ -61,7 +61,6 @@ const buildProviderAcceptance: () => ProviderIssuedAcceptance = () => ({
       externalId: "test",
     },
     metadata: {
-      AwsRegion: "test",
       EventProcessorStream: "test",
       UploadS3Bucket: "test",
     },

@@ -33,10 +33,10 @@ Resources:
   #
   # Stack clean-up
   #
-  DeleteStackDependenciesFunction:
+  DeleteDependenciesFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: !Sub SSDN-${SSDNId}-DeleteStackDependenciesFunction
+      FunctionName: !Sub SSDN-${SSDNId}-DeleteDependenciesFunction
       CodeUri: ./dist/delete-stack-dependencies
       Timeout: 900
       Policies:
@@ -1837,9 +1837,6 @@ Outputs:
   AwsAccountId:
     Description: The AWS account ID
     Value: !Ref AWS::AccountId
-  AwsRegion:
-    Description: The AWS region
-    Value: !Ref AWS::Region
   SSDNId:
     Description: An identifier for this particular SSDN installation. Used in resource names.
     Value: !Ref SSDNId

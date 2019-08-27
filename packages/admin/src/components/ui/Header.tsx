@@ -10,7 +10,7 @@ import logo from "../../logo.svg";
 const Header = () => (
   <header className="App-header">
     <Navbar bg="primary" variant="dark">
-      <Navbar.Brand href="https://github.com/learningtapestry/ssdn">
+      <Navbar.Brand href="https://github.com/awslabs/secure-student-data-network">
         <img
           alt="SSDN logo"
           src={logo}

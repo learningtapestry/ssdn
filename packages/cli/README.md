@@ -17,9 +17,9 @@ software packages on your system:
 - [Node.js](https://nodejs.org/en/). We recommend using version 10.16 or higher.
 - [Yarn](https://yarnpkg.com/en/). Any version equal or higher than 1.15.x should work fine.
 - [AWS CLI](https://aws.amazon.com/cli/). This is necessary to package and deploy the CloudFormation
-  templates.
+  templates. Please make sure to run the 'aws configure' after installing the AWS CLI.
 - [Amplify CLI](https://github.com/aws-amplify/amplify-cli). After you have installed Node.js and
-  Yarn, you can execute `yarn global add @aws-amplify/cli`.
+  Yarn, you can execute `sudo yarn global add @aws-amplify/cli`.
 
 ### Caveat regarding S3 bucket policy
 
@@ -43,7 +43,7 @@ deployment of your SSDN instance:
    required by the SSDN components.
 3. Enable programatic access and don't forget to write down the `Access Key ID` and
    `Secret Access Key` values. You'll need them later when the SSDN installer asks for them.
-4. Go to the [Releases page on GitHub](https://github.com/learningtapestry/ssdn/releases/) and
+4. Go to the [Releases page on GitHub](https://github.com/awslabs/secure-student-data-network/releases/) and
    download the latest one.
 5. Unzip the file to a folder of your choice.
 6. Inside the unzipped folder, execute `yarn install`.
@@ -75,8 +75,10 @@ following these steps:
 2. Locate the `.ssdn-config.json` file from your current SSDN installation and copy it over to the folder that contains
    the new release. This file stores the settings that point to the AWS resources currently used by your existing
    installation, as well as other important configuration details.
-3. From the root of the new release folder, run `yarn install` to install the required dependencies.
-4. Run `bin/ssdn install` as if it was a regular new installation. It will detect the settings in `.ssdn-config.json`
+3. Locate the `packages/admin/amplify` folder from your current SSDN installation and copy it over to the same path in
+   the new release folder.
+4. From the root of the new release folder, run `yarn install` to install the required dependencies.
+5. Run `bin/ssdn install` as if it was a regular new installation. It will detect the settings in `.ssdn-config.json`
    and update the CloudFormation stack instead of generating a fresh new one.
 
 Keep in mind that, in some scenarios, it won't be possible to use this upgrade path, specially in those cases where

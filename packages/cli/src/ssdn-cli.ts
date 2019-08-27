@@ -43,6 +43,8 @@ class SSDNCLI {
         message: "Enter the name of your organization",
         name: "organization",
         type: "input",
+        validate: (name: string) =>
+          name.length <= 15 ? true : "Organization name is too long (max: 15 characters)",
       },
       {
         message: "Enter the e-mail that will be used for notification purposes",

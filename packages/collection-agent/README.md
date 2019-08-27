@@ -2,7 +2,7 @@
 
 ## Introduction
 
-_ssdn-collection-agent_ is a browser library for sending messages to a [SSDN](https://github.com/learningtapestry/ssdn)
+_ssdn-collection-agent_ is a browser library for sending messages to a [SSDN](https://github.com/awslabs/secure-student-data-network)
 instance. By default, it encodes messages in the [xAPI](https://xapi.com/overview/) format and pushes them via
 [image beacons](https://en.wikipedia.org/wiki/Web_beacon). It features two data collection strategies out of the box:
 one for tracking user visits, and one for tracking user interactions with embedded videos.
@@ -75,7 +75,8 @@ To run end-to-end tests in the default configuration, you should have a recent v
 
 ## Project layout
 
-The project has been modeled after the [SSDN server](https://github.com/learningtapestry/ssdn) application.
+The project has been modeled after the [SSDN Core](https://github.com/awslabs/secure-student-data-network/tree/master/packages/core) 
+application.
 
 ```bash
 ssdn-collection-agent/
