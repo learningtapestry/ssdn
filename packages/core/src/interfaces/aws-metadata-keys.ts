@@ -11,6 +11,7 @@ export enum API_KEYS {
 
 export enum AWS_SSDN {
   awsAccountId = "AwsAccountId",
+  awsRegion = "AwsRegion",
   clientId = "CognitoUserPoolClientId",
   clientWebId = "CognitoUserPoolClientWebId",
   identityPoolId = "CognitoIdentityPoolId",
@@ -54,6 +55,7 @@ export enum POLICIES {
 }
 
 export enum PUBLIC_METADATA {
+  AwsRegion = "AwsRegion",
   EventProcessorStream = "EventProcessorStream",
 }
 

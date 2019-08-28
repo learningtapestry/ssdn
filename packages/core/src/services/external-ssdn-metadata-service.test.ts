@@ -20,6 +20,7 @@ const connection: Connection = {
   isConsumer: false,
   isProvider: false,
   metadata: {
+    AwsRegion: "TestRegion",
     EventProcessorStream: "TestStream",
     UploadS3Bucket: "TestUploadBucket",
   },
@@ -48,6 +49,7 @@ describe("ExternalSSDNMetadataService", () => {
     it("returns public metadata for the instance", async () => {
       const metadata = await new ExternalSSDNMetadataService(connection).getPublicMetadata();
       expect(metadata).toEqual({
+        AwsRegion: "TestRegion",
         EventProcessorStream: "TestStream",
         UploadS3Bucket: "TestUploadBucket",
       });
