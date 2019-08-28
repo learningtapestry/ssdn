@@ -10,8 +10,8 @@ import SSDNConfig from "./ssdn-config";
 export default class DeployAdminPanel {
   private static async amplifyCommand(parameters: string[]) {
     await execute(async () => {
-      const { stdout } = await execa("amplify", parameters, { cwd: "packages/admin" });
-      logger.info(stdout);
+      const { all } = await execa("amplify", parameters, { cwd: "packages/admin" });
+      logger.info(all);
     });
   }
 
