@@ -3,8 +3,9 @@
 const { argv } = process;
 const ssdn = require("commander");
 const SSDNCLI = require("../packages/cli/dist/ssdn-cli");
+const lerna = require("../lerna.json");
 
-ssdn.version("1.0.2", "-v, --version");
+ssdn.version(lerna.version, "-v, --version");
 ssdn
   .command("install")
   .description("Installs a new SSDN instance on your AWS account")
