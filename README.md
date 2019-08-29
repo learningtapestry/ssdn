@@ -42,4 +42,27 @@ yarn build          # generates a production-ready bundle
 yarn start          # starts a live-reloading development environment
 yarn lint           # runs typescript linter (ts-lint)
 yarn check-types    # runs typescript compiler (tsc)
+yarn release        # generates a new release in a .zip file and stores it in `/releases`
 ```
+
+## Creating a new release
+
+Since the main project is managed by Lerna, you can use one of its commands to update all the sub-packages at the same
+time. For example, to bump the project to version `1.2.3`, you can run:
+
+```bash
+lerna version 1.2.3
+```
+
+Keep in mind that, by default, this command will commit the changes, generate a version tag and push everything to the
+repository. If you don't want that, check out Lerna's documentation to know more about its different options.
+
+After the version is set, you can then run:
+
+```bash
+yarn release
+```
+
+This will generate a file named `ssdn-1.2.3.zip` in the `releases` folder that is suitable for installation. Check out 
+the [installation instructions](https://github.com/awslabs/secure-student-data-network/tree/master/packages/cli#installation-instructions)
+for more details.
