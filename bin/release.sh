@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-VERSION="1.0.2"
+VERSION=$(node -p "require('./lerna.json').version")
+
 ROOT_DIR=$(pwd)
 RELEASE_PATH="releases/ssdn-${VERSION}"
 
@@ -45,6 +46,7 @@ copy_extra () {
   mkdir ${RELEASE_PATH}/bin
   cp -r bin/ssdn ${RELEASE_PATH}/bin
   cp package.json ${RELEASE_PATH}
+  cp lerna.json ${RELEASE_PATH}
   cp yarn.lock ${RELEASE_PATH}
 }
 

@@ -77,15 +77,11 @@ export function getCloudFormation(clientSettings = {}) {
 }
 
 export function getKinesis(clientSettings = {}) {
-  return new Kinesis(
-    Object.assign(
-      {
-        apiVersion: "2013-12-02",
-        endpoint: readEnv("SSDN_KINESIS_ENDPOINT", undefined),
-      },
-      clientSettings,
-    ),
-  );
+  return new Kinesis({
+    apiVersion: "2013-12-02",
+    endpoint: readEnv("SSDN_KINESIS_ENDPOINT", undefined),
+    ...clientSettings,
+  });
 }
 
 export function getLambda(clientSettings = {}) {

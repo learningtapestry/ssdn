@@ -11,7 +11,7 @@ export async function execute(command: () => any) {
   try {
     await command();
   } catch (error) {
-    logger.error(error.stderr);
+    logger.error(error);
     printError(
       "An unexpected error has occurred. Please check the 'ssdn.log' file for more details.",
     );

@@ -53,6 +53,7 @@ export function buildConnection(overrides?: Partial<Connection>): Connection {
     isConsumer: false,
     isProvider: false,
     metadata: {
+      AwsRegion: "",
       EventProcessorStream: "",
       UploadS3Bucket: "",
     },

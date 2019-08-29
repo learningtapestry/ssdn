@@ -12,6 +12,7 @@ import {
   getSts,
 } from "./aws-clients";
 import { readEnv } from "./helpers/app-helper";
+import { AWS_SSDN, PUBLIC_METADATA } from "./interfaces/aws-metadata-keys";
 import { Connection } from "./interfaces/connection";
 import DynamoConnectionRepository from "./repositories/dynamo-connection-repository";
 import DynamoConnectionRequestRepository from "./repositories/dynamo-connection-request-repository";
@@ -133,14 +134,15 @@ export function getEventRouter() {
   return new AwsEventRouter(getConnectionRepository(), getExchangeService());
 }
 
-export function getExternalEventRepository(
+export async function getExternalEventRepository(
   metadataParams: ConstructorParameters<typeof ExternalSSDNMetadataService>,
   kinesisParams: ConstructorParameters<typeof Kinesis>,
 ) {
-  return new KinesisEventRepository(
-    getExternalMetadataService(...metadataParams),
-    getKinesis(...kinesisParams),
-  );
+  const externalMetadata = getExternalMetadataService(...metadataParams);
+  const region = await externalMetadata.getMetadataValue(PUBLIC_METADATA.AwsRegion);
+  const clientParams = { region: region.value, ...kinesisParams[0] };
+
+  return new KinesisEventRepository(externalMetadata, getKinesis(clientParams));
 }
 
 export function getTemporaryCredentialsFactory() {
