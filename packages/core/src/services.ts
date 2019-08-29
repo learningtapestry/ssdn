@@ -140,7 +140,8 @@ export async function getExternalEventRepository(
 ) {
   const externalMetadata = getExternalMetadataService(...metadataParams);
   const region = await externalMetadata.getMetadataValue(PUBLIC_METADATA.AwsRegion);
-  const clientParams = { region, ...kinesisParams };
+  const clientParams = { region: region.value, ...kinesisParams[0] };
+
   return new KinesisEventRepository(externalMetadata, getKinesis(clientParams));
 }
 
