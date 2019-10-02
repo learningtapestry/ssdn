@@ -17,6 +17,7 @@ export default class ChainableTemporaryCredentialsFactory {
             RoleArn: roleArn,
             RoleSessionName: `SSDN-${new Date().getTime()}`,
           },
+          stsConfig: {},
         }),
     );
   }

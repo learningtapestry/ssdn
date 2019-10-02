@@ -51,8 +51,6 @@ const awsapi = {
   ],
 };
 
-const ENV = process.env ? process.env : (window as any).Cypress ? (window as any).Cypress : {};
-
 const awsconfiguration = {
   Api: awsapi,
   Auth: {

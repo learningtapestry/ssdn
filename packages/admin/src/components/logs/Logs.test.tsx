@@ -8,9 +8,6 @@ import * as factories from "../../../test-support/factories";
 import AWSService from "../../services/aws-service";
 import Logs from "./Logs";
 
-/* FIXME: The nasty warning about test not wrapped in act(...) should go away when this is resolved:
- *        https://github.com/facebook/react/issues/14769
- */
 describe("<Logs/>", () => {
   beforeAll(() => {
     AWSService.retrieveLogGroups = jest.fn().mockReturnValue(factories.logGroups());
