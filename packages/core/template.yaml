@@ -1650,6 +1650,30 @@ Resources:
         BlockPublicPolicy: true
         RestrictPublicBuckets: true
   #
+  # SQS Integration
+  #
+  ProcessSQSMessageFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./dist/process-sqs-message
+      Policies:
+        - AWSLambdaSQSQueueExecutionRole
+        - Version: 2012-10-17
+          Statement:
+            - Effect: Allow
+              Action:
+                - kinesis:PutRecord
+                - kinesis:PutRecords
+              Resource: !GetAtt EventProcessorStream.Arn
+            - Effect: Allow
+              Action:
+                - cloudformation:DescribeStacks
+              Resource:
+                - !Sub arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/${AWS::StackName}/*
+      DeadLetterQueue:
+        Type: SNS
+        TargetArn: !Ref LambdaDeadLetterQueueTopic
+  #
   # CloudTrail
   #
   CloudTrail:
@@ -1834,6 +1858,9 @@ Outputs:
   FileTransferNotificationsTopic:
     Description: SNS Topic that receives file transfer notifications
     Value: !Ref FileTransferNotificationsTopic
+  ProcessSQSMessageFunction:
+    Description: Reads and processes a message from an SQS queue
+    Value: !GetAtt ProcessSQSMessageFunction.Arn
   AwsAccountId:
     Description: The AWS account ID
     Value: !Ref AWS::AccountId
