@@ -1,6 +1,6 @@
 import difference from "lodash/fp/difference";
 import map from "lodash/fp/map";
-import React, { useEffect, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { Form } from "react-bootstrap";
 
 import QueueMapping from "../../interfaces/queueMapping";
@@ -18,6 +18,8 @@ export default function AssociateQueue(props: AssociateQueueProps) {
   const { show, onClose, onAssociationCreated, queueMappings } = props;
   const [availableQueues, setAvailableQueues] = useState<string[]>([]);
   const [selectedQueue, setSelectedQueue] = useState("");
+  const [externalQueue, setExternalQueue] = useState(false);
+  const [error, setError] = useState(undefined);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -36,8 +38,12 @@ export default function AssociateQueue(props: AssociateQueueProps) {
 
   const handleConfirmAssociateQueue = async () => {
     if (selectedQueue) {
-      await AWSService.createQueueMapping(selectedQueue);
-      onAssociationCreated();
+      try {
+        await AWSService.createQueueMapping(selectedQueue);
+        onAssociationCreated();
+      } catch (error) {
+        setError(error.message);
+      }
     }
   };
 
@@ -52,10 +58,46 @@ export default function AssociateQueue(props: AssociateQueueProps) {
       onClose={onClose}
     >
       <div>
-        <Form.Label>Select the SQS Queue you want to associate</Form.Label>
-        <Form.Control as="select" onChange={handleChangeSelectedQueue}>
-          {renderAvailableQueues()}
-        </Form.Control>
+        <Form.Group controlId="externalAccount">
+          <Form.Check
+            type="checkbox"
+            label="Queue resides in external AWS account?"
+            defaultChecked={externalQueue}
+            onChange={() => setExternalQueue(!externalQueue)}
+          />
+        </Form.Group>
+        <Form.Group controlId="queueArn">
+          {externalQueue ? (
+            <Fragment>
+              <Form.Control
+                type="text"
+                onChange={handleChangeSelectedQueue}
+                placeholder="Enter the ARN of the queue"
+                isInvalid={error}
+              />
+              <p className="mt-3">
+                <small>
+                  Before associating an external SQS queue, please make sure your AWS account has
+                  the required access permissions. More specifically, the <em>ReceiveMessage</em>,{" "}
+                  <em>DeleteMessage</em> and <em>GetQueueAttributes</em> permissions are needed.
+                  Check out the official documentation on how to add a{" "}
+                  <a href="https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-creating-custom-policies.html#sqs-creating-custom-policies-key-concepts">
+                    custom policy for SQS access
+                  </a>
+                  .
+                </small>
+              </p>
+            </Fragment>
+          ) : (
+            <Fragment>
+              <Form.Label>Select the SQS queue you want to associate</Form.Label>
+              <Form.Control as="select" onChange={handleChangeSelectedQueue} isInvalid={error}>
+                {renderAvailableQueues()}
+              </Form.Control>
+            </Fragment>
+          )}
+          <Form.Control.Feedback type="invalid">{error}</Form.Control.Feedback>
+        </Form.Group>
       </div>
     </ConfirmationModal>
   );

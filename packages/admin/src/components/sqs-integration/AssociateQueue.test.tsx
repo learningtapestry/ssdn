@@ -55,4 +55,27 @@ describe("<AssociateQueue/>", () => {
       expect(props.onAssociationCreated).toHaveBeenCalled();
     });
   });
+
+  it("changes input type when queue is external", async () => {
+    const { getByLabelText, getByPlaceholderText } = render(<AssociateQueue {...props} />);
+
+    await wait(() => {
+      fireEvent.click(getByLabelText("Queue resides in external AWS account?"));
+
+      getByPlaceholderText("Enter the ARN of the queue");
+    });
+  });
+
+  it("displays the error message when it happens", async () => {
+    AWSService.createQueueMapping = jest.fn().mockImplementation(() => {
+      throw Error("Test Error");
+    });
+    const { getByText } = render(<AssociateQueue {...props} />);
+
+    await wait(() => {
+      fireEvent.click(getByText("Confirm"));
+
+      getByText("Test Error");
+    });
+  });
 });
