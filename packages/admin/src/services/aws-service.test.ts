@@ -4,6 +4,8 @@ import CloudFormation from "aws-sdk/clients/cloudformation";
 import CloudWatchLogs from "aws-sdk/clients/cloudwatchlogs";
 import CognitoIdentityServiceProvider from "aws-sdk/clients/cognitoidentityserviceprovider";
 import DynamoDB from "aws-sdk/clients/dynamodb";
+import Lambda from "aws-sdk/clients/lambda";
+import SQS from "aws-sdk/clients/sqs";
 import { buildFormat } from "../../test-support/factories";
 import * as factories from "../../test-support/factories";
 import * as responses from "../../test-support/service-responses";
@@ -269,5 +271,48 @@ describe("AWSService", () => {
         {},
       );
     });
+  });
+});
+
+describe("retrieveSQSIntegrationFunction", () => {
+  it("retrieves the ARN of the SQS lambda", async () => {
+    AWSService.retrieveStack = jest.fn().mockResolvedValue(factories.ssdnStack);
+
+    const integrationFunction = await AWSService.retrieveSQSIntegrationFunction();
+
+    expect(integrationFunction).toEqual(
+      "arn:aws:lambda:us-east-1:111111111111:function:SSDN-ProcessSQSMessageFunction-18XOSMJC66JZK",
+    );
+  });
+});
+
+describe("retrieveQueues", () => {
+  it("retrieves the SQS queues", async () => {
+    SQS.prototype.listQueues = mockWithPromise(responses.queues());
+    SQS.prototype.getQueueAttributes = jest
+      .fn()
+      .mockReturnValueOnce({ promise: async () => responses.queueAttributes() })
+      .mockReturnValueOnce({
+        promise: async () => responses.queueAttributes("ssdn-another-queue"),
+      });
+
+    const logEvents = await AWSService.retrieveQueues();
+
+    expect(logEvents).toEqual(factories.queueArns());
+  });
+});
+
+describe("retrieveQueueMappings", () => {
+  it("retrieves the source event mappings for the SQS lambda", async () => {
+    Lambda.prototype.listEventSourceMappings = mockWithPromise(responses.queueMappings());
+    AWSService.retrieveSQSIntegrationFunction = jest
+      .fn()
+      .mockResolvedValue(
+        "arn:aws:lambda:us-east-1:111111111111:function:SSDN-ProcessSQSMessageFunction-18XOSMJC66JZK",
+      );
+
+    const queueMappings = await AWSService.retrieveQueueMappings();
+
+    expect(queueMappings).toEqual(factories.queueMappings());
   });
 });

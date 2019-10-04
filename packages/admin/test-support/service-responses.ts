@@ -32,6 +32,12 @@ export function cloudFormationStacks() {
           SSDN-Dev-HelloSSDNFunction-HCJE3P62QE5P`,
           },
           {
+            Description: "Reads and processes a message from an SQS queue",
+            OutputKey: "ProcessSQSMessageFunction",
+            OutputValue:
+              "arn:aws:lambda:us-east-1:111111111111:function:SSDN-ProcessSQSMessageFunction-18XOSMJC66JZK",
+          },
+          {
             Description: "Endpoint that generates temporary upload credentials to specific folders",
             OutputKey: "GenerateUploadCredentialsApi",
             OutputValue: "https://ssdn.example.org/Development",
@@ -82,6 +88,12 @@ export function cloudFormationStacks() {
             OutputValue:
               `arn:aws:lambda:us-east-1:111111111111:function:` +
               `SSDN-HelloSSDNFunction-60K87QSYCYTJ`,
+          },
+          {
+            Description: "Reads and processes a message from an SQS queue",
+            OutputKey: "ProcessSQSMessageFunction",
+            OutputValue:
+              "arn:aws:lambda:us-east-1:111111111111:function:SSDN-ProcessSQSMessageFunction-18XOSMJC66JZK",
           },
           {
             Description: "Endpoint that generates temporary upload credentials to specific folders",
@@ -330,6 +342,7 @@ export function logStreams() {
     ],
   };
 }
+
 export function logEvents() {
   return {
     events: [
@@ -357,5 +370,54 @@ export function apiKey() {
     name: "SSDN-learning-tapestry-as25vydn3ekjn2e-GenerateUploadCredentialsApiKey",
     stageKeys: [],
     value: "K4I8vkxjRz3OUZ8HBPKdS9Y8hCIh4fjY5F4JPFfn",
+  };
+}
+
+export function queues() {
+  return {
+    QueueUrls: [
+      "https://sqs.us-east-1.amazonaws.com/111111111111/ssdn-one-queue",
+      "https://sqs.us-east-1.amazonaws.com/111111111111/ssdn-another-queue",
+    ],
+    ResponseMetadata: { RequestId: "a560a9e7-77cb-5ea7-af98-fff66c35d8b8" },
+  };
+}
+
+export function queueAttributes(name: string = "ssdn-one-queue") {
+  return {
+    Attributes: { QueueArn: `arn:aws:sqs:us-east-1:111111111111:${name}` },
+    ResponseMetadata: { RequestId: "a24b46ac-771d-58c6-bc9e-10bd6b4b25cd" },
+  };
+}
+
+export function queueMappings() {
+  return {
+    EventSourceMappings: [
+      {
+        BatchSize: 10,
+        EventSourceArn: "arn:aws:sqs:us-east-1:111111111111:ssdn-one-queue",
+        FunctionArn:
+          "arn:aws:lambda:us-east-1:111111111111:function:SSDN-ProcessSQSMessageFunction-18XOSMJC66JZK",
+        LastModified: "2019-10-02T17:25:18.199Z",
+        LastProcessingResult: null,
+        MaximumBatchingWindowInSeconds: null,
+        State: "Enabled",
+        StateTransitionReason: "USER_INITIATED",
+        UUID: "48aeaf30-abc6-4cc4-9bdf-9fc6d8f4f9ad",
+      },
+      {
+        BatchSize: 10,
+        EventSourceArn: "arn:aws:sqs:us-east-1:111111111111:ssdn-another-queue",
+        FunctionArn:
+          "arn:aws:lambda:us-east-1:111111111111:function:SSDN-ProcessSQSMessageFunction-18XOSMJC66JZK",
+        LastModified: "2019-10-03T11:32:32.102Z",
+        LastProcessingResult: null,
+        MaximumBatchingWindowInSeconds: null,
+        State: "Disabled",
+        StateTransitionReason: "USER_INITIATED",
+        UUID: "3d865ff0-5949-4cd9-810c-f31a481f8b1a",
+      },
+    ],
+    NextMarker: null,
   };
 }

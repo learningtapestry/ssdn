@@ -9,6 +9,8 @@ import CloudFormation from "aws-sdk/clients/cloudformation";
 import CloudWatchLogs from "aws-sdk/clients/cloudwatchlogs";
 import CognitoIdentityServiceProvider from "aws-sdk/clients/cognitoidentityserviceprovider";
 import DynamoDB from "aws-sdk/clients/dynamodb";
+import Lambda from "aws-sdk/clients/lambda";
+import SQS from "aws-sdk/clients/sqs";
 import { config } from "aws-sdk/global";
 import { flatMap, map } from "lodash/fp";
 import { nullInstance } from "../app-helper";
@@ -18,6 +20,7 @@ import { Connection } from "../interfaces/connection";
 import { ConnectionRequest, NewConnectionRequest } from "../interfaces/connection-request";
 import { FileTransferNotification } from "../interfaces/file-transfer-notification";
 import { Format, NewFormat } from "../interfaces/format";
+import Setting from "../interfaces/setting";
 import UserForm from "../interfaces/user-form";
 import AWSAdapter from "./aws-adapter";
 
@@ -35,6 +38,8 @@ export default class AWSService {
       cloudwatchlogs: "2014-03-28",
       cognitoidentityserviceprovider: "2016-04-18",
       dynamodb: "2012-08-10",
+      lambda: "2015-03-31",
+      sqs: "2012-11-05",
     };
   }
 
@@ -291,6 +296,79 @@ export default class AWSService {
   public static async deleteFileTransferNotification(id: string): Promise<void> {
     return AWSService.withCredentials(async () => {
       await API.del("FileTransferNotificationsApi", `/file-transfers/notifications/${id}`, {});
+    });
+  }
+
+  public static async retrieveSQSIntegrationFunction() {
+    const stack = await this.retrieveStack();
+    const functionField = stack.settings.find(
+      (setting: Setting) => setting.key === "ProcessSQSMessageFunction",
+    );
+
+    return functionField.value;
+  }
+
+  public static async retrieveQueues() {
+    return AWSService.withCredentials(async () => {
+      const sqs = new SQS();
+      const queuesData = await sqs.listQueues().promise();
+
+      if (queuesData.QueueUrls) {
+        const queueArns = queuesData.QueueUrls.map(async (url) => {
+          const attributesData = await sqs
+            .getQueueAttributes({ QueueUrl: url, AttributeNames: ["QueueArn"] })
+            .promise();
+
+          return attributesData.Attributes!.QueueArn;
+        });
+
+        return Promise.all(queueArns);
+      }
+    });
+  }
+
+  public static async retrieveQueueMappings() {
+    const integrationLambda = await this.retrieveSQSIntegrationFunction();
+
+    return AWSService.withCredentials(async () => {
+      const mappingsData = await new Lambda()
+        .listEventSourceMappings({ FunctionName: integrationLambda })
+        .promise();
+
+      return AWSAdapter.convertEventSourceMappings(mappingsData.EventSourceMappings!);
+    });
+  }
+
+  public static async createQueueMapping(queueArn: string) {
+    const integrationLambda = await this.retrieveSQSIntegrationFunction();
+
+    return AWSService.withCredentials(async () => {
+      return await new Lambda()
+        .createEventSourceMapping({
+          EventSourceArn: queueArn,
+          FunctionName: integrationLambda,
+        })
+        .promise();
+    });
+  }
+
+  public static async disableQueueMapping(uuid: string) {
+    return await this.updateQueueMapping(uuid, { Enabled: false });
+  }
+
+  public static async enableQueueMapping(uuid: string) {
+    return await this.updateQueueMapping(uuid, { Enabled: true });
+  }
+
+  public static async updateQueueMapping(uuid: string, params = {}) {
+    return AWSService.withCredentials(async () => {
+      return await new Lambda().updateEventSourceMapping({ UUID: uuid, ...params }).promise();
+    });
+  }
+
+  public static async deleteQueueMapping(uuid: string) {
+    return AWSService.withCredentials(async () => {
+      return await new Lambda().deleteEventSourceMapping({ UUID: uuid }).promise();
     });
   }
 

@@ -33,6 +33,12 @@ export const ssdnDevStack = {
         `arn:aws:lambda:us-east-1:111111111111:function:` +
         `SSDN-Dev-HelloSSDNFunction-HCJE3P62QE5P`,
     },
+    {
+      description: "Reads and processes a message from an SQS queue",
+      key: "ProcessSQSMessageFunction",
+      value:
+        "arn:aws:lambda:us-east-1:111111111111:function:SSDN-ProcessSQSMessageFunction-18XOSMJC66JZK",
+    },
   ],
 };
 
@@ -58,6 +64,12 @@ export const ssdnStack = {
       description: "Hello SSDN Lambda Function ARN",
       key: "HelloSSDNFunction",
       value: "arn:aws:lambda:us-east-1:111111111111:function:SSDN-HelloSSDNFunction-60K87QSYCYTJ",
+    },
+    {
+      description: "Reads and processes a message from an SQS queue",
+      key: "ProcessSQSMessageFunction",
+      value:
+        "arn:aws:lambda:us-east-1:111111111111:function:SSDN-ProcessSQSMessageFunction-18XOSMJC66JZK",
     },
   ],
 };
@@ -196,6 +208,30 @@ export function fileTransferNotifications() {
       message: "File was successfully transferred",
       subject: "This is another test message",
       type: "info",
+    },
+  ];
+}
+
+export function queueArns() {
+  return [
+    "arn:aws:sqs:us-east-1:111111111111:ssdn-one-queue",
+    "arn:aws:sqs:us-east-1:111111111111:ssdn-another-queue",
+  ];
+}
+
+export function queueMappings() {
+  return [
+    {
+      arn: "arn:aws:sqs:us-east-1:111111111111:ssdn-one-queue",
+      modificationDate: new Date("2019-10-02T17:25:18.199Z"),
+      status: "Enabled",
+      uuid: "48aeaf30-abc6-4cc4-9bdf-9fc6d8f4f9ad",
+    },
+    {
+      arn: "arn:aws:sqs:us-east-1:111111111111:ssdn-another-queue",
+      modificationDate: new Date("2019-10-03T11:32:32.102Z"),
+      status: "Disabled",
+      uuid: "3d865ff0-5949-4cd9-810c-f31a481f8b1a",
     },
   ];
 }
