@@ -308,6 +308,37 @@ export default class AWSService {
     return functionField.value;
   }
 
+  public static async retrieveSQSIntegrationNamespace() {
+    const functionConfig = await this.retrieveSQSIntegrationConfig();
+
+    return functionConfig.Environment!.Variables!.SSDN_NAMESPACE;
+  }
+
+  public static async retrieveSQSIntegrationConfig() {
+    const lambda = new Lambda();
+    const integrationFunction = await this.retrieveSQSIntegrationFunction();
+
+    return await lambda.getFunctionConfiguration({ FunctionName: integrationFunction }).promise();
+  }
+
+  public static async updateNamespace(namespace: string) {
+    const lambda = new Lambda();
+    const integrationFunction = await this.retrieveSQSIntegrationFunction();
+    const currentConfiguration = await this.retrieveSQSIntegrationConfig();
+
+    lambda
+      .updateFunctionConfiguration({
+        Environment: {
+          Variables: {
+            ...currentConfiguration.Environment!.Variables,
+            SSDN_NAMESPACE: namespace,
+          },
+        },
+        FunctionName: integrationFunction,
+      })
+      .promise();
+  }
+
   public static async retrieveQueues() {
     return AWSService.withCredentials(async () => {
       const sqs = new SQS();

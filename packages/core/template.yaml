@@ -207,6 +207,8 @@ Resources:
                   - lambda:CreateEventSourceMapping
                   - lambda:UpdateEventSourceMapping
                   - lambda:DeleteEventSourceMapping
+                  - lambda:UpdateFunctionConfiguration
+                  - lambda:GetFunctionConfiguration
                   - sqs:ListQueues
                   - sqs:GetQueueAttributes
                 Resource:

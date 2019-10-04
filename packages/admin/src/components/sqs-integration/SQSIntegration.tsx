@@ -8,11 +8,13 @@ import QueueMapping from "../../interfaces/queueMapping";
 import AWSService from "../../services/aws-service";
 import ConfirmationModal from "../ui/ConfirmationModal";
 import AssociateQueue from "./AssociateQueue";
+import SetNamespace from "./SetNamespace";
 
 export default function SQSIntegration() {
   const [queueMappings, setQueueMappings] = useState<QueueMapping[]>([]);
   const [selectedQueueMapping, setSelectedQueueMapping] = useState<QueueMapping>(nullQueue());
   const [showAssociateQueueModal, setShowAssociateQueueModal] = useState(false);
+  const [showSetNamespaceModal, setShowSetNamespaceModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   useEffect(() => {
@@ -25,6 +27,8 @@ export default function SQSIntegration() {
 
   const handleClickOpenAssociateQueueModal = () => setShowAssociateQueueModal(true);
 
+  const handleClickOpenSetNamespaceModal = () => setShowSetNamespaceModal(true);
+
   const handleClickOpenDeleteModal = (event: React.MouseEvent<HTMLElement>) => {
     const data = (event.target as HTMLElement).dataset;
     const queue = find({ arn: data.arn })(queueMappings) as QueueMapping;
@@ -35,6 +39,8 @@ export default function SQSIntegration() {
   const handleCloseDeleteModal = () => setShowDeleteModal(false);
 
   const handleCloseAssociateQueueModal = () => setShowAssociateQueueModal(false);
+
+  const handleCloseSetNamespaceModal = () => setShowSetNamespaceModal(false);
 
   const handleClickDisableQueueMapping = async (event: React.MouseEvent<HTMLElement>) => {
     await AWSService.disableQueueMapping((event.target as HTMLElement).dataset.uuid!);
@@ -50,6 +56,8 @@ export default function SQSIntegration() {
     setShowAssociateQueueModal(false);
     await fetchData();
   };
+
+  const handleNamespaceSaved = () => setShowSetNamespaceModal(false);
 
   const handleConfirmDeleteQueueMapping = async () => {
     await AWSService.deleteQueueMapping(selectedQueueMapping.uuid);
@@ -124,18 +132,25 @@ export default function SQSIntegration() {
         Here you can integrate your SSDN instance with AWS SQS, and import all the content that goes
         through your chosen SQS queues into SSDN.
       </p>
-      <Button variant="outline-primary" onClick={handleClickOpenAssociateQueueModal}>
-        Associate Queue
-      </Button>
-      <Button variant="outline-primary" onClick={handleClickOpenSetNamespaceModal}>
-        Set Namespace
-      </Button>
+      <ButtonGroup>
+        <Button variant="outline-primary" onClick={handleClickOpenAssociateQueueModal}>
+          Associate Queue
+        </Button>
+        <Button variant="outline-primary" onClick={handleClickOpenSetNamespaceModal}>
+          Set Namespace
+        </Button>
+      </ButtonGroup>
       {isEmpty(queueMappings) ? renderEmpty() : renderList()}
       <AssociateQueue
         show={showAssociateQueueModal}
         onClose={handleCloseAssociateQueueModal}
         onAssociationCreated={handleAssociationCreated}
         queueMappings={queueMappings}
+      />
+      <SetNamespace
+        show={showSetNamespaceModal}
+        onClose={handleCloseSetNamespaceModal}
+        onNamespaceSaved={handleNamespaceSaved}
       />
       <ConfirmationModal
         title="Confirm queue deletion"

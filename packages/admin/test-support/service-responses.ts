@@ -421,3 +421,41 @@ export function queueMappings() {
     NextMarker: null,
   };
 }
+
+export function functionConfiguration() {
+  return {
+    CodeSha256: "E8yOSF/pvAqCRL2s0ceH0H7RbPtofY+pXfzRKnP5Ziw=",
+    CodeSize: 1003792,
+    DeadLetterConfig: {
+      TargetArn: "arn:aws:sns:us-east-1:111111111111:SSDN-LambdaDeadLetterQueueTopic-PRZVYUH0L7K9",
+    },
+    Description: "",
+    Environment: {
+      Variables: {
+        SSDN_AWS_ACCOUNT_ID: "111111111111",
+        SSDN_ENVIRONMENT: "Development",
+        SSDN_ID: "learning-tapestry-dev",
+        SSDN_LOG_LEVEL: "info",
+        SSDN_NAMESPACE: "test.example.com",
+        SSDN_STACK_ID:
+          "arn:aws:cloudformation:us-east-1:111111111111:stack/SSDN/00390200-a309-11e9-99ba-12ff035a5bdc",
+        SSDN_STACK_NAME: "SSDN",
+      },
+    },
+    FunctionArn:
+      "arn:aws:lambda:us-east-1:111111111111:function:SSDN-ProcessSQSMessageFunction-18XOSMJC66JZK",
+    FunctionName: "SSDN-ProcessSQSMessageFunction-18XOSMJC66JZK",
+    Handler: "index.handler",
+    KMSKeyArn: null,
+    LastModified: "2019-10-04T12:07:33.559+0000",
+    MasterArn: null,
+    MemorySize: 128,
+    RevisionId: "5faa934e-982f-4a39-930e-75acbc86e2e8",
+    Role: "arn:aws:iam::111111111111:role/SSDN-ProcessSQSMessageFunctionRole-ARFHDPUYI00Y",
+    Runtime: "nodejs10.x",
+    Timeout: 30,
+    TracingConfig: { Mode: "PassThrough" },
+    Version: "$LATEST",
+    VpcConfig: { SubnetIds: [], SecurityGroupIds: [], VpcId: "" },
+  };
+}

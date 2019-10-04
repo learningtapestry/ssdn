@@ -316,3 +316,47 @@ describe("retrieveQueueMappings", () => {
     expect(queueMappings).toEqual(factories.queueMappings());
   });
 });
+
+describe("retrieveSQSIntegrationNamespace", () => {
+  it("retrieves the current namespace for the SQS lambda function", async () => {
+    Lambda.prototype.getFunctionConfiguration = mockWithPromise(responses.functionConfiguration());
+    AWSService.retrieveStack = jest.fn().mockResolvedValue(factories.ssdnStack);
+
+    const namespace = await AWSService.retrieveSQSIntegrationNamespace();
+
+    expect(namespace).toEqual("test.example.com");
+  });
+});
+
+describe("updateNamespace", () => {
+  it("updates the namespace variable without affecting the others", async () => {
+    AWSService.retrieveSQSIntegrationFunction = jest
+      .fn()
+      .mockResolvedValue(
+        "arn:aws:lambda:us-east-1:111111111111:function:SSDN-ProcessSQSMessageFunction-18XOSMJC66JZK",
+      );
+    AWSService.retrieveSQSIntegrationConfig = jest
+      .fn()
+      .mockResolvedValue(responses.functionConfiguration());
+    Lambda.prototype.updateFunctionConfiguration = mockWithPromise("pepe");
+
+    await AWSService.updateNamespace("modified.example.com");
+
+    expect(Lambda.prototype.updateFunctionConfiguration).toHaveBeenCalledWith({
+      Environment: {
+        Variables: {
+          SSDN_AWS_ACCOUNT_ID: "111111111111",
+          SSDN_ENVIRONMENT: "Development",
+          SSDN_ID: "learning-tapestry-dev",
+          SSDN_LOG_LEVEL: "info",
+          SSDN_NAMESPACE: "modified.example.com",
+          SSDN_STACK_ID:
+            "arn:aws:cloudformation:us-east-1:111111111111:stack/SSDN/00390200-a309-11e9-99ba-12ff035a5bdc",
+          SSDN_STACK_NAME: "SSDN",
+        },
+      },
+      FunctionName:
+        "arn:aws:lambda:us-east-1:111111111111:function:SSDN-ProcessSQSMessageFunction-18XOSMJC66JZK",
+    });
+  });
+});
