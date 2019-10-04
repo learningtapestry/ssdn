@@ -203,6 +203,12 @@ Resources:
                   - logs:DescribeLogGroups
                   - logs:DescribeLogStreams
                   - logs:GetLogEvents
+                  - lambda:ListEventSourceMappings
+                  - lambda:CreateEventSourceMapping
+                  - lambda:UpdateEventSourceMapping
+                  - lambda:DeleteEventSourceMapping
+                  - sqs:ListQueues
+                  - sqs:GetQueueAttributes
                 Resource:
                   - "*"
                 Effect: Allow

@@ -82,3 +82,12 @@ export function nullFileTransferNotification(): FileTransferNotification {
     type: FileTransferNotificationType.Info,
   };
 }
+
+export function nullQueue() {
+  return {
+    arn: "arn:aws:sqs:us-east-1:111111111111:ssdn-queue",
+    modificationDate: new Date(),
+    status: "Disabled",
+    uuid: "8b29ea99-2f34-4432-b12b-ded8347ed99e",
+  };
+}

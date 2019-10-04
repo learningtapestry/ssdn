@@ -26,6 +26,7 @@ import Formats from "./components/formats/Formats";
 import Home from "./components/home/Home";
 import Logs from "./components/logs/Logs";
 import Settings from "./components/settings/Settings";
+import SQSIntegration from "./components/sqs-integration/SQSIntegration";
 import Header from "./components/ui/Header";
 import CreateUser from "./components/users/CreateUser";
 import Users from "./components/users/Users";
@@ -54,6 +55,7 @@ class App extends Component {
                 <Route exact={true} path="/users/create" component={CreateUser} />
                 <Route exact={true} path="/settings" component={Settings} />
                 <Route path="/file-transfers" component={FileTransfersHome} />
+                <Route path="/sqs-integration" component={SQSIntegration} />
               </Col>
             </Row>
           </Container>
