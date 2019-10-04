@@ -65,12 +65,14 @@ describe("<Incoming />", () => {
     );
     await waitForElement(() => getAllByText("Accept"));
     fireEvent.click(getAllByText("Accept")[0]);
+    // @ts-ignore
     await waitForElement(() => getByRole("dialog", { hidden: true }));
     fireEvent.change(getByPlaceholderText("Verification Code"), {
       target: { value: "VerifyJonah" },
     });
     fireEvent.click(getByLabelText(acceptTermsMessage));
     fireEvent.click(getByText("Confirm"));
+    // @ts-ignore
     await waitForElementToBeRemoved(() => getByRole("dialog", { hidden: true }));
     expect(AWSService.acceptConnectionRequest).toHaveBeenCalledTimes(1);
     expect(AWSService.acceptConnectionRequest).toHaveBeenCalledWith(
@@ -85,6 +87,7 @@ describe("<Incoming />", () => {
 
     await waitForElement(() => getAllByText("Accept"));
     fireEvent.click(getAllByText("Accept")[0]);
+    // @ts-ignore
     await waitForElement(() => getByRole("dialog", { hidden: true }));
     fireEvent.click(getByText("Confirm"));
 
@@ -95,8 +98,10 @@ describe("<Incoming />", () => {
     const { getByText, getAllByText, getByRole } = render(<Incoming />);
     await waitForElement(() => getAllByText("Reject"));
     fireEvent.click(getAllByText("Reject")[0]);
+    // @ts-ignore
     await waitForElement(() => getByRole("dialog", { hidden: true }));
     fireEvent.click(getByText("Confirm"));
+    // @ts-ignore
     await waitForElementToBeRemoved(() => getByRole("dialog", { hidden: true }));
     expect(AWSService.acceptConnectionRequest).toHaveBeenCalledTimes(1);
     expect(AWSService.acceptConnectionRequest).toHaveBeenCalledWith(
@@ -110,8 +115,10 @@ describe("<Incoming />", () => {
     const { getAllByText, getByRole } = render(<Incoming />);
     await waitForElement(() => getAllByText("View info"));
     fireEvent.click(getAllByText("View info")[0]);
+    // @ts-ignore
     await waitForElement(() => getByRole("dialog", { hidden: true }));
     fireEvent.click(getAllByText("Close")[0]);
+    // @ts-ignore
     await waitForElementToBeRemoved(() => getByRole("dialog", { hidden: true }));
   });
 });

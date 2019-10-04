@@ -54,8 +54,10 @@ describe("<Submitted />", () => {
 
     await waitForElement(() => getAllByText("View info"));
     fireEvent.click(getAllByText("View info")[0]);
+    // @ts-ignore
     await waitForElement(() => getByRole("dialog", { hidden: true }));
     fireEvent.click(getAllByText("Close")[0]);
+    // @ts-ignore
     await waitForElementToBeRemoved(() => getByRole("dialog", { hidden: true }));
   });
 });

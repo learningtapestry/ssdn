@@ -57,8 +57,10 @@ describe("<Streams />", () => {
       const { getByText, getByRole } = render(<Streams streamType="output" />);
       await waitForElement(() => getByText("Pause"));
       fireEvent.click(getByText("Pause"));
+      // @ts-ignore
       await waitForElement(() => getByRole("dialog", { hidden: true }));
       fireEvent.click(getByText("Confirm"));
+      // @ts-ignore
       await waitForElementToBeRemoved(() => getByRole("dialog", { hidden: true }));
       expect(AWSService.updateStream).toHaveBeenCalledTimes(1);
       expect(AWSService.updateStream).toHaveBeenCalledWith(
@@ -74,8 +76,10 @@ describe("<Streams />", () => {
       const { getByText, getByRole } = render(<Streams streamType="output" />);
       await waitForElement(() => getByText("Resume"));
       fireEvent.click(getByText("Resume"));
+      // @ts-ignore
       await waitForElement(() => getByRole("dialog", { hidden: true }));
       fireEvent.click(getByText("Confirm"));
+      // @ts-ignore
       await waitForElementToBeRemoved(() => getByRole("dialog", { hidden: true }));
       expect(AWSService.updateStream).toHaveBeenCalledTimes(1);
       expect(AWSService.updateStream).toHaveBeenCalledWith(
