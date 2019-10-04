@@ -314,19 +314,19 @@ export default class AWSService {
     return functionConfig.Environment!.Variables!.SSDN_NAMESPACE;
   }
 
-  public static async retrieveSQSIntegrationConfig() {
-    const lambda = new Lambda();
+  public static async retrieveSQSIntegrationConfig(lambdaClient = new Lambda()) {
     const integrationFunction = await this.retrieveSQSIntegrationFunction();
 
-    return await lambda.getFunctionConfiguration({ FunctionName: integrationFunction }).promise();
+    return await lambdaClient
+      .getFunctionConfiguration({ FunctionName: integrationFunction })
+      .promise();
   }
 
-  public static async updateNamespace(namespace: string) {
-    const lambda = new Lambda();
+  public static async updateNamespace(namespace: string, lambdaClient = new Lambda()) {
     const integrationFunction = await this.retrieveSQSIntegrationFunction();
     const currentConfiguration = await this.retrieveSQSIntegrationConfig();
 
-    lambda
+    lambdaClient
       .updateFunctionConfiguration({
         Environment: {
           Variables: {
@@ -339,14 +339,13 @@ export default class AWSService {
       .promise();
   }
 
-  public static async retrieveQueues() {
+  public static async retrieveQueues(sqsClient = new SQS()) {
     return AWSService.withCredentials(async () => {
-      const sqs = new SQS();
-      const queuesData = await sqs.listQueues().promise();
+      const queuesData = await sqsClient.listQueues().promise();
 
       if (queuesData.QueueUrls) {
         const queueArns = queuesData.QueueUrls.map(async (url) => {
-          const attributesData = await sqs
+          const attributesData = await sqsClient
             .getQueueAttributes({ QueueUrl: url, AttributeNames: ["QueueArn"] })
             .promise();
 
@@ -358,11 +357,11 @@ export default class AWSService {
     });
   }
 
-  public static async retrieveQueueMappings() {
+  public static async retrieveQueueMappings(lambdaClient = new Lambda()) {
     const integrationLambda = await this.retrieveSQSIntegrationFunction();
 
     return AWSService.withCredentials(async () => {
-      const mappingsData = await new Lambda()
+      const mappingsData = await lambdaClient
         .listEventSourceMappings({ FunctionName: integrationLambda })
         .promise();
 
@@ -370,11 +369,11 @@ export default class AWSService {
     });
   }
 
-  public static async createQueueMapping(queueArn: string) {
+  public static async createQueueMapping(queueArn: string, lambdaClient = new Lambda()) {
     const integrationLambda = await this.retrieveSQSIntegrationFunction();
 
     return AWSService.withCredentials(async () => {
-      return await new Lambda()
+      return await lambdaClient
         .createEventSourceMapping({
           EventSourceArn: queueArn,
           FunctionName: integrationLambda,
@@ -391,15 +390,15 @@ export default class AWSService {
     return await this.updateQueueMapping(uuid, { Enabled: true });
   }
 
-  public static async updateQueueMapping(uuid: string, params = {}) {
+  public static async updateQueueMapping(uuid: string, params = {}, lambdaClient = new Lambda()) {
     return AWSService.withCredentials(async () => {
-      return await new Lambda().updateEventSourceMapping({ UUID: uuid, ...params }).promise();
+      return await lambdaClient.updateEventSourceMapping({ UUID: uuid, ...params }).promise();
     });
   }
 
-  public static async deleteQueueMapping(uuid: string) {
+  public static async deleteQueueMapping(uuid: string, lambdaClient = new Lambda()) {
     return AWSService.withCredentials(async () => {
-      return await new Lambda().deleteEventSourceMapping({ UUID: uuid }).promise();
+      return await lambdaClient.deleteEventSourceMapping({ UUID: uuid }).promise();
     });
   }
 
