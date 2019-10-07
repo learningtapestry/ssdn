@@ -1,7 +1,9 @@
 import { Context, SNSEvent } from "aws-lambda";
+
 import { buildFileTransferNotification } from "../../../test-support/factories";
 import { fakeImpl, mocked } from "../../../test-support/jest-helper";
 import storeNotificationEvent from "../../../test-support/lambda-events/store-file-transfer-notification-event.json";
+import { FileTransferNotification } from "../../interfaces/file-transfer-notification";
 import NotificationRepository from "../../repositories/notification-repository";
 import { getFileTransferNotificationRepository } from "../../services";
 import { handler } from "./index";
@@ -10,7 +12,9 @@ jest.mock("../../services");
 
 describe("StoreFileTransferNotificationFunction", () => {
   const notification = buildFileTransferNotification();
-  const fileTransferNotificationRepository = fakeImpl<NotificationRepository>({
+  const fileTransferNotificationRepository = fakeImpl<
+    NotificationRepository<FileTransferNotification>
+  >({
     put: jest.fn().mockResolvedValue(notification),
   });
   mocked(getFileTransferNotificationRepository).mockReturnValue(fileTransferNotificationRepository);
