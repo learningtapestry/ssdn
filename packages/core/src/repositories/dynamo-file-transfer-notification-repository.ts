@@ -16,7 +16,9 @@ export default class DynamoFileTransferNotificationRepository
   constructor(private metadata: SSDNMetadataService, private client: DocumentClient) {}
 
   public async findAll(): Promise<FileTransferNotification[]> {
-    const items = await this.client.scan({ TableName: await this.getTableName() }).promise();
+    const items = await this.client
+      .scan({ Limit: 50, TableName: await this.getTableName() })
+      .promise();
 
     if (!items || !items.Items) {
       return [];
