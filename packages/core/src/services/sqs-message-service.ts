@@ -3,6 +3,7 @@
  */
 
 import SNS from "aws-sdk/clients/sns";
+import last from "lodash/fp/last";
 
 import { TOPICS } from "../interfaces/aws-metadata-keys";
 import Event from "../interfaces/event";
@@ -40,7 +41,7 @@ export default class SQSMessageService {
         details: error.stack,
         message: error.message,
         queue: event.event.origin,
-        subject: `Error detected in queue '${event.event.origin}'`,
+        subject: `Error detected in queue '${last(event.event.origin.split(":"))}'`,
       });
 
       return {

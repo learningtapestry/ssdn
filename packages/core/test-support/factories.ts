@@ -159,11 +159,11 @@ export function buildSNSFileTransferNotification(overrides?: Partial<SNSFileTran
 export function buildSQSIntegrationNotification(overrides?: Partial<SQSIntegrationNotification>) {
   return {
     creationDate: "2019-10-07T11:52:37.616Z",
-    details: "Error: Test SQS error\n at SQSMessageService.process (/var/task/index.js:72699:13)",
+    details: "Error: Test SQS error at SQSMessageService.process (/var/task/index.js:72699:13)",
     id: "d887cd79-010b-4572-9121-5821b9ec5390",
     message: "Test SQS error",
     queue: "arn:aws:sqs:us-east-1:111111111111:ssdn-test-queue",
-    subject: "Error detected in queue 'arn:aws:sqs:us-east-1:111111111111:ssdn-test-queue'",
+    subject: "Error detected in queue 'ssdn-test-queue'",
     ...overrides,
   };
 }
