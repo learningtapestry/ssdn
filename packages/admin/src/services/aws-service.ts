@@ -318,9 +318,11 @@ export default class AWSService {
   public static async retrieveSQSIntegrationConfig(lambdaClient = new Lambda()) {
     const integrationFunction = await this.retrieveSQSIntegrationFunction();
 
-    return await lambdaClient
-      .getFunctionConfiguration({ FunctionName: integrationFunction })
-      .promise();
+    return AWSService.withCredentials(async () => {
+      return await lambdaClient
+        .getFunctionConfiguration({ FunctionName: integrationFunction })
+        .promise();
+    });
   }
 
   public static async updateNamespace(namespace: string, lambdaClient = new Lambda()) {
