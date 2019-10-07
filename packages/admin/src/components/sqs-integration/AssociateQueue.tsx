@@ -36,7 +36,10 @@ export default function AssociateQueue(props: AssociateQueueProps) {
   const handleChangeSelectedQueue = (event: React.ChangeEvent<HTMLInputElement>) =>
     setSelectedQueue(event.target.value);
 
-  const handleChangeExternalQueue = () => setExternalQueue(!externalQueue);
+  const handleChangeExternalQueue = () => {
+    setSelectedQueue(externalQueue ? availableQueues[0] : "");
+    setExternalQueue(!externalQueue);
+  };
 
   const handleConfirmAssociateQueue = async () => {
     if (selectedQueue) {
