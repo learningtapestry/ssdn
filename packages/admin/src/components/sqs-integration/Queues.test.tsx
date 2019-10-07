@@ -5,7 +5,7 @@ import React from "react";
 import * as factories from "../../../test-support/factories";
 import { renderWithRouter } from "../../../test-support/test-helper";
 import AWSService from "../../services/aws-service";
-import SQSIntegration from "./SQSIntegration";
+import Queues from "./Queues";
 
 describe("<SQSIntegration/>", () => {
   beforeAll(() => {
@@ -18,11 +18,11 @@ describe("<SQSIntegration/>", () => {
   });
 
   it("renders title and active queue mappings in the list", async () => {
-    const { getByText } = renderWithRouter(<SQSIntegration />, {
+    const { getByText } = renderWithRouter(<Queues />, {
       route: "/sqs-integration",
     });
 
-    getByText("SQS Integration");
+    getByText("Queues");
     await wait(() => {
       getByText("arn:aws:sqs:us-east-1:111111111111:ssdn-one-queue");
       getByText("10/2/2019, 7:25:18 PM");
@@ -34,7 +34,7 @@ describe("<SQSIntegration/>", () => {
   });
 
   it("handles the delete modal dialog", async () => {
-    const { getAllByText, getByText } = renderWithRouter(<SQSIntegration />, {
+    const { getAllByText, getByText } = renderWithRouter(<Queues />, {
       route: "/sqs-integration",
     });
 
@@ -55,7 +55,7 @@ describe("<SQSIntegration/>", () => {
   });
 
   it("changes status of queue", async () => {
-    const { getAllByText, getByText } = renderWithRouter(<SQSIntegration />, {
+    const { getAllByText, getByText } = renderWithRouter(<Queues />, {
       route: "/sqs-integration",
     });
 
@@ -69,7 +69,7 @@ describe("<SQSIntegration/>", () => {
   });
 
   it("renders action buttons", async () => {
-    const { getByText } = renderWithRouter(<SQSIntegration />, { route: "/sqs-integration" });
+    const { getByText } = renderWithRouter(<Queues />, { route: "/sqs-integration" });
 
     await wait(() => {
       getByText("Associate Queue");

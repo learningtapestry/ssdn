@@ -10,7 +10,7 @@ import ConfirmationModal from "../ui/ConfirmationModal";
 import AssociateQueue from "./AssociateQueue";
 import SetNamespace from "./SetNamespace";
 
-export default function SQSIntegration() {
+export default function Queues() {
   const [queueMappings, setQueueMappings] = useState<QueueMapping[]>([]);
   const [selectedQueueMapping, setSelectedQueueMapping] = useState<QueueMapping>(nullQueue());
   const [showAssociateQueueModal, setShowAssociateQueueModal] = useState(false);
@@ -127,7 +127,7 @@ export default function SQSIntegration() {
 
   return (
     <section id="admin-sqs-integration">
-      <h1>SQS Integration</h1>
+      <h1>Queues</h1>
       <p>
         Here you can integrate your SSDN instance with AWS SQS, and import all the content that goes
         through your chosen SQS queues into SSDN.

@@ -235,3 +235,24 @@ export function queueMappings() {
     },
   ];
 }
+
+export function sqsIntegrationNotifications() {
+  return [
+    {
+      creationDate: new Date(2019, 6, 4, 13, 38, 39),
+      details: "Error: Test SQS error at SQSMessageService.process (/var/task/index.js:72699:13)",
+      id: "d887cd79-010b-4572-9121-5821b9ec5390",
+      message: "First SQS error",
+      queue: "arn:aws:sqs:us-east-1:111111111111:ssdn-test-queue",
+      subject: "Error detected in queue 'ssdn-test-queue'",
+    },
+    {
+      creationDate: new Date(2019, 6, 7, 12, 55, 8),
+      details: "Error: Test SQS error at SQSMessageService.process (/var/task/index.js:72699:13)",
+      id: "40b643b4-50d1-4dd7-b1ef-9c9e1620270b",
+      message: "Second SQS error",
+      queue: "arn:aws:sqs:us-east-1:111111111111:ssdn-another-queue",
+      subject: "Error detected in queue 'ssdn-another-queue'",
+    },
+  ];
+}

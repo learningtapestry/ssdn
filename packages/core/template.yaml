@@ -1714,7 +1714,7 @@ Resources:
     Properties:
       CodeUri: ./dist/store-sqs-integration-notification
       Events:
-        ProcessQueueMessageError:
+        ProcessSQSMessageError:
           Type: SNS
           Properties:
             Topic: !Ref SQSIntegrationNotificationsTopic
@@ -1734,6 +1734,63 @@ Resources:
       DeadLetterQueue:
         Type: SNS
         TargetArn: !Ref LambdaDeadLetterQueueTopic
+  SQSIntegrationNotificationsApiFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./dist/sqs-integration-notifications
+      Events:
+        ListAll:
+          Type: Api
+          Properties:
+            Path: /sqs-integration/notifications
+            Method: get
+            RestApiId: !Ref SQSIntegrationNotificationsApi
+            Auth:
+              Authorizer: CognitoAuth
+        Delete:
+          Type: Api
+          Properties:
+            Path: /sqs-integration/notifications/{id}
+            Method: delete
+            RestApiId: !Ref SQSIntegrationNotificationsApi
+            Auth:
+              Authorizer: CognitoAuth
+      Policies:
+        - Version: 2012-10-17
+          Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:Query
+                - dynamodb:Scan
+                - dynamodb:DeleteItem
+              Resource:
+                - !Sub ${SSDNSQSIntegrationNotificationsTable.Arn}*
+            - Effect: Allow
+              Action:
+                - cloudformation:DescribeStacks
+              Resource:
+                - "*"
+      DeadLetterQueue:
+        Type: SNS
+        TargetArn: !Ref LambdaDeadLetterQueueTopic
+  SQSIntegrationNotificationsApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: !Sub SSDN-${SSDNId}-SQSIntegrationNotificationsApi
+      StageName: !Ref Environment
+      Cors:
+        AllowOrigin: "'*'"
+        AllowHeaders: "'Content-Type,Authorization'"
+      Auth:
+        Authorizers:
+          CognitoAuth:
+            UserPoolArn: !GetAtt CognitoUserPool.Arn
+      MethodSettings:
+        - LoggingLevel: ERROR
+          DataTraceEnabled: true
+          MetricsEnabled: true
+          ResourcePath: "/*"
+          HttpMethod: "*"
   #
   # CloudTrail
   #
@@ -1871,6 +1928,9 @@ Outputs:
   FileTransferNotificationsApi:
     Description: API to perform CRUD operations on file transfer notifications
     Value: !Sub https://${FileTransferNotificationsApi}.execute-api.${AWS::Region}.amazonaws.com/${Environment}
+  SQSIntegrationNotificationsApi:
+    Description: API to perform CRUD operations on SQS integration notifications
+    Value: !Sub https://${SQSIntegrationNotificationsApi}.execute-api.${AWS::Region}.amazonaws.com/${Environment}
   EntitiesApiFunction:
     Description: EntitiesApiFunction
     Value: !GetAtt EntitiesApiFunction.Arn

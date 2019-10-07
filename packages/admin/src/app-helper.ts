@@ -3,6 +3,7 @@
  */
 import uuid from "uuid/v4";
 
+import { SQSIntegrationNotification } from "ssdn-core/src/interfaces/sqs-integration-notification";
 import { Connection } from "./interfaces/connection";
 import { ConnectionRequest, ConnectionRequestStatus } from "./interfaces/connection-request";
 import {
@@ -89,5 +90,15 @@ export function nullQueue() {
     modificationDate: new Date(),
     status: "Disabled",
     uuid: "8b29ea99-2f34-4432-b12b-ded8347ed99e",
+  };
+}
+
+export function nullSQSIntegrationNotification(): SQSIntegrationNotification {
+  return {
+    creationDate: new Date(),
+    id: "NULL-ID",
+    message: "This is a null notification",
+    queue: "null-queue",
+    subject: "Null Notification",
   };
 }

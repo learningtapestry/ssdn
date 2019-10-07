@@ -21,6 +21,7 @@ import { ConnectionRequest, NewConnectionRequest } from "../interfaces/connectio
 import { FileTransferNotification } from "../interfaces/file-transfer-notification";
 import { Format, NewFormat } from "../interfaces/format";
 import Setting from "../interfaces/setting";
+import { SQSIntegrationNotification } from "../interfaces/sqs-integration-notification";
 import UserForm from "../interfaces/user-form";
 import AWSAdapter from "./aws-adapter";
 
@@ -399,6 +400,24 @@ export default class AWSService {
   public static async deleteQueueMapping(uuid: string, lambdaClient = new Lambda()) {
     return AWSService.withCredentials(async () => {
       return await lambdaClient.deleteEventSourceMapping({ UUID: uuid }).promise();
+    });
+  }
+
+  public static async retrieveSQSIntegrationNotifications(): Promise<SQSIntegrationNotification[]> {
+    return AWSService.withCredentials(async () => {
+      const response = await API.get(
+        "SQSIntegrationNotificationsApi",
+        "/sqs-integration/notifications",
+        {},
+      );
+
+      return response as SQSIntegrationNotification[];
+    });
+  }
+
+  public static async deleteSQSIntegrationNotification(id: string): Promise<void> {
+    return AWSService.withCredentials(async () => {
+      await API.del("SQSIntegrationNotificationsApi", `/sqs-integration/notifications/${id}`, {});
     });
   }
 
