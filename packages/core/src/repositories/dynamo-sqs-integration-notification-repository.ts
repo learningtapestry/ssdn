@@ -1,45 +1,46 @@
 /**
- * dynamo-file-transfer-notification-repository.ts: Repository class to manage access to DynamoDB
- * table that stores file transfer notifications
+ * dynamo-sqs-integration-notification-repository.ts: Repository class to manage access to
+ * DynamoDB table that stores SQS integration notifications
  */
 
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import orderBy from "lodash/fp/orderBy";
+
 import { TABLES } from "../interfaces/aws-metadata-keys";
-import { FileTransferNotification } from "../interfaces/file-transfer-notification";
+import { SQSIntegrationNotification } from "../interfaces/sqs-integration-notification";
 import logger from "../logger";
 import SSDNMetadataService from "../services/ssdn-metadata-service";
 import NotificationRepository from "./notification-repository";
 
-export default class DynamoFileTransferNotificationRepository
-  implements NotificationRepository<FileTransferNotification> {
+export default class DynamoSQSIntegrationNotificationRepository
+  implements NotificationRepository<SQSIntegrationNotification> {
   constructor(private metadata: SSDNMetadataService, private client: DocumentClient) {}
 
-  public async findAll(): Promise<FileTransferNotification[]> {
+  public async findAll(): Promise<SQSIntegrationNotification[]> {
     const items = await this.client.scan({ TableName: await this.getTableName() }).promise();
 
     if (!items || !items.Items) {
       return [];
     }
 
-    return orderBy<FileTransferNotification>((notification) => new Date(notification.creationDate))(
-      ["desc"],
-    )(items.Items as FileTransferNotification[]);
+    return orderBy<SQSIntegrationNotification>(
+      (notification) => new Date(notification.creationDate),
+    )(["desc"])(items.Items as SQSIntegrationNotification[]);
   }
 
   public async put(
-    fileTransferNotification: FileTransferNotification,
-  ): Promise<FileTransferNotification> {
-    logger.info("Storing file transfer notification: %j", fileTransferNotification);
+    sqsIntegrationNotification: SQSIntegrationNotification,
+  ): Promise<SQSIntegrationNotification> {
+    logger.info("Storing SQS integration notification: %j", sqsIntegrationNotification);
 
     await this.client
       .put({
-        Item: fileTransferNotification,
+        Item: sqsIntegrationNotification,
         TableName: await this.getTableName(),
       })
       .promise();
 
-    return fileTransferNotification;
+    return sqsIntegrationNotification;
   }
 
   public async delete(id: string): Promise<void> {
@@ -54,7 +55,7 @@ export default class DynamoFileTransferNotificationRepository
   }
 
   private async getTableName() {
-    const name = await this.metadata.getMetadataValue(TABLES.ssdnFileTransferNotifications);
+    const name = await this.metadata.getMetadataValue(TABLES.ssdnSQSIntegrationNotifications);
 
     return name.value;
   }

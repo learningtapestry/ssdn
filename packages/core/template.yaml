@@ -1678,6 +1678,59 @@ Resources:
                 - cloudformation:DescribeStacks
               Resource:
                 - !Sub arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/${AWS::StackName}/*
+            - Effect: Allow
+              Action:
+                - sns:Publish
+              Resource:
+                - !Ref SQSIntegrationNotificationsTopic
+      DeadLetterQueue:
+        Type: SNS
+        TargetArn: !Ref LambdaDeadLetterQueueTopic
+  SSDNSQSIntegrationNotificationsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub SSDN-${SSDNId}-SQSIntegrationNotificationsTable
+      ProvisionedThroughput:
+        ReadCapacityUnits: 2
+        WriteCapacityUnits: 2
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+  SQSIntegrationNotificationsTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      DisplayName: !Sub SSDN-${SSDNId}-SQSIntegrationNotificationsTopic
+      KmsMasterKeyId: alias/aws/sns
+      Subscription:
+        - Endpoint: !Ref NotificationEmail
+          Protocol: email
+  StoreSQSIntegrationNotificationFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./dist/store-sqs-integration-notification
+      Events:
+        ProcessQueueMessageError:
+          Type: SNS
+          Properties:
+            Topic: !Ref SQSIntegrationNotificationsTopic
+      Policies:
+        - Version: 2012-10-17
+          Statement:
+            - Effect: Allow
+              Action:
+                - cloudformation:DescribeStacks
+              Resource:
+                - !Sub arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/${AWS::StackName}/*
+            - Effect: Allow
+              Action:
+                - dynamodb:PutItem
+              Resource:
+                - !GetAtt SSDNSQSIntegrationNotificationsTable.Arn
       DeadLetterQueue:
         Type: SNS
         TargetArn: !Ref LambdaDeadLetterQueueTopic
@@ -1806,6 +1859,9 @@ Outputs:
   SSDNFileTransferNotificationsTable:
     Description: SSDNFileTransferNotificationsTable
     Value: !Ref SSDNFileTransferNotificationsTable
+  SSDNSQSIntegrationNotificationsTable:
+    Description: SSDNSQSIntegrationNotificationsTable
+    Value: !Ref SSDNSQSIntegrationNotificationsTable
   ExchangeApi:
     Description: ExchangeApi
     Value: !Sub https://${ExchangeApi}.execute-api.${AWS::Region}.amazonaws.com/${Environment}
@@ -1869,6 +1925,9 @@ Outputs:
   ProcessSQSMessageFunction:
     Description: Reads and processes a message from an SQS queue
     Value: !GetAtt ProcessSQSMessageFunction.Arn
+  SQSIntegrationNotificationsTopic:
+    Description: SNS Topic that receives SQS integration notifications
+    Value: !Ref SQSIntegrationNotificationsTopic
   AwsAccountId:
     Description: The AWS account ID
     Value: !Ref AWS::AccountId

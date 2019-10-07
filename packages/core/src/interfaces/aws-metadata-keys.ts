@@ -69,8 +69,10 @@ export enum TABLES {
   ssdnIncomingConnectionRequests = "SSDNIncomingConnectionRequestsTable",
   ssdnFormats = "SSDNFormatsTable",
   ssdnFileTransferNotifications = "SSDNFileTransferNotificationsTable",
+  ssdnSQSIntegrationNotifications = "SSDNSQSIntegrationNotificationsTable",
 }
 
 export enum TOPICS {
   fileTransferNotifications = "FileTransferNotificationsTopic",
+  sqsIntegrationNotifications = "SQSIntegrationNotificationsTopic",
 }
