@@ -114,6 +114,20 @@ Resources:
       SmsConfiguration:
         SnsCallerArn: !GetAtt SNSRole.Arn
         ExternalId: !Sub SSDN-${SSDNId}-SNSExternalId
+  CognitoUserPoolDomain:
+    Type: AWS::Cognito::UserPoolDomain
+    Properties:
+      Domain: !Ref SSDNId
+      UserPoolId: !Ref CognitoUserPool
+  CognitoUserPoolResourceServer:
+    Type: AWS::Cognito::UserPoolResourceServer
+    Properties:
+      Identifier: !Ref SSDNId
+      Name: !Ref SSDNId
+      Scopes:
+        - ScopeName: "caliper.create"
+          ScopeDescription: "Allows creating a Caliper event"
+      UserPoolId: !Ref CognitoUserPool
   CognitoUserPoolClient:
     Type: AWS::Cognito::UserPoolClient
     Properties:
@@ -124,6 +138,19 @@ Resources:
     Type: AWS::Cognito::UserPoolClient
     Properties:
       ClientName: !Sub SSDN-${SSDNId}-AppClientWeb
+      UserPoolId: !Ref CognitoUserPool
+  CognitoUserPoolClientCaliper:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      AllowedOAuthFlows:
+        - client_credentials
+      AllowedOAuthFlowsUserPoolClient: true
+      AllowedOAuthScopes:
+        - !Sub ${SSDNId}/caliper.create
+      ClientName: !Sub SSDN-${SSDNId}-AppClientCaliper
+      GenerateSecret: true
+      SupportedIdentityProviders:
+        - COGNITO
       UserPoolId: !Ref CognitoUserPool
   CognitoIdentityPool:
     Type: AWS::Cognito::IdentityPool
@@ -1708,6 +1735,9 @@ Outputs:
   CognitoUserPoolClientWebId:
     Description: CognitoUserPoolClientWeb
     Value: !Ref CognitoUserPoolClientWeb
+  CognitoUserPoolClientCaliperId:
+    Description: CognitoUserPoolClientCaliper
+    Value: !Ref CognitoUserPoolClientCaliper
   CognitoIdentityPoolId:
     Description: CognitoIdentityPool
     Value: !Ref CognitoIdentityPool
