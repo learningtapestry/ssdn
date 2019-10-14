@@ -614,6 +614,75 @@ Resources:
                 authorizerResultTtlInSeconds: 60
                 identitySource: method.request.querystring.aid
   #
+  # Caliper Endpoint
+  #
+  ProcessCaliperEnvelopeFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./dist/process-caliper-envelope
+      Events:
+        Post:
+          Type: Api
+          Properties:
+            Path: /caliper/envelopes
+            Method: post
+            RestApiId: !Ref ProcessCaliperEnvelopeApi
+            Auth:
+              Authorizer: CognitoAuthCaliper
+      Policies:
+        - Version: 2012-10-17
+          Statement:
+            - Effect: Allow
+              Action:
+                - kinesis:PutRecord
+                - kinesis:PutRecords
+              Resource: !GetAtt EventProcessorStream.Arn
+            - Effect: Allow
+              Action:
+                - cloudformation:DescribeStacks
+              Resource:
+                - !Sub arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/${AWS::StackName}/*
+      DeadLetterQueue:
+        Type: SNS
+        TargetArn: !Ref LambdaDeadLetterQueueTopic
+  ProcessCaliperEnvelopeApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: !Ref Environment
+      MethodSettings:
+        - LoggingLevel: ERROR
+          DataTraceEnabled: true
+          MetricsEnabled: true
+          ResourcePath: "/*"
+          HttpMethod: "*"
+      DefinitionBody:
+        openapi: 3.0.1
+        info:
+          title: !Sub SSDN-${SSDNId}-ProcessCaliperEnvelopeApi
+          version: 1.0
+        paths:
+          /caliper/envelopes:
+            post:
+              x-amazon-apigateway-integration:
+                uri: !Sub arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ProcessCaliperEnvelopeFunction.Arn}/invocations
+                passthroughBehavior: when_no_match
+                httpMethod: POST
+                type: aws_proxy
+              security:
+                - cognito_authorizer:
+                    - !Sub ${SSDNId}/caliper.create
+        components:
+          securitySchemes:
+            cognito_authorizer:
+              name: Authorization
+              type: apiKey
+              in: header
+              x-amazon-apigateway-authtype: cognito_user_pools
+              x-amazon-apigateway-authorizer:
+                providerARNs:
+                  - !GetAtt CognitoUserPool.Arn
+                type: cognito_user_pools
+  #
   # Interchange
   #
   SSDNFormatsTable:
@@ -1780,12 +1849,18 @@ Outputs:
   ProcessXAPIStatementFunction:
     Description: ProcessXAPIStatementFunction
     Value: !GetAtt ProcessXAPIStatementFunction.Arn
+  ProcessCaliperEnvelopeFunction:
+    Description: ProcessCaliperEnvelopeFunction
+    Value: !GetAtt ProcessCaliperEnvelopeFunction.Arn
   ProcessXAPIStatementApi:
     Description: ProcessXAPIStatementApi
     Value: !Sub https://${ProcessXAPIStatementApi}.execute-api.${AWS::Region}.amazonaws.com/${Environment}
   ProcessXAPIBeaconApi:
     Description: ProcessXAPIBeaconApi
     Value: !Sub https://${ProcessXAPIBeaconApi}.execute-api.${AWS::Region}.amazonaws.com/${Environment}
+  ProcessCaliperEnvelopeApi:
+    Description: ProcessCaliperEnvelopeApi
+    Value: !Sub https://${ProcessCaliperEnvelopeApi}.execute-api.${AWS::Region}.amazonaws.com/${Environment}
   GenerateUploadCredentialsApi:
     Description: Endpoint that generates temporary upload credentials to specific folders
     Value: !Sub https://${GenerateUploadCredentialsApi}.execute-api.${AWS::Region}.amazonaws.com/${Environment}
