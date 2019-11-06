@@ -3,7 +3,6 @@
  */
 import uuid from "uuid/v4";
 
-import { SQSIntegrationNotification } from "ssdn-core/src/interfaces/sqs-integration-notification";
 import { Connection } from "./interfaces/connection";
 import { ConnectionRequest, ConnectionRequestStatus } from "./interfaces/connection-request";
 import {
@@ -11,6 +10,7 @@ import {
   FileTransferNotificationType,
 } from "./interfaces/file-transfer-notification";
 import Instance from "./interfaces/instance";
+import { SQSIntegrationNotification } from "./interfaces/sqs-integration-notification";
 import { StreamStatus } from "./interfaces/stream";
 
 export function displayDate(val: number | string | Date) {
