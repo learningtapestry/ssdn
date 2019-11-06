@@ -152,6 +152,8 @@ Resources:
       SupportedIdentityProviders:
         - COGNITO
       UserPoolId: !Ref CognitoUserPool
+    DependsOn:
+      - CognitoUserPoolResourceServer
   CognitoIdentityPool:
     Type: AWS::Cognito::IdentityPool
     Properties:
