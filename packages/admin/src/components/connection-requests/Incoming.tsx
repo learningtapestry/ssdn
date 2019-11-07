@@ -25,7 +25,7 @@ export default function Incoming() {
   const [termsAgreement, setTermsAgreement] = useState(false);
   const [matchingCodes, setMatchingCodes] = useState(false);
   const [inputTouched, setInputTouched] = useState(false);
-
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [alertContent, setAlertContent, renderAlert, showOnError] = useAlert();
 
   const selectConnectionRequest = (event: React.MouseEvent<HTMLElement>) => {
@@ -38,6 +38,7 @@ export default function Incoming() {
 
   const [
     showViewInfoModal,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     setShowViewInfoModal,
     openViewInfoModal,
     handleCloseViewInfoModal,
@@ -65,7 +66,7 @@ export default function Incoming() {
 
   useEffect(() => {
     setMatchingCodes(selectedConnectionRequest.verificationCode === verificationCode);
-  }, [verificationCode]);
+  }, [verificationCode, selectedConnectionRequest.verificationCode]);
 
   const fetchData = async () => {
     const receivedRequests = await AWSService.retrieveConnectionRequests("incoming");

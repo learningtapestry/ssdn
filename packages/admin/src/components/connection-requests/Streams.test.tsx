@@ -14,9 +14,6 @@ import * as factories from "../../../test-support/factories";
 import AWSService from "../../services/aws-service";
 import Streams from "./Streams";
 
-/* FIXME: The nasty warning about test not wrapped in act(...) should go away when this is resolved:
- *        https://github.com/facebook/react/issues/14769
- */
 describe("<Streams />", () => {
   describe("consumers", () => {
     beforeAll(() => {
@@ -60,9 +57,11 @@ describe("<Streams />", () => {
       const { getByText, getByRole } = render(<Streams streamType="output" />);
       await waitForElement(() => getByText("Pause"));
       fireEvent.click(getByText("Pause"));
-      await waitForElement(() => getByRole("dialog"));
+      // @ts-ignore
+      await waitForElement(() => getByRole("dialog", { hidden: true }));
       fireEvent.click(getByText("Confirm"));
-      await waitForElementToBeRemoved(() => getByRole("dialog"));
+      // @ts-ignore
+      await waitForElementToBeRemoved(() => getByRole("dialog", { hidden: true }));
       expect(AWSService.updateStream).toHaveBeenCalledTimes(1);
       expect(AWSService.updateStream).toHaveBeenCalledWith(
         "https://ssdn.adam.acme.org/",
@@ -77,9 +76,11 @@ describe("<Streams />", () => {
       const { getByText, getByRole } = render(<Streams streamType="output" />);
       await waitForElement(() => getByText("Resume"));
       fireEvent.click(getByText("Resume"));
-      await waitForElement(() => getByRole("dialog"));
+      // @ts-ignore
+      await waitForElement(() => getByRole("dialog", { hidden: true }));
       fireEvent.click(getByText("Confirm"));
-      await waitForElementToBeRemoved(() => getByRole("dialog"));
+      // @ts-ignore
+      await waitForElementToBeRemoved(() => getByRole("dialog", { hidden: true }));
       expect(AWSService.updateStream).toHaveBeenCalledTimes(1);
       expect(AWSService.updateStream).toHaveBeenCalledWith(
         "https://ssdn.jonah.acme.org/",
@@ -104,7 +105,9 @@ describe("<Streams />", () => {
     it("renders title and requests in the list", async () => {
       const { getByText } = render(<Streams streamType="input" />);
 
-      getByText("Provider Streams");
+      await wait(() => {
+        getByText("Provider Streams");
+      });
     });
   });
 });
