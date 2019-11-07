@@ -1,0 +1,31 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Caliper Envelope",
+  "additionalProperties": false,
+  "properties": {
+    "sensor": {
+      "id": "#sensor",
+      "type": "string",
+      "format": "iri"
+    },
+    "sendTime": {
+      "id": "#sendTime",
+      "type": "string",
+      "format": "date-time"
+    },
+    "dataVersion": {
+      "id": "#dataVersion",
+      "type": "string",
+      "format": "iri"
+    },
+    "data": {
+      "id": "#activityid",
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    }
+  },
+  "required": ["sensor", "sendTime", "dataVersion", "data"]
+}

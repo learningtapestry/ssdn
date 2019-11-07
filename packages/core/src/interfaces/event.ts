@@ -11,7 +11,7 @@ export interface EventMetadata {
     headers?: object;
     queryStringParameters?: {
       [k: string]: string;
-    };
+    } | null;
     // S3 specific elements
     requestParameters?: object;
     responseElements?: object;

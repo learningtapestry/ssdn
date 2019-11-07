@@ -13,6 +13,7 @@ more.
 
 ## Additional documentation
 
+- [API usage](docs/api-usage.md)
 - [Architecture design](docs/architecture-design.md)
 - [Testing methodology](docs/testing-methodology.md)
 - [Security considerations](docs/security-considerations.md)
