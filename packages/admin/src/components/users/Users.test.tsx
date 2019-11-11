@@ -2,13 +2,16 @@ import "@testing-library/jest-dom/extend-expect";
 
 import React from "react";
 
-import { act, fireEvent, wait } from "@testing-library/react";
+import { fireEvent, wait } from "@testing-library/react";
 
 import * as factories from "../../../test-support/factories";
 import { renderWithRouter } from "../../../test-support/test-helper";
 import AWSService from "../../services/aws-service";
 import Users from "./Users";
 
+/* FIXME: The nasty warning about test not wrapped in act(...) should go away when this is resolved:
+ *        https://github.com/facebook/react/issues/14769
+ */
 describe("<Users/>", () => {
   beforeAll(() => {
     AWSService.retrieveUsers = jest.fn().mockReturnValue(factories.users());
@@ -42,19 +45,13 @@ describe("<Users/>", () => {
       fireEvent.click(getAllByText("Delete")[0]);
       getByText("Are you sure you want to delete user 'test-user-1'?");
     });
-
-    await act(async () => {
-      fireEvent.click(getByText("Confirm"));
-    });
-
+    fireEvent.click(getByText("Confirm"));
     expect(AWSService.deleteUser).toHaveBeenCalled();
   });
 
   it("renders button to create user", async () => {
     const { getByText } = renderWithRouter(<Users />, { route: "/users" });
 
-    await wait(() => {
-      expect(getByText("Create New User")).toBeInTheDocument();
-    });
+    expect(getByText("Create New User")).toBeInTheDocument();
   });
 });

@@ -48,16 +48,10 @@ const awsapi = {
       endpoint: ensure("REACT_APP_FILE_TRANSFER_NOTIFICATIONS_ENDPOINT"),
       name: "FileTransferNotificationsApi",
     },
-    {
-      custom_header: async () => ({
-        Authorization: (await Auth.currentSession()).getIdToken().getJwtToken(),
-        "Content-Type": "application/json",
-      }),
-      endpoint: ensure("REACT_APP_SQS_INTEGRATION_NOTIFICATIONS_ENDPOINT"),
-      name: "SQSIntegrationNotificationsApi",
-    },
   ],
 };
+
+const ENV = process.env ? process.env : (window as any).Cypress ? (window as any).Cypress : {};
 
 const awsconfiguration = {
   Api: awsapi,

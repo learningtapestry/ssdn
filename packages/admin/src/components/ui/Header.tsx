@@ -42,9 +42,6 @@ const Header = () => (
         <LinkContainer to="/file-transfers">
           <Nav.Link>File Transfers</Nav.Link>
         </LinkContainer>
-        <LinkContainer to="/sqs-integration">
-          <Nav.Link>SQS Integration</Nav.Link>
-        </LinkContainer>
       </Nav>
     </Navbar>
   </header>

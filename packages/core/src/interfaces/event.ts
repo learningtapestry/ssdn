@@ -16,10 +16,6 @@ export interface EventMetadata {
     requestParameters?: object;
     responseElements?: object;
     userIdentity?: object;
-    // SQS specific elements
-    messageAttributes?: object;
-    messageId?: string;
-    senderId?: string;
   };
   resource: string;
   resourceId?: string;

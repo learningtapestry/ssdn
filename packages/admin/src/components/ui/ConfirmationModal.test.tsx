@@ -18,8 +18,7 @@ describe("<ConfirmationModal />", () => {
   it("renders the dialog components", () => {
     const { getByRole, getByText } = render(<ConfirmationModal {...props} />);
 
-    // @ts-ignore
-    expect(getByRole("dialog", { hidden: true })).toBeVisible();
+    expect(getByRole("dialog")).toBeVisible();
     expect(getByText("Children element")).toBeVisible();
   });
 

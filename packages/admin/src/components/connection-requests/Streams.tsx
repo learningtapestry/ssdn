@@ -27,7 +27,6 @@ export interface StreamsProps {
 export default function Streams(props: StreamsProps) {
   const [streams, setStreams] = useState<EndpointStream[]>([]);
   const [selectedStream, setSelectedStream] = useState<EndpointStream>(nullStream());
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [alertContent, setAlertContent, renderAlert, showOnError] = useAlert();
 
   const selectStream = (event: React.MouseEvent<HTMLElement>) => {
@@ -53,13 +52,13 @@ export default function Streams(props: StreamsProps) {
   const [triggerRefresh, setTriggerRefresh] = useState(false);
 
   useEffect(() => {
-    const fetchData = async () => {
-      const ex = await AWSService.retrieveStreams(props.streamType);
-      setStreams(ex);
-    };
-
     fetchData();
-  }, [triggerRefresh, props.streamType]);
+  }, [triggerRefresh]);
+
+  const fetchData = async () => {
+    const ex = await AWSService.retrieveStreams(props.streamType);
+    setStreams(ex);
+  };
 
   const handleResumeStream = showOnError(async () => {
     await AWSService.updateStream(

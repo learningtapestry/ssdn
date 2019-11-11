@@ -76,8 +76,6 @@ actual CloudFormation resource used by the SSDN Core stack:
 - **`REACT_APP_ENTITIES_ENDPOINT`**: points to the Entities API endpoint. (`EntitiesApi`).
 - **`REACT_APP_FILE_TRANSFER_NOTIFICATIONS_ENDPOINT`**: points to the File Transfer Notifications API endpoint
   (`FileTransferNotificationsApi`).
-- **`REACT_APP_SQS_INTEGRATION_NOTIFICATIONS_ENDPOINT`**: points to the SQS Integration Notifications API endpoint
-  (`SQSIntegrationNotificationsApi`).
 - **`REACT_APP_IDENTITY_POOL_ID`**: The Cognito Identity Pool ID (`CognitoIdentityPool`).
 - **`REACT_APP_SSDN_ID`**: The SSDN ID. It's usually assigned by you, or the CLI installer (`SSDNId`).
 - **`REACT_APP_AWS_REGION`**: The AWS region, usually `us-east-1`.

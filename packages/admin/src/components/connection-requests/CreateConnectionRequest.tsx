@@ -63,7 +63,7 @@ function CreateConnectionRequestForm(props: FormikProps<NewConnectionRequest>) {
 
   const handleCloseVerificationCodeModal = useCallback(() => {
     setStatus({ success: false });
-  }, [setStatus]);
+  }, []);
 
   const verificationCode = status && status.verificationCode ? status.verificationCode : "";
 

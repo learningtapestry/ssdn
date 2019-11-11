@@ -1,5 +1,6 @@
-import { wait } from "@testing-library/react";
 import React from "react";
+
+import { wait } from "@testing-library/react";
 
 import { renderWithRouter } from "../../../test-support/test-helper";
 import UploadCredentialsService from "../../services/upload-credentials-service";
@@ -23,13 +24,11 @@ describe("<ProgrammaticAccess />", () => {
     });
   });
 
-  it("renders the code snippets", async () => {
+  it("renders the code snippets", () => {
     const { getByText } = renderWithRouter(<ProgrammaticAccess />);
 
-    await wait(() => {
-      getByText("Using cURL");
-      getByText("Using HTTPie");
-      getByText("Using Node");
-    });
+    getByText("Using cURL");
+    getByText("Using HTTPie");
+    getByText("Using Node");
   });
 });

@@ -18,12 +18,10 @@ export default function Submitted() {
   const [selectedConnectionRequest, setSelectedConnectionRequest] = useState<ConnectionRequest>(
     nullConnectionRequest(),
   );
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [triggerRefresh, setTriggerRefresh] = useState(false);
 
   const [
     showViewInfoModal,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     setShowViewInfoModal,
     openViewInfoModal,
     handleCloseViewInfoModal,

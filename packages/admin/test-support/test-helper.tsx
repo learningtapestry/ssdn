@@ -1,7 +1,7 @@
 /**
  * test-helper.ts: Support functions to be used in tests
  */
-import { createMemoryHistory, MemoryHistory } from "history";
+import { createMemoryHistory } from "history";
 import React from "react";
 import { Router } from "react-router-dom";
 
@@ -9,7 +9,6 @@ import { render } from "@testing-library/react";
 
 export function renderWithRouter(
   ui: JSX.Element,
-  // @ts-ignore
   { route = "/", history = createMemoryHistory({ initialEntries: [route] }) } = {},
 ) {
   return {

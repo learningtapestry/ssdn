@@ -2,12 +2,14 @@ import "@testing-library/jest-dom/extend-expect";
 
 import React from "react";
 
-import { wait } from "@testing-library/dom";
 import * as factories from "../../../test-support/factories";
 import { renderWithRouter } from "../../../test-support/test-helper";
 import AWSService from "../../services/aws-service";
 import ConnectionsHome from "./ConnectionsHome";
 
+/* FIXME: The nasty warning about test not wrapped in act(...) should go away when this is resolved:
+ *        https://github.com/facebook/react/issues/14769
+ */
 describe("<ConnectionsHome />", () => {
   beforeAll(() => {
     AWSService.retrieveConnectionRequests = jest
@@ -19,23 +21,17 @@ describe("<ConnectionsHome />", () => {
     const { getByText } = renderWithRouter(<ConnectionsHome />, {
       route: "/connections",
     });
-
-    await wait(() => {
-      getByText("Consumers");
-      getByText("Providers");
-      getByText("Incoming");
-      getByText("Submitted");
-      getByText("Create new connection");
-    });
+    getByText("Consumers");
+    getByText("Providers");
+    getByText("Incoming");
+    getByText("Submitted");
+    getByText("Create new connection");
   });
 
   it("redirects to the incoming requests", async () => {
     const { queryByText } = renderWithRouter(<ConnectionsHome />, {
       route: "/connections",
     });
-
-    await wait(() => {
-      queryByText("This section displays incoming connection requests from other instances.");
-    });
+    queryByText("This section displays incoming connection requests from other instances.");
   });
 });

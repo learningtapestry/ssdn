@@ -9,6 +9,9 @@ import { renderWithRouter } from "../../../test-support/test-helper";
 import AWSService from "../../services/aws-service";
 import Submitted from "./Submitted";
 
+/* FIXME: The nasty warning about test not wrapped in act(...) should go away when this is resolved:
+ *        https://github.com/facebook/react/issues/14769
+ */
 describe("<Submitted />", () => {
   beforeAll(() => {
     AWSService.retrieveConnectionRequests = jest
@@ -54,10 +57,8 @@ describe("<Submitted />", () => {
 
     await waitForElement(() => getAllByText("View info"));
     fireEvent.click(getAllByText("View info")[0]);
-    // @ts-ignore
-    await waitForElement(() => getByRole("dialog", { hidden: true }));
+    await waitForElement(() => getByRole("dialog"));
     fireEvent.click(getAllByText("Close")[0]);
-    // @ts-ignore
-    await waitForElementToBeRemoved(() => getByRole("dialog", { hidden: true }));
+    await waitForElementToBeRemoved(() => getByRole("dialog"));
   });
 });

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import SyntaxHighlighter from "react-syntax-highlighter";
-import { atomOneDark } from "react-syntax-highlighter/dist/esm/styles/hljs";
+import atom from "react-syntax-highlighter/dist/styles/hljs/atom-one-dark";
 import UploadCredentialsService from "../../services/upload-credentials-service";
 
 export default function ProgrammaticAccess() {
@@ -52,16 +52,16 @@ axios.post(endpoint, querystring.stringify({ client, format })).then((response) 
       </p>
       <hr />
       <h3>Using cURL</h3>
-      <SyntaxHighlighter language="bash" style={atomOneDark}>
+      <SyntaxHighlighter language="bash" style={atom}>
         curl --data 'client=ssdn.learningtapestry.com' --data 'format=xAPI' --header
         'X-Api-Key:$API_KEY' $ENDPOINT
       </SyntaxHighlighter>
       <h3>Using HTTPie</h3>
-      <SyntaxHighlighter language="bash" style={atomOneDark}>
+      <SyntaxHighlighter language="bash" style={atom}>
         http -f POST $ENDPOINT client=ssdn.learningtapestry.com format=xAPI X-Api-Key:$API_KEY
       </SyntaxHighlighter>
       <h3>Using Node</h3>
-      <SyntaxHighlighter language="javascript" style={atomOneDark}>
+      <SyntaxHighlighter language="javascript" style={atom}>
         {axiosCode}
       </SyntaxHighlighter>
     </section>

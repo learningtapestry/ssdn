@@ -57,11 +57,9 @@ describe("<Formats />", () => {
     await waitForElement(() => getAllByText("Delete"));
 
     fireEvent.click(getAllByText("Delete")[0]);
-    // @ts-ignore
-    await waitForElement(() => getByRole("dialog", { hidden: true }));
+    await waitForElement(() => getByRole("dialog"));
     fireEvent.click(getByText("Confirm"));
-    // @ts-ignore
-    await waitForElementToBeRemoved(() => getByRole("dialog", { hidden: true }));
+    await waitForElementToBeRemoved(() => getByRole("dialog"));
     expect(AWSService.deleteFormat).toHaveBeenCalledTimes(1);
     expect(AWSService.deleteFormat).toHaveBeenCalledWith("xAPI");
   });

@@ -5,7 +5,7 @@
 import slugify from "@sindresorhus/slugify";
 import { config as awsConfig } from "aws-sdk/global";
 import { existsSync, readFile, writeFile } from "fs";
-import inquirer, { Answers } from "inquirer";
+import inquirer, { Answers, Questions } from "inquirer";
 import moment from "moment";
 import generate from "nanoid/generate";
 import { promisify } from "util";
@@ -95,7 +95,7 @@ class SSDNCLI {
         },
       },
     ];
-    return inquirer.prompt(questions).then(async (answers: Answers) => {
+    return inquirer.prompt(questions as Questions).then(async (answers: Answers) => {
       const id = await SSDNCLI.instanceId(answers.organization);
       const config = {
         ...answers,
@@ -130,8 +130,6 @@ class SSDNCLI {
     process.env.REACT_APP_ENTITIES_ENDPOINT = outputs.EntitiesApi;
     process.env.REACT_APP_FILE_TRANSFER_NOTIFICATIONS_ENDPOINT =
       outputs.FileTransferNotificationsApi;
-    process.env.REACT_APP_SQS_INTEGRATION_NOTIFICATIONS_ENDPOINT =
-      outputs.SQSIntegrationNotificationsApi;
     process.env.REACT_APP_IDENTITY_POOL_ID = outputs.CognitoIdentityPoolId;
     process.env.REACT_APP_SSDN_ID = outputs.SSDNId;
     process.env.REACT_APP_AWS_REGION = this.ssdnConfig.region;

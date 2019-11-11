@@ -22,8 +22,7 @@ describe("<ConnectionRequestModal />", () => {
   it("renders the dialog components", () => {
     const { getByRole } = render(<ConnectionRequestModal {...props} />);
 
-    // @ts-ignore
-    expect(getByRole("dialog", { hidden: true })).toBeVisible();
+    expect(getByRole("dialog")).toBeVisible();
   });
 
   it("renders the title", () => {

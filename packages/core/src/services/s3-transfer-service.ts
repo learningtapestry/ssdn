@@ -62,9 +62,15 @@ export default class S3TransferService {
         type: FileTransferNotificationType.Info,
       });
     } catch (error) {
+      const errorDetails = error.trace
+        ? error.trace()
+        : error.message
+        ? error.message
+        : "Unexpected error";
+
       await this.sendNotification({
         bucket: connection.metadata.UploadS3Bucket,
-        details: error.stack,
+        details: errorDetails,
         file: objectKey,
         message: "There was a problem transferring the file",
         subject: error.message,

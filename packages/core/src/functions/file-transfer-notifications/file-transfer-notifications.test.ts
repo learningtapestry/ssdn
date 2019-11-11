@@ -1,7 +1,6 @@
 import { buildFileTransferNotification } from "../../../test-support/factories";
 import { FakeImpl } from "../../../test-support/jest-helper";
-import { FileTransferNotification } from "../../interfaces/file-transfer-notification";
-import NotificationRepository from "../../repositories/notification-repository";
+import FileTransferNotificationRepository from "../../repositories/file-transfer-notification-repository";
 import { getFileTransferNotificationRepository } from "../../services";
 import { handler } from "./index";
 
@@ -20,7 +19,7 @@ jest.mock("../../services", () => {
 });
 
 const repository = (getFileTransferNotificationRepository as any).impl as FakeImpl<
-  NotificationRepository<FileTransferNotification>
+  FileTransferNotificationRepository
 >;
 
 describe("FileTransferNotificationsApiFunction", () => {

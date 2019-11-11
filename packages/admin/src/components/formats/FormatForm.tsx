@@ -11,7 +11,7 @@ export const Schema = object({
 });
 
 function FormatForm(props: FormikProps<NewFormat>) {
-  const { handleSubmit, handleChange, values, errors, status } = props;
+  const { handleSubmit, handleChange, values, errors, status, setStatus } = props;
 
   const displayAlert = () => {
     if (status && status.message) {

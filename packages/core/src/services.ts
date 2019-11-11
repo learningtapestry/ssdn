@@ -12,13 +12,12 @@ import {
   getSts,
 } from "./aws-clients";
 import { readEnv } from "./helpers/app-helper";
-import { PUBLIC_METADATA } from "./interfaces/aws-metadata-keys";
+import { AWS_SSDN, PUBLIC_METADATA } from "./interfaces/aws-metadata-keys";
 import { Connection } from "./interfaces/connection";
 import DynamoConnectionRepository from "./repositories/dynamo-connection-repository";
 import DynamoConnectionRequestRepository from "./repositories/dynamo-connection-request-repository";
 import DynamoFileTransferNotificationRepository from "./repositories/dynamo-file-transfer-notification-repository";
 import DynamoFormatRepository from "./repositories/dynamo-format-repository";
-import DynamoSQSIntegrationNotificationRepository from "./repositories/dynamo-sqs-integration-notification-repository";
 import KinesisEventRepository from "./repositories/kinesis-event-repository";
 import ApiGatewayService from "./services/api-gateway-service";
 import AwsConnectionRequestService from "./services/aws-connection-request-service";
@@ -30,7 +29,6 @@ import ExternalSSDNMetadataService from "./services/external-ssdn-metadata-servi
 import IamService from "./services/iam-service";
 import LambdaService from "./services/lambda-service";
 import S3TransferService from "./services/s3-transfer-service";
-import SQSMessageService from "./services/sqs-message-service";
 import TemporaryCredentialsFactory from "./services/temporary-credentials-factory";
 import UploadCredentialsService from "./services/upload-credentials-service";
 
@@ -70,13 +68,6 @@ export function getFileTransferNotificationRepository() {
   return singleton(
     "FileTransferNotificationRepository",
     () => new DynamoFileTransferNotificationRepository(getMetadataService(), getDocumentClient()),
-  );
-}
-
-export function getSQSIntegrationNotificationRepository() {
-  return singleton(
-    "SQSIntegrationNotificationRepository",
-    () => new DynamoSQSIntegrationNotificationRepository(getMetadataService(), getDocumentClient()),
   );
 }
 
@@ -177,8 +168,4 @@ export function getUploadCredentialsService() {
 
 export function getFormatRepository() {
   return new DynamoFormatRepository(getMetadataService(), getDocumentClient());
-}
-
-export function getSQSMessageService() {
-  return new SQSMessageService(getMetadataService(), getSns());
 }
