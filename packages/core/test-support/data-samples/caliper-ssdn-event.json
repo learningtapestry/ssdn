@@ -1,0 +1,80 @@
+{
+  "content": {
+    "sensor": "https://example.edu/sensors/1",
+    "sendTime": "2018-11-15T11:05:01.000Z",
+    "dataVersion": "http://purl.imsglobal.org/ctx/caliper/v1p1",
+    "data": [
+      {
+        "@context": "http://purl.imsglobal.org/ctx/caliper/v1p1",
+        "id": "urn:uuid:7e10e4f3-a0d8-4430-95bd-783ffae4d916",
+        "type": "ToolUseEvent",
+        "actor": {
+          "id": "https://example.edu/users/554433",
+          "type": "Person"
+        },
+        "action": "Used",
+        "object": {
+          "id": "https://example.edu",
+          "type": "SoftwareApplication"
+        },
+        "eventTime": "2018-11-15T10:15:00.000Z",
+        "edApp": "https://example.edu",
+        "group": {
+          "id": "https://example.edu/terms/201801/courses/7/sections/1",
+          "type": "CourseSection",
+          "courseNumber": "CPS 435-01",
+          "academicSession": "Fall 2018"
+        },
+        "membership": {
+          "id": "https://example.edu/terms/201801/courses/7/sections/1/rosters/1",
+          "type": "Membership",
+          "member": "https://example.edu/users/554433",
+          "organization": "https://example.edu/terms/201801/courses/7/sections/1",
+          "roles": ["Learner"],
+          "status": "Active",
+          "dateCreated": "2018-08-01T06:00:00.000Z"
+        },
+        "session": {
+          "id": "https://example.edu/sessions/1f6442a482de72ea6ad134943812bff564a76259",
+          "type": "Session",
+          "startedAtTime": "2018-11-15T10:00:00.000Z"
+        }
+      }
+    ]
+  },
+  "event": {
+    "date": "2019-10-13T13:08:25.720Z",
+    "format": "Caliper",
+    "namespace": "test.example.com",
+    "operation": "POST",
+    "origin": "1234567890.execute-api.us-east-1.amazonaws.com/Development/caliper/envelopes",
+    "protocol": "HTTP/1.1",
+    "representation": "REST",
+    "request": {
+      "headers": {
+        "Accept": "*/*",
+        "Accept-Encoding": "gzip, deflate",
+        "Authorization": "Bearer eyJraWQiOiJJS0wxNUtOa3hGZGFYSE8yRU9LUm8zVjFVWEsxVFF1MWtHOW1...",
+        "Cache-Control": "no-cache",
+        "CloudFront-Forwarded-Proto": "https",
+        "CloudFront-Is-Desktop-Viewer": "true",
+        "CloudFront-Is-Mobile-Viewer": "false",
+        "CloudFront-Is-SmartTV-Viewer": "false",
+        "CloudFront-Is-Tablet-Viewer": "false",
+        "CloudFront-Viewer-Country": "US",
+        "Content-Type": "application/json",
+        "Host": "1234567890.execute-api.us-east-1.amazonaws.com",
+        "User-Agent": "Custom User Agent String",
+        "Via": "1.1 73596018e775c86271b93928c6afe2dd.cloudfront.net (CloudFront)",
+        "X-Amz-Cf-Id": "PI6dYWk0BKJFc2ATO0_rM_xpFS5kIubo8B2UrbeRnpESTGbhAh_euQ==",
+        "X-Amzn-Trace-Id": "Root=1-5da321c9-7267c608af1ace007d4f3558",
+        "X-Forwarded-For": "127.0.0.1, 127.0.0.2",
+        "X-Forwarded-Port": "443",
+        "X-Forwarded-Proto": "https",
+        "X-SSDN-Namespace": "test.example.com"
+      },
+      "queryStringParameters": null
+    },
+    "resource": "envelopes"
+  }
+}
