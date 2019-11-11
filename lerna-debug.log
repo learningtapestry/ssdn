@@ -11,38 +11,38 @@
 7 verbose currentBranch master
 8 silly remoteBranchExists
 9 silly isBehindUpstream
-10 silly isBehindUpstream master is behind origin/master by 0 commit(s) and ahead by 2
+10 silly isBehindUpstream master is behind origin/master by 0 commit(s) and ahead by 1
 11 silly hasTags
 12 verbose hasTags true
-13 silly git-describe.sync "a104a80" => {"refCount":"306","sha":"a104a80","isDirty":false}
+13 silly git-describe.sync "7d0818b" => {"refCount":"305","sha":"7d0818b","isDirty":false}
 14 info Assuming all packages changed
 15 verbose updated ssdn-admin
 16 verbose updated ssdn-cli
 17 verbose updated ssdn-collection-agent
 18 verbose updated ssdn-core
-19 verbose git-describe undefined => "a104a80"
-20 silly git-describe parsed => {"refCount":"306","sha":"a104a80","isDirty":false}
+19 verbose git-describe undefined => "7d0818b"
+20 silly git-describe parsed => {"refCount":"305","sha":"7d0818b","isDirty":false}
 21 info execute Skipping releases
 22 silly lifecycle No script for "preversion" in "ssdn", continuing
 23 silly lifecycle No script for "preversion" in "ssdn-admin", continuing
 24 silly lifecycle No script for "preversion" in "ssdn-cli", continuing
 25 silly lifecycle No script for "preversion" in "ssdn-collection-agent", continuing
 26 silly lifecycle No script for "preversion" in "ssdn-core", continuing
-27 silly lifecycle No script for "version" in "ssdn-collection-agent", continuing
-28 silly lifecycle No script for "version" in "ssdn-cli", continuing
+27 silly lifecycle No script for "version" in "ssdn-admin", continuing
+28 silly lifecycle No script for "version" in "ssdn-collection-agent", continuing
 29 silly lifecycle No script for "version" in "ssdn-core", continuing
-30 silly lifecycle No script for "version" in "ssdn-admin", continuing
+30 silly lifecycle No script for "version" in "ssdn-cli", continuing
 31 silly lifecycle No script for "version" in "ssdn", continuing
-32 silly gitAdd [ '/Users/isenbs/Documents/GitHub/ssdn/secure-student-data-network/packages/collection-agent/package.json',
-32 silly gitAdd   '/Users/isenbs/Documents/GitHub/ssdn/secure-student-data-network/packages/cli/package.json',
+32 silly gitAdd [ '/Users/isenbs/Documents/GitHub/ssdn/secure-student-data-network/packages/admin/package.json',
+32 silly gitAdd   '/Users/isenbs/Documents/GitHub/ssdn/secure-student-data-network/packages/collection-agent/package.json',
 32 silly gitAdd   '/Users/isenbs/Documents/GitHub/ssdn/secure-student-data-network/packages/core/package.json',
-32 silly gitAdd   '/Users/isenbs/Documents/GitHub/ssdn/secure-student-data-network/packages/admin/package.json',
+32 silly gitAdd   '/Users/isenbs/Documents/GitHub/ssdn/secure-student-data-network/packages/cli/package.json',
 32 silly gitAdd   '/Users/isenbs/Documents/GitHub/ssdn/secure-student-data-network/lerna.json' ]
 33 silly gitCommit v1.1.0
 34 verbose git [ 'commit', '-m', 'v1.1.0' ]
 35 error Error: Command failed: git commit -m v1.1.0
 35 error On branch master
-35 error Your branch is ahead of 'origin/master' by 2 commits.
+35 error Your branch is ahead of 'origin/master' by 1 commit.
 35 error   (use "git push" to publish your local commits)
 35 error
 35 error nothing to commit, working tree clean
