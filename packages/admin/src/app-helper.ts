@@ -10,6 +10,7 @@ import {
   FileTransferNotificationType,
 } from "./interfaces/file-transfer-notification";
 import Instance from "./interfaces/instance";
+import { SQSIntegrationNotification } from "./interfaces/sqs-integration-notification";
 import { StreamStatus } from "./interfaces/stream";
 
 export function displayDate(val: number | string | Date) {
@@ -80,5 +81,24 @@ export function nullFileTransferNotification(): FileTransferNotification {
     message: "This is a null notification",
     subject: "Null Notification",
     type: FileTransferNotificationType.Info,
+  };
+}
+
+export function nullQueue() {
+  return {
+    arn: "arn:aws:sqs:us-east-1:111111111111:ssdn-queue",
+    modificationDate: new Date(),
+    status: "Disabled",
+    uuid: "8b29ea99-2f34-4432-b12b-ded8347ed99e",
+  };
+}
+
+export function nullSQSIntegrationNotification(): SQSIntegrationNotification {
+  return {
+    creationDate: new Date(),
+    id: "NULL-ID",
+    message: "This is a null notification",
+    queue: "null-queue",
+    subject: "Null Notification",
   };
 }

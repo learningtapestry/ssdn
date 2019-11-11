@@ -1,0 +1,18 @@
+{
+  "content": "Message Content",
+  "event": {
+    "date": "2019-10-03T09:19:28.578Z",
+    "format": "unknown",
+    "namespace": "ssdn-test.learningtapestry.com",
+    "operation": "create",
+    "origin": "arn:aws:sqs:us-east-1:111111111111:ssdn-queue",
+    "protocol": "HTTP/1.1",
+    "representation": "aws:sqs",
+    "request": {
+      "messageAttributes": {},
+      "messageId": "ab6c7f3e-6678-4d4f-98e7-05790ea71d1f",
+      "senderId": "AIDAJFTJREZT37FPSLCAM"
+    },
+    "resource": "ab6c7f3e-6678-4d4f-98e7-05790ea71d1f"
+  }
+}

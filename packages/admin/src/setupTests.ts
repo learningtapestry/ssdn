@@ -1,5 +1,4 @@
-import "@testing-library/react/cleanup-after-each";
-
+// @ts-ignore
 process.env.REACT_APP_ENDPOINT = "https://localhost";
 process.env.REACT_APP_IDENTITY_POOL_ID = "us-east-1:test-test-test-test-test";
 process.env.REACT_APP_SSDN_ID = "SSDN";

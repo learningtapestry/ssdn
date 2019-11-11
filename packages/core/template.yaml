@@ -203,6 +203,14 @@ Resources:
                   - logs:DescribeLogGroups
                   - logs:DescribeLogStreams
                   - logs:GetLogEvents
+                  - lambda:ListEventSourceMappings
+                  - lambda:CreateEventSourceMapping
+                  - lambda:UpdateEventSourceMapping
+                  - lambda:DeleteEventSourceMapping
+                  - lambda:UpdateFunctionConfiguration
+                  - lambda:GetFunctionConfiguration
+                  - sqs:ListQueues
+                  - sqs:GetQueueAttributes
                 Resource:
                   - "*"
                 Effect: Allow
@@ -1650,6 +1658,140 @@ Resources:
         BlockPublicPolicy: true
         RestrictPublicBuckets: true
   #
+  # SQS Integration
+  #
+  ProcessSQSMessageFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./dist/process-sqs-message
+      Policies:
+        - AWSLambdaSQSQueueExecutionRole
+        - Version: 2012-10-17
+          Statement:
+            - Effect: Allow
+              Action:
+                - kinesis:PutRecord
+                - kinesis:PutRecords
+              Resource: !GetAtt EventProcessorStream.Arn
+            - Effect: Allow
+              Action:
+                - cloudformation:DescribeStacks
+              Resource:
+                - !Sub arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/${AWS::StackName}/*
+            - Effect: Allow
+              Action:
+                - sns:Publish
+              Resource:
+                - !Ref SQSIntegrationNotificationsTopic
+      DeadLetterQueue:
+        Type: SNS
+        TargetArn: !Ref LambdaDeadLetterQueueTopic
+  SSDNSQSIntegrationNotificationsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub SSDN-${SSDNId}-SQSIntegrationNotificationsTable
+      ProvisionedThroughput:
+        ReadCapacityUnits: 2
+        WriteCapacityUnits: 2
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+  SQSIntegrationNotificationsTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      DisplayName: !Sub SSDN-${SSDNId}-SQSIntegrationNotificationsTopic
+      KmsMasterKeyId: alias/aws/sns
+      Subscription:
+        - Endpoint: !Ref NotificationEmail
+          Protocol: email
+  StoreSQSIntegrationNotificationFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./dist/store-sqs-integration-notification
+      Events:
+        ProcessSQSMessageError:
+          Type: SNS
+          Properties:
+            Topic: !Ref SQSIntegrationNotificationsTopic
+      Policies:
+        - Version: 2012-10-17
+          Statement:
+            - Effect: Allow
+              Action:
+                - cloudformation:DescribeStacks
+              Resource:
+                - !Sub arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/${AWS::StackName}/*
+            - Effect: Allow
+              Action:
+                - dynamodb:PutItem
+              Resource:
+                - !GetAtt SSDNSQSIntegrationNotificationsTable.Arn
+      DeadLetterQueue:
+        Type: SNS
+        TargetArn: !Ref LambdaDeadLetterQueueTopic
+  SQSIntegrationNotificationsApiFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./dist/sqs-integration-notifications
+      Events:
+        ListAll:
+          Type: Api
+          Properties:
+            Path: /sqs-integration/notifications
+            Method: get
+            RestApiId: !Ref SQSIntegrationNotificationsApi
+            Auth:
+              Authorizer: CognitoAuth
+        Delete:
+          Type: Api
+          Properties:
+            Path: /sqs-integration/notifications/{id}
+            Method: delete
+            RestApiId: !Ref SQSIntegrationNotificationsApi
+            Auth:
+              Authorizer: CognitoAuth
+      Policies:
+        - Version: 2012-10-17
+          Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:Query
+                - dynamodb:Scan
+                - dynamodb:DeleteItem
+              Resource:
+                - !Sub ${SSDNSQSIntegrationNotificationsTable.Arn}*
+            - Effect: Allow
+              Action:
+                - cloudformation:DescribeStacks
+              Resource:
+                - "*"
+      DeadLetterQueue:
+        Type: SNS
+        TargetArn: !Ref LambdaDeadLetterQueueTopic
+  SQSIntegrationNotificationsApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: !Sub SSDN-${SSDNId}-SQSIntegrationNotificationsApi
+      StageName: !Ref Environment
+      Cors:
+        AllowOrigin: "'*'"
+        AllowHeaders: "'Content-Type,Authorization'"
+      Auth:
+        Authorizers:
+          CognitoAuth:
+            UserPoolArn: !GetAtt CognitoUserPool.Arn
+      MethodSettings:
+        - LoggingLevel: ERROR
+          DataTraceEnabled: true
+          MetricsEnabled: true
+          ResourcePath: "/*"
+          HttpMethod: "*"
+  #
   # CloudTrail
   #
   CloudTrail:
@@ -1774,6 +1916,9 @@ Outputs:
   SSDNFileTransferNotificationsTable:
     Description: SSDNFileTransferNotificationsTable
     Value: !Ref SSDNFileTransferNotificationsTable
+  SSDNSQSIntegrationNotificationsTable:
+    Description: SSDNSQSIntegrationNotificationsTable
+    Value: !Ref SSDNSQSIntegrationNotificationsTable
   ExchangeApi:
     Description: ExchangeApi
     Value: !Sub https://${ExchangeApi}.execute-api.${AWS::Region}.amazonaws.com/${Environment}
@@ -1783,6 +1928,9 @@ Outputs:
   FileTransferNotificationsApi:
     Description: API to perform CRUD operations on file transfer notifications
     Value: !Sub https://${FileTransferNotificationsApi}.execute-api.${AWS::Region}.amazonaws.com/${Environment}
+  SQSIntegrationNotificationsApi:
+    Description: API to perform CRUD operations on SQS integration notifications
+    Value: !Sub https://${SQSIntegrationNotificationsApi}.execute-api.${AWS::Region}.amazonaws.com/${Environment}
   EntitiesApiFunction:
     Description: EntitiesApiFunction
     Value: !GetAtt EntitiesApiFunction.Arn
@@ -1834,6 +1982,12 @@ Outputs:
   FileTransferNotificationsTopic:
     Description: SNS Topic that receives file transfer notifications
     Value: !Ref FileTransferNotificationsTopic
+  ProcessSQSMessageFunction:
+    Description: Reads and processes a message from an SQS queue
+    Value: !GetAtt ProcessSQSMessageFunction.Arn
+  SQSIntegrationNotificationsTopic:
+    Description: SNS Topic that receives SQS integration notifications
+    Value: !Ref SQSIntegrationNotificationsTopic
   AwsAccountId:
     Description: The AWS account ID
     Value: !Ref AWS::AccountId
