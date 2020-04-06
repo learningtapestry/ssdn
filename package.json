@@ -39,6 +39,9 @@
     "tslint-plugin-prettier": "^2.0.1",
     "typescript": "^3.5.3"
   },
+  "engines": {
+    "node": ">=10.16 <11"
+  },
   "scripts": {
     "build": "lerna run build --stream",
     "start": "lerna run start --parallel",
