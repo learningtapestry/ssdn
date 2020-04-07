@@ -52,6 +52,7 @@ describe("DynamoSQSIntegrationNotificationRepository", () => {
       expect(notifications[1]).toHaveProperty("id", "dded0fbe-6abe-4c7f-8a55-b1543b7405e9");
       expect(notifications[1]).toHaveProperty("message", "Another Test SQS error");
       expect(documentClient.impl.scan!).toHaveBeenCalledWith({
+        Limit: 50,
         TableName: "SSDNSQSIntegrationNotifications",
       });
     });
