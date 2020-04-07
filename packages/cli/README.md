@@ -19,7 +19,9 @@ software packages on your system:
 - [AWS CLI](https://aws.amazon.com/cli/). This is necessary to package and deploy the CloudFormation
   templates. Please make sure to run the 'aws configure' after installing the AWS CLI.
 - [Amplify CLI](https://github.com/aws-amplify/amplify-cli). After you have installed Node.js and
-  Yarn, you can execute `sudo yarn global add @aws-amplify/cli`.
+  Yarn, you can execute:
+  --yarn global add @aws-amplify/cli
+  --export PATH="$(yarn global bin):$PATH"`.
 
 ### Caveat regarding S3 bucket policy
 

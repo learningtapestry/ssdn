@@ -51,7 +51,8 @@ describe("<CreateConnectionRequest/>", () => {
     fireEvent.click(getByText("xAPI"));
     fireEvent.click(getByText("Send"));
 
-    await waitForElement(() => getByRole("dialog"));
+    // @ts-ignore
+    await waitForElement(() => getByRole("dialog", { hidden: true }));
     expect(AWSService.saveConnectionRequest).toHaveBeenCalled();
   });
 });
