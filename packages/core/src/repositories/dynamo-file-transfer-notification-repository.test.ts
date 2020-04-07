@@ -52,6 +52,7 @@ describe("DynamoFileTransferNotificationRepository", () => {
       expect(notifications[1]).toHaveProperty("id", "4f331ac9-5d41-4129-ad1b-b704adc80ce2");
       expect(notifications[1]).toHaveProperty("subject", "This is a test message");
       expect(documentClient.impl.scan!).toHaveBeenCalledWith({
+        Limit: 50,
         TableName: "SSDNFileTransferNotifications",
       });
     });
