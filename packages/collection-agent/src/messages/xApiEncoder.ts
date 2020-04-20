@@ -4,12 +4,12 @@ import { MessageEncoder } from "./messageEncoder";
 import { VideoMessage } from "./videoMessage";
 import { XApiActor, XApiContext, XApiMessage, XApiObject, XApiVerb } from "./xApiSpec";
 
-const heartbeatVerb = "https://learningtapestry.github.io/xapi/nucleus/collection/verbs/heartbeat";
+const heartbeatVerb = "https://learningtapestry.github.io/xapi/ssdn/collection/verbs/heartbeat";
 const heartbeatExtensions: { [k: string]: string } = {
-  heartbeatId: "https://learningtapestry.github.io/xapi/nucleus/collection/extensions/heartbeatId",
-  pageTitle: "https://learningtapestry.github.io/xapi/nucleus/collection/extensions/pageTitle",
+  heartbeatId: "https://learningtapestry.github.io/xapi/ssdn/collection/extensions/heartbeatId",
+  pageTitle: "https://learningtapestry.github.io/xapi/ssdn/collection/extensions/pageTitle",
   timeSpentOnPage:
-    "https://learningtapestry.github.io/xapi/nucleus/collection/extensions/timeSpentOnPage",
+    "https://learningtapestry.github.io/xapi/ssdn/collection/extensions/timeSpentOnPage",
 };
 
 const videoVerbs: { [k: string]: string } = {
@@ -50,7 +50,7 @@ export class XApiEncoder implements MessageEncoder {
     };
     const object: XApiObject = {
       definition: {
-        type: "https://learningtapestry.github.io/xapi/nucleus/collection/activities/page",
+        type: "https://learningtapestry.github.io/xapi/ssdn/collection/activities/page",
       },
       id: message.data.pageUrl,
       objectType: "Activity",

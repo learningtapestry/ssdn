@@ -26,7 +26,7 @@ export interface ConnectionRequest {
   connection: {
     awsAccountId: string;
     externalId: string;
-    nucleusId: string;
+    ssdnId: string;
   };
 }
 

@@ -1,4 +1,4 @@
-import nucleusEvent from "../../test-support/data-samples/file-transfer-nucleus-event.json";
+import ssdnEvent from "../../test-support/data-samples/file-transfer-ssdn-event.json";
 import Event from "../interfaces/event";
 import FileUploadService from "./file-upload-service";
 
@@ -11,9 +11,9 @@ describe("FileUploadService", () => {
     });
 
     it("stores the content", async () => {
-      const results = await FileUploadService.process(nucleusEvent as Event, inMemoryRepository);
+      const results = await FileUploadService.process(ssdnEvent as Event, inMemoryRepository);
 
-      expect(results).toEqual(nucleusEvent);
+      expect(results).toEqual(ssdnEvent);
       expect(results).not.toHaveProperty("errors");
     });
 
@@ -22,7 +22,7 @@ describe("FileUploadService", () => {
         throw new Error("Unexpected error message");
       });
 
-      const results = await FileUploadService.process(nucleusEvent as Event, inMemoryRepository);
+      const results = await FileUploadService.process(ssdnEvent as Event, inMemoryRepository);
 
       expect(results).toHaveProperty("error", "Unexpected error message");
     });

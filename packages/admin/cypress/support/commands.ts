@@ -1,4 +1,3 @@
-import ConnectionRequest from "../../src/interfaces/connection-request";
 import UserForm from "../../src/interfaces/user-form";
 import AWSService from "../../src/services/aws-service";
 import * as factories from "../../test-support/factories";
@@ -13,20 +12,6 @@ Cypress.Commands.add("deleteUsers", async () => {
     if (user.username !== Cypress.env("DEFAULT_USERNAME")) {
       await AWSService.deleteUser(user.username);
     }
-  });
-});
-
-Cypress.Commands.add("createConnectionRequest", async (connectionParams = {}) => {
-  await AWSService.saveConnectionRequest({
-    ...factories.connectionRequests()[0],
-    ...connectionParams,
-  });
-});
-
-Cypress.Commands.add("deleteConnectionRequests", async (type: string) => {
-  const allConnections = await AWSService.retrieveConnectionRequests("submitted");
-  await allConnections.forEach(async (connection: ConnectionRequest) => {
-    // How should we delete them?
   });
 });
 

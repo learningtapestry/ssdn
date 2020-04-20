@@ -4,6 +4,8 @@ import CloudFormation from "aws-sdk/clients/cloudformation";
 import CloudWatchLogs from "aws-sdk/clients/cloudwatchlogs";
 import CognitoIdentityServiceProvider from "aws-sdk/clients/cognitoidentityserviceprovider";
 import DynamoDB from "aws-sdk/clients/dynamodb";
+import Lambda from "aws-sdk/clients/lambda";
+import SQS from "aws-sdk/clients/sqs";
 import { buildFormat } from "../../test-support/factories";
 import * as factories from "../../test-support/factories";
 import * as responses from "../../test-support/service-responses";
@@ -13,6 +15,8 @@ import awsconfiguration from "../aws-configuration";
 import AWSService from "./aws-service";
 
 describe("AWSService", () => {
+  const lambda = new Lambda();
+  const sqs = new SQS();
   describe("retrieveConnectionRequests", () => {
     it("retrieves incoming requests from the DynamoDB table", async () => {
       DynamoDB.DocumentClient.prototype.scan = mockWithPromise(responses.connectionRequestItems());
@@ -26,7 +30,7 @@ describe("AWSService", () => {
       ]);
 
       expect(DynamoDB.DocumentClient.prototype.scan).toHaveBeenCalledWith({
-        TableName: awsconfiguration.Storage.nucleusIncomingConnectionRequests,
+        TableName: awsconfiguration.Storage.ssdnIncomingConnectionRequests,
       });
     });
 
@@ -42,7 +46,7 @@ describe("AWSService", () => {
       ]);
 
       expect(DynamoDB.DocumentClient.prototype.scan).toHaveBeenCalledWith({
-        TableName: awsconfiguration.Storage.nucleusConnectionRequests,
+        TableName: awsconfiguration.Storage.ssdnConnectionRequests,
       });
     });
   });
@@ -50,28 +54,28 @@ describe("AWSService", () => {
   describe("retrieveStreams", () => {
     const mockFormats = [
       {
-        endpoint: "https://nucleus.adam.acme.org/",
+        endpoint: "https://ssdn.adam.acme.org/",
         format: "xAPI",
-        namespace: "nucleus.ajax.org",
+        namespace: "ssdn.ajax.org",
         status: "active",
       },
       {
-        endpoint: "https://nucleus.jonah.acme.org/",
+        endpoint: "https://ssdn.jonah.acme.org/",
         format: "xAPI",
-        namespace: "nucleus.ajax.org",
+        namespace: "ssdn.ajax.org",
         status: "paused",
       },
       {
-        endpoint: "https://nucleus.mickey.acme.org/",
+        endpoint: "https://ssdn.mickey.acme.org/",
         format: "xAPI",
-        namespace: "nucleus.ajax.org",
+        namespace: "ssdn.ajax.org",
         status: "paused_external",
       },
     ];
     const mockOutputFormats = [
-      { ...mockFormats[0], namespace: "nucleus.adam.acme.org" },
-      { ...mockFormats[1], namespace: "nucleus.jonah.acme.org" },
-      { ...mockFormats[2], namespace: "nucleus.mickey.acme.org" },
+      { ...mockFormats[0], namespace: "ssdn.adam.acme.org" },
+      { ...mockFormats[1], namespace: "ssdn.jonah.acme.org" },
+      { ...mockFormats[2], namespace: "ssdn.mickey.acme.org" },
     ];
 
     it("finds inputs", async () => {
@@ -80,7 +84,7 @@ describe("AWSService", () => {
       expect(streams).toEqual(mockFormats);
       expect(DynamoDB.DocumentClient.prototype.scan).toHaveBeenCalledWith({
         FilterExpression: "attribute_exists(inputStreams[0])",
-        TableName: awsconfiguration.Storage.nucleusConnections,
+        TableName: awsconfiguration.Storage.ssdnConnections,
       });
     });
 
@@ -90,7 +94,7 @@ describe("AWSService", () => {
       expect(streams).toEqual(mockOutputFormats);
       expect(DynamoDB.DocumentClient.prototype.scan).toHaveBeenCalledWith({
         FilterExpression: "attribute_exists(outputStreams[0])",
-        TableName: awsconfiguration.Storage.nucleusConnections,
+        TableName: awsconfiguration.Storage.ssdnConnections,
       });
     });
   });
@@ -99,7 +103,7 @@ describe("AWSService", () => {
     it("retrieves the available stacks and return instances", async () => {
       CloudFormation.prototype.describeStacks = mockWithPromise(responses.cloudFormationStacks());
       const currentStack = await AWSService.retrieveStack();
-      expect(currentStack).toEqual(factories.nucleusStack);
+      expect(currentStack).toEqual(factories.ssdnStack);
     });
   });
 
@@ -122,7 +126,7 @@ describe("AWSService", () => {
       CloudWatchLogs.prototype.getLogEvents = mockWithPromise(responses.logEvents());
 
       const logEvents = await AWSService.retrieveLogEvents(
-        "/aws/lambda/Nucleus-AuthorizeBeaconFunction-1P2GO4YF9VZA7",
+        "/aws/lambda/SSDN-AuthorizeBeaconFunction-1P2GO4YF9VZA7",
       );
 
       expect(logEvents).toEqual(factories.logEvents());
@@ -268,6 +272,94 @@ describe("AWSService", () => {
         "/file-transfers/notifications/6e6e94dd-aa5e-47bb-a2df-7f21cafed71e",
         {},
       );
+    });
+  });
+
+  describe("retrieveSQSIntegrationFunction", () => {
+    it("retrieves the ARN of the SQS lambda", async () => {
+      AWSService.retrieveStack = jest.fn().mockResolvedValue(factories.ssdnStack);
+
+      const integrationFunction = await AWSService.retrieveSQSIntegrationFunction();
+
+      expect(integrationFunction).toEqual(
+        "arn:aws:lambda:us-east-1:111111111111:function:SSDN-ProcessSQSMessageFunction-18XOSMJC66JZK",
+      );
+    });
+  });
+
+  describe("retrieveQueues", () => {
+    it("retrieves the SQS queues", async () => {
+      sqs.listQueues = mockWithPromise(responses.queues());
+      sqs.getQueueAttributes = jest
+        .fn()
+        .mockReturnValueOnce({ promise: async () => responses.queueAttributes() })
+        .mockReturnValueOnce({
+          promise: async () => responses.queueAttributes("ssdn-another-queue"),
+        });
+
+      const logEvents = await AWSService.retrieveQueues(sqs);
+
+      expect(logEvents).toEqual(factories.queueArns());
+    });
+  });
+
+  describe("retrieveQueueMappings", () => {
+    it("retrieves the source event mappings for the SQS lambda", async () => {
+      lambda.listEventSourceMappings = mockWithPromise(responses.queueMappings());
+      AWSService.retrieveSQSIntegrationFunction = jest
+        .fn()
+        .mockResolvedValue(
+          "arn:aws:lambda:us-east-1:111111111111:function:SSDN-ProcessSQSMessageFunction-18XOSMJC66JZK",
+        );
+
+      const queueMappings = await AWSService.retrieveQueueMappings(lambda);
+
+      expect(queueMappings).toEqual(factories.queueMappings());
+    });
+  });
+
+  describe("retrieveSQSIntegrationNamespace", () => {
+    it("retrieves the current namespace for the SQS lambda function", async () => {
+      AWSService.retrieveSQSIntegrationConfig = jest
+        .fn()
+        .mockResolvedValue(responses.functionConfiguration());
+
+      const namespace = await AWSService.retrieveSQSIntegrationNamespace();
+
+      expect(namespace).toEqual("test.example.com");
+    });
+  });
+
+  describe("updateNamespace", () => {
+    it("updates the namespace variable without affecting the others", async () => {
+      AWSService.retrieveSQSIntegrationFunction = jest
+        .fn()
+        .mockResolvedValue(
+          "arn:aws:lambda:us-east-1:111111111111:function:SSDN-ProcessSQSMessageFunction-18XOSMJC66JZK",
+        );
+      AWSService.retrieveSQSIntegrationConfig = jest
+        .fn()
+        .mockResolvedValue(responses.functionConfiguration());
+      lambda.updateFunctionConfiguration = mockWithPromise(undefined);
+
+      await AWSService.updateNamespace("modified.example.com", lambda);
+
+      expect(lambda.updateFunctionConfiguration).toHaveBeenCalledWith({
+        Environment: {
+          Variables: {
+            SSDN_AWS_ACCOUNT_ID: "111111111111",
+            SSDN_ENVIRONMENT: "Development",
+            SSDN_ID: "learning-tapestry-dev",
+            SSDN_LOG_LEVEL: "info",
+            SSDN_NAMESPACE: "modified.example.com",
+            SSDN_STACK_ID:
+              "arn:aws:cloudformation:us-east-1:111111111111:stack/SSDN/00390200-a309-11e9-99ba-12ff035a5bdc",
+            SSDN_STACK_NAME: "SSDN",
+          },
+        },
+        FunctionName:
+          "arn:aws:lambda:us-east-1:111111111111:function:SSDN-ProcessSQSMessageFunction-18XOSMJC66JZK",
+      });
     });
   });
 });

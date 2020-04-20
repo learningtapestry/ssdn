@@ -21,18 +21,18 @@
     -->
     <title>SSDN Demo</title>
     <script>
-      window.nucleus = window.nucleus || {
+      window.ssdn = window.ssdn || {
         configure: function() {
-          (window.nucleus.args = window.nucleus.args || []).push(arguments);
+          (window.ssdn.args = window.ssdn.args || []).push(arguments);
         },
       };
-      nucleus.configure(
+      ssdn.configure(
         "server",
         "https://d3z2sjx3id.execute-api.us-east-1.amazonaws.com/Production/xAPI",
       );
-      nucleus.configure("defaultNamespace", "ssdnsampleprovider");
-      nucleus.configure("apiKey", "7fvgii98pb");
-      nucleus.configure("collectors", [
+      ssdn.configure("defaultNamespace", "ssdnsampleprovider");
+      ssdn.configure("apiKey", "7fvgii98pb");
+      ssdn.configure("collectors", [
         [
           "heartbeat",
           {
@@ -41,7 +41,7 @@
         ],
         "video",
       ]);
-      nucleus.configure("user", {
+      ssdn.configure("user", {
         id: "Dallas Student",
         extensions: { homePage: "https://ssdn-demo.example.org" },
       });

@@ -29,22 +29,22 @@ describe("XApiEncoder", () => {
         },
         context: {
           extensions: {
-            "https://learningtapestry.github.io/xapi/nucleus/collection/extensions/heartbeatId":
+            "https://learningtapestry.github.io/xapi/ssdn/collection/extensions/heartbeatId":
               "1234567890",
-            "https://learningtapestry.github.io/xapi/nucleus/collection/extensions/pageTitle":
+            "https://learningtapestry.github.io/xapi/ssdn/collection/extensions/pageTitle":
               "Khan Academy",
-            "https://learningtapestry.github.io/xapi/nucleus/collection/extensions/timeSpentOnPage": 10,
+            "https://learningtapestry.github.io/xapi/ssdn/collection/extensions/timeSpentOnPage": 10,
           },
         },
         object: {
           definition: {
-            type: "https://learningtapestry.github.io/xapi/nucleus/collection/activities/page",
+            type: "https://learningtapestry.github.io/xapi/ssdn/collection/activities/page",
           },
           id: "https://www.khanacademy.org",
           objectType: "Activity",
         },
         verb: {
-          id: "https://learningtapestry.github.io/xapi/nucleus/collection/verbs/heartbeat",
+          id: "https://learningtapestry.github.io/xapi/ssdn/collection/verbs/heartbeat",
         },
       });
     });

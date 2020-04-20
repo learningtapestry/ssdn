@@ -1,13 +1,14 @@
-import "jest-dom/extend-expect";
+import "@testing-library/jest-dom/extend-expect";
 
 import React from "react";
+
 import {
   fireEvent,
   render,
   wait,
   waitForElement,
   waitForElementToBeRemoved,
-} from "react-testing-library";
+} from "@testing-library/react";
 
 import { buildFormat } from "../../../test-support/factories";
 import { renderWithRouter } from "../../../test-support/test-helper";
@@ -56,9 +57,11 @@ describe("<Formats />", () => {
     await waitForElement(() => getAllByText("Delete"));
 
     fireEvent.click(getAllByText("Delete")[0]);
-    await waitForElement(() => getByRole("dialog"));
+    // @ts-ignore
+    await waitForElement(() => getByRole("dialog", { hidden: true }));
     fireEvent.click(getByText("Confirm"));
-    await waitForElementToBeRemoved(() => getByRole("dialog"));
+    // @ts-ignore
+    await waitForElementToBeRemoved(() => getByRole("dialog", { hidden: true }));
     expect(AWSService.deleteFormat).toHaveBeenCalledTimes(1);
     expect(AWSService.deleteFormat).toHaveBeenCalledWith("xAPI");
   });

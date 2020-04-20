@@ -2,6 +2,7 @@ import { APIGatewayProxyHandler } from "aws-lambda";
 
 import { ConsumerIssuedConnection } from "../../interfaces/connection";
 import { ProviderIssuedAcceptance } from "../../interfaces/exchange";
+import logger from "../../logger";
 import {
   getConnectionRequestRepository,
   getConnectionRequestService,
@@ -12,13 +13,16 @@ import { apiResponse, applyMiddlewares, verifyAuthorization } from "../api-helpe
 
 export const handler = applyMiddlewares<APIGatewayProxyHandler>(async (event) => {
   const connectionRequests = getConnectionRequestRepository();
-  const connectionRequest = await connectionRequests.get(event.pathParameters!.id);
+  const id = event.pathParameters!.id;
+  const connectionRequest = await connectionRequests.get(id);
   verifyAuthorization(event, connectionRequest.acceptanceToken);
+  logger.info(`Verified authorization for id ${id}.`);
 
   const acceptance = JSON.parse(event.body!) as ProviderIssuedAcceptance;
 
   if (!acceptance.accepted) {
     await getConnectionRequestService().receiveProviderRejection(connectionRequest);
+    logger.info(`Received rejection for id ${id}.`);
     return apiResponse();
   }
 
@@ -26,6 +30,8 @@ export const handler = applyMiddlewares<APIGatewayProxyHandler>(async (event) =>
     connectionRequest,
     acceptance.details,
   );
+
+  logger.info(`Received acceptance for id ${id}.`);
 
   const response: ConsumerIssuedConnection = {
     externalConnection: {

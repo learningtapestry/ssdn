@@ -1,6 +1,6 @@
 /**
  * api-gateway-event-parser.ts: Parses an API Gateway event as obtained from the lambda function and
- * returns an internal Nucleus event representation
+ * returns an internal SSDN event representation
  */
 import { APIGatewayProxyEvent } from "aws-lambda";
 import get from "lodash/fp/get";
@@ -28,7 +28,7 @@ export default abstract class ApiGatewayEventParser {
   }
 
   public parse(): Event {
-    logger.debug("Generating Nucleus event from Lambda: %j", this.lambdaEvent);
+    logger.debug("Generating SSDN event from Lambda: %j", this.lambdaEvent);
 
     return {
       content: this.interpretContent(),
@@ -52,7 +52,7 @@ export default abstract class ApiGatewayEventParser {
   protected abstract interpretContent(): any;
 
   protected namespace() {
-    const eventNamespace = getLowercaseHeader(this.headers)("x-nucleus-namespace");
+    const eventNamespace = getLowercaseHeader(this.headers)("x-ssdn-namespace");
     if (eventNamespace) {
       return eventNamespace;
     }

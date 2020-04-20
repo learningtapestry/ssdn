@@ -40,7 +40,7 @@ export class HeartbeatMessage implements Message {
 
   /**
    * Creates a heartbeat message.
-   * @param user The `Nucleus` message user (xAPI agent).
+   * @param user The `SSDN` message user (xAPI agent).
    * @param data Custom data for this message.
    */
   constructor(user: User, data: HeartbeatMessageData) {

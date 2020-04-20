@@ -1,4 +1,4 @@
-import React, { DependencyList, Dispatch, SetStateAction, useCallback, useState } from "react";
+import { DependencyList, Dispatch, SetStateAction, useCallback, useState } from "react";
 
 // tslint:disable: no-empty
 const useModal = (
@@ -8,16 +8,18 @@ const useModal = (
   boolean,
   Dispatch<SetStateAction<boolean>>,
   (...args: any[]) => any,
-  (...args: any[]) => any
+  (...args: any[]) => any,
 ] => {
   const [visible, setVisible] = useState(false);
   const openFn = useCallback((...args) => {
     setVisible(true);
     openSideEffect[0](...args);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, openSideEffect[1]);
   const closeFn = useCallback((...args) => {
     setVisible(false);
     closeSideEffect[0](...args);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, closeSideEffect[1]);
   return [visible, setVisible, openFn, closeFn];
 };

@@ -7,15 +7,15 @@
     <title>Document</title>
     <script src="indexConfiguration.ts"></script>
     <script>
-      window.nucleus = window.nucleus || {
+      window.ssdn = window.ssdn || {
         configure: function() {
-          (window.nucleus.args = window.nucleus.args || []).push(arguments);
+          (window.ssdn.args = window.ssdn.args || []).push(arguments);
         },
       };
-      nucleus.configure("server", window.configuration.BACKEND_ADDRESS);
-      nucleus.configure("defaultNamespace", window.configuration.NAMESPACE);
-      nucleus.configure("apiKey", window.configuration.API_KEY);
-      nucleus.configure("collectors", [
+      ssdn.configure("server", window.configuration.BACKEND_ADDRESS);
+      ssdn.configure("defaultNamespace", window.configuration.NAMESPACE);
+      ssdn.configure("apiKey", window.configuration.API_KEY);
+      ssdn.configure("collectors", [
         [
           "heartbeat",
           {
@@ -24,7 +24,7 @@
         ],
         "video",
       ]);
-      nucleus.configure("user", {
+      ssdn.configure("user", {
         id: window.configuration.USER_ID,
         extensions: { homePage: window.configuration.USER_HOME_PAGE },
       });

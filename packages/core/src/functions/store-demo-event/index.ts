@@ -25,11 +25,11 @@ export const handler: KinesisStreamHandler | S3Handler = async (
         demoEvents = [buildDirectUploadEvent(record)];
       }
     } else {
-      const nucleusEvent = parseKinesisData<Event>(record.kinesis.data);
-      if (nucleusEvent.event.protocol === "S3" || !wantedVideoEvent(nucleusEvent)) {
+      const ssdnEvent = parseKinesisData<Event>(record.kinesis.data);
+      if (ssdnEvent.event.protocol === "S3" || !wantedVideoEvent(ssdnEvent)) {
         continue;
       }
-      demoEvents = [buildVideoEvent(nucleusEvent)];
+      demoEvents = [buildVideoEvent(ssdnEvent)];
     }
     logger.info(demoEvents);
 
@@ -59,16 +59,16 @@ async function readCSV(bucket: string, file: string) {
   return csvFile.Body!.toString();
 }
 
-function buildVideoEvent(nucleusEvent: Event) {
+function buildVideoEvent(ssdnEvent: Event) {
   return {
     additionalInfo: {
-      action: path.basename(nucleusEvent.content.verb.id),
-      homepage: nucleusEvent.content.actor.account.homePage,
+      action: path.basename(ssdnEvent.content.verb.id),
+      homepage: ssdnEvent.content.actor.account.homePage,
     },
-    creationDate: nucleusEvent.event.date,
-    resource: nucleusEvent.content.object.id,
+    creationDate: ssdnEvent.event.date,
+    resource: ssdnEvent.content.object.id,
     type: DemoEventType.Video,
-    user: nucleusEvent.content.actor.account.name,
+    user: ssdnEvent.content.actor.account.name,
   };
 }
 

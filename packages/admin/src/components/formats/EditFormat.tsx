@@ -44,17 +44,18 @@ interface EditFormatProps {
 function EditFormat(props: RouteComponentProps<EditFormatProps>) {
   const [format, setFormat] = useState<Format>({
     creationDate: "",
+    description: "",
     name: "",
     updateDate: "",
   });
 
-  const fetchFormat = async () => {
-    setFormat(await AWSService.retrieveFormat(props.match.params.name));
-  };
-
   const name = props.match.params.name;
 
   useEffect(() => {
+    const fetchFormat = async () => {
+      setFormat(await AWSService.retrieveFormat(name));
+    };
+
     fetchFormat();
   }, [name]);
 

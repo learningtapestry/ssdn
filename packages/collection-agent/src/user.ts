@@ -1,5 +1,5 @@
 /**
- * An user or actor, _in the context of a Nucleus message_.
+ * An user or actor, _in the context of a SSDN message_.
  * In xApi, equivalent to an "actor" - one who performs an action.
  * May represent someone who is logged into a system, or even an
  * anonymous browser user.

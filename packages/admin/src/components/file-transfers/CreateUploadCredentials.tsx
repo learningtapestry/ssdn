@@ -138,7 +138,7 @@ function CreateUploadCredentialsForm(props: FormikProps<UploadCredentialsForm>) 
       <h1>Generate Upload Credentials</h1>
       <p>
         Here you can generate temporary AWS credentials that will allow you to upload and share
-        files with other Nucleus instances.
+        files with other SSDN instances.
       </p>
       {!has("credentials")(status) && renderForm()}
       {renderCredentials()}

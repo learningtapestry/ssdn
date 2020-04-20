@@ -9,13 +9,19 @@ export enum API_KEYS {
   collectionApiKeyId = "CollectionApiKeyId",
 }
 
-export enum AWS_NUCLEUS {
+export enum AWS_SSDN {
   awsAccountId = "AwsAccountId",
+  awsRegion = "AwsRegion",
+  clientId = "CognitoUserPoolClientId",
+  clientWebId = "CognitoUserPoolClientWebId",
+  identityPoolId = "CognitoIdentityPoolId",
   namespace = "Namespace",
-  nucleusId = "NucleusId",
+  ssdnId = "SSDNId",
+  userPoolId = "CognitoUserPoolId",
 }
 
 export enum BUCKETS {
+  delivery = "DeliveryS3Bucket",
   download = "DownloadS3Bucket",
   upload = "UploadS3Bucket",
 }
@@ -35,7 +41,7 @@ export enum LAMBDAS {
   processXAPIBeacon = "ProcessXAPIBeaconFunction",
   processXAPIStatement = "ProcessXAPIStatementFunction",
   routeEvents = "RouteEventsFunction",
-  streamUpdate = "StreamUpdate",
+  streamUpdate = "StreamUpdateFunction",
   generateUploadCredentials = "GenerateUploadCredentialsFunction",
 }
 
@@ -49,6 +55,7 @@ export enum POLICIES {
 }
 
 export enum PUBLIC_METADATA {
+  AwsRegion = "AwsRegion",
   EventProcessorStream = "EventProcessorStream",
 }
 
@@ -57,14 +64,16 @@ export enum STREAMS {
 }
 
 export enum TABLES {
-  nucleusConnectionRequests = "NucleusConnectionRequestsTable",
-  nucleusConnections = "NucleusConnectionsTable",
-  nucleusIncomingConnectionRequests = "NucleusIncomingConnectionRequestsTable",
-  nucleusFormats = "NucleusFormatsTable",
-  nucleusFileTransferNotifications = "NucleusFileTransferNotificationsTable",
-  nucleusDemoEvents = "NucleusDemoEventsTable",
+  ssdnConnectionRequests = "SSDNConnectionRequestsTable",
+  ssdnConnections = "SSDNConnectionsTable",
+  ssdnIncomingConnectionRequests = "SSDNIncomingConnectionRequestsTable",
+  ssdnFormats = "SSDNFormatsTable",
+  ssdnFileTransferNotifications = "SSDNFileTransferNotificationsTable",
+  ssdnSQSIntegrationNotifications = "SSDNSQSIntegrationNotificationsTable",
+  ssdnDemoEvents = "SSDNDemoEventsTable",
 }
 
 export enum TOPICS {
   fileTransferNotifications = "FileTransferNotificationsTopic",
+  sqsIntegrationNotifications = "SQSIntegrationNotificationsTopic",
 }

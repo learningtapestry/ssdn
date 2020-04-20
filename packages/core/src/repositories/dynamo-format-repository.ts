@@ -5,14 +5,14 @@ import { isoDate } from "../helpers/app-helper";
 import { getOrFail } from "../helpers/dynamo-helper";
 import { TABLES } from "../interfaces/aws-metadata-keys";
 import { Format } from "../interfaces/format";
-import NucleusMetadataService from "../services/nucleus-metadata-service";
+import SSDNMetadataService from "../services/ssdn-metadata-service";
 import FormatRepository from "./format-repository";
 
 export default class DynamoFormatRepository implements FormatRepository {
-  private metadata: NucleusMetadataService;
+  private metadata: SSDNMetadataService;
   private client: DocumentClient;
 
-  constructor(metadata: NucleusMetadataService, client: DocumentClient) {
+  constructor(metadata: SSDNMetadataService, client: DocumentClient) {
     this.metadata = metadata;
     this.client = client;
   }
@@ -81,7 +81,7 @@ export default class DynamoFormatRepository implements FormatRepository {
   }
 
   private async getTableName() {
-    const name = await this.metadata.getMetadataValue(TABLES.nucleusFormats);
+    const name = await this.metadata.getMetadataValue(TABLES.ssdnFormats);
     return name.value;
   }
 }

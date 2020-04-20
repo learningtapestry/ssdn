@@ -4,10 +4,10 @@ import nanoid from "nanoid";
 import { parse } from "url";
 import uuid from "uuid/v4";
 
-import { AWS_NUCLEUS, POLICIES } from "../interfaces/aws-metadata-keys";
+import { AWS_SSDN, POLICIES } from "../interfaces/aws-metadata-keys";
 import { MetadataValue } from "../interfaces/base-types";
 import logger from "../logger";
-import NucleusMetadataService from "./nucleus-metadata-service";
+import SSDNMetadataService from "./ssdn-metadata-service";
 
 export interface RoleInfo {
   arn: string;
@@ -17,9 +17,9 @@ export interface RoleInfo {
 
 export default class IamService {
   private client: IAM;
-  private metadata: NucleusMetadataService;
+  private metadata: SSDNMetadataService;
 
-  constructor(client: IAM, metadata: NucleusMetadataService) {
+  constructor(client: IAM, metadata: SSDNMetadataService) {
     this.client = client;
     this.metadata = metadata;
   }
@@ -29,7 +29,7 @@ export default class IamService {
     externalEndpoint: string,
   ) {
     const rolePath = this.buildRolePath(
-      (await this.metadata.getMetadataValue(AWS_NUCLEUS.nucleusId)).value,
+      (await this.metadata.getMetadataValue(AWS_SSDN.ssdnId)).value,
       externalEndpoint,
     );
     await this.client
@@ -46,7 +46,7 @@ export default class IamService {
     }
 
     const rolePath = this.buildRolePath(
-      (await this.metadata.getMetadataValue(AWS_NUCLEUS.nucleusId)).value,
+      (await this.metadata.getMetadataValue(AWS_SSDN.ssdnId)).value,
       externalEndpoint,
     );
 
@@ -62,8 +62,8 @@ export default class IamService {
   }
 
   public async findOrCreateEndpointRole(externalEndpoint: string, externalAwsAccountId: string) {
-    const nucleusId = (await this.metadata.getMetadataValue(AWS_NUCLEUS.nucleusId)).value;
-    const rolePath = this.buildRolePath(nucleusId, externalEndpoint);
+    const ssdnId = (await this.metadata.getMetadataValue(AWS_SSDN.ssdnId)).value;
+    const rolePath = this.buildRolePath(ssdnId, externalEndpoint);
 
     let role: RoleInfo;
 
@@ -92,7 +92,7 @@ export default class IamService {
             Version: "2012-10-17",
           }),
           Path: rolePath,
-          RoleName: this.buildRoleName(nucleusId, externalEndpoint),
+          RoleName: this.buildRoleName(ssdnId, externalEndpoint),
         })
         .promise();
 
@@ -106,12 +106,12 @@ export default class IamService {
     return role;
   }
 
-  private buildRolePath(nucleusId: string, externalEndpoint: string) {
-    return `/nucleus/${nucleusId}/${externalEndpoint.replace(/^https?\:\/\//i, "")}/`;
+  private buildRolePath(ssdnId: string, externalEndpoint: string) {
+    return `/ssdn/${ssdnId}/${externalEndpoint.replace(/^https?\:\/\//i, "")}/`;
   }
 
-  private buildRoleName(nucleusId: string, externalEndpoint: string) {
-    return `nucleus_ex_${nucleusId.slice(0, 14)}_${parse(externalEndpoint).hostname!.slice(
+  private buildRoleName(ssdnId: string, externalEndpoint: string) {
+    return `ssdn_ex_${ssdnId.slice(0, 14)}_${parse(externalEndpoint).hostname!.slice(
       0,
       14,
     )}_${nanoid()}`;

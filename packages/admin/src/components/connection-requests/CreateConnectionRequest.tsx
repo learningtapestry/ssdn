@@ -63,7 +63,7 @@ function CreateConnectionRequestForm(props: FormikProps<NewConnectionRequest>) {
 
   const handleCloseVerificationCodeModal = useCallback(() => {
     setStatus({ success: false });
-  }, []);
+  }, [setStatus]);
 
   const verificationCode = status && status.verificationCode ? status.verificationCode : "";
 
@@ -87,8 +87,6 @@ function CreateConnectionRequestForm(props: FormikProps<NewConnectionRequest>) {
     );
   });
 
-  console.log(errors);
-
   return (
     <section id="admin-create-user">
       <h1>Data Provider Request Form</h1>
@@ -110,7 +108,7 @@ function CreateConnectionRequestForm(props: FormikProps<NewConnectionRequest>) {
                 {errors.providerEndpoint}
               </Form.Control.Feedback>
               <Form.Text className="text-muted">
-                This URL should be provided by the Nucleus instance that owns the data.
+                This URL should be provided by the SSDN instance that owns the data.
               </Form.Text>
             </Form.Group>
             <Form.Group controlId="organization">

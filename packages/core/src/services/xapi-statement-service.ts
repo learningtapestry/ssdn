@@ -1,5 +1,5 @@
 /**
- * xapi-statement-service.ts: Receives an xAPI-based Nucleus event representation, validates it and
+ * xapi-statement-service.ts: Receives an xAPI-based SSDN event representation, validates it and
  * then puts it into the repository.
  */
 

@@ -4,13 +4,13 @@ import { getOrFail } from "../helpers/dynamo-helper";
 import { TABLES } from "../interfaces/aws-metadata-keys";
 import { Connection } from "../interfaces/connection";
 import { DemoEvent } from "../interfaces/demo-event";
-import NucleusMetadataService from "../services/nucleus-metadata-service";
+import SSDNMetadataService from "../services/ssdn-metadata-service";
 
 export default class DynamoDemoEventRepository {
-  private metadata: NucleusMetadataService;
+  private metadata: SSDNMetadataService;
   private client: DocumentClient;
 
-  constructor(metadata: NucleusMetadataService, client: DocumentClient) {
+  constructor(metadata: SSDNMetadataService, client: DocumentClient) {
     this.metadata = metadata;
     this.client = client;
   }
@@ -31,7 +31,7 @@ export default class DynamoDemoEventRepository {
   }
 
   private async getTableName() {
-    const name = await this.metadata.getMetadataValue(TABLES.nucleusDemoEvents);
+    const name = await this.metadata.getMetadataValue(TABLES.ssdnDemoEvents);
     return name.value;
   }
 }

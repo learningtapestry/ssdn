@@ -2,20 +2,20 @@ import { DocumentClient } from "aws-sdk/clients/dynamodb";
 
 import { buildConnection } from "../../test-support/factories";
 import { fakeAws, fakeImpl } from "../../test-support/jest-helper";
-import NucleusMetadataService from "../services/nucleus-metadata-service";
+import SSDNMetadataService from "../services/ssdn-metadata-service";
 import DynamoConnectionRepository from "./dynamo-connection-repository";
 
-const fakeMetadataService = fakeImpl<NucleusMetadataService>({
+const fakeMetadataService = fakeImpl<SSDNMetadataService>({
   getMetadataValue: jest.fn((k: string) =>
-    k === "NucleusConnectionsTable"
-      ? Promise.resolve({ value: "NucleusConnections" })
+    k === "SSDNConnectionsTable"
+      ? Promise.resolve({ value: "SSDNConnections" })
       : Promise.reject(new Error("Does not exist")),
   ),
 });
 
 const fakeDocumentClient = fakeAws<DocumentClient>({
   get: jest.fn((params: any) =>
-    params.Key.endpoint === "https://test.com" && params.TableName === "NucleusConnections"
+    params.Key.endpoint === "https://test.com" && params.TableName === "SSDNConnections"
       ? Promise.resolve({ Item: buildConnection({ endpoint: "https://test.com" }) })
       : Promise.resolve({}),
   ),
@@ -45,7 +45,7 @@ describe("DynamoConnectionRepository", () => {
       expect(result[1].endpoint).toEqual("https://test2.com");
       expect(fakeDocumentClient.impl.scan!).toHaveBeenCalledWith({
         FilterExpression: `attribute_exists(outputStreams[0])`,
-        TableName: "NucleusConnections",
+        TableName: "SSDNConnections",
       });
     });
 
@@ -77,7 +77,7 @@ describe("DynamoConnectionRepository", () => {
         Key: {
           endpoint: "https://test.com",
         },
-        TableName: "NucleusConnections",
+        TableName: "SSDNConnections",
       });
     });
 
@@ -117,7 +117,7 @@ describe("DynamoConnectionRepository", () => {
           ":roleName": "test",
         },
         FilterExpression: "#connection.#roleName = :roleName",
-        TableName: "NucleusConnections",
+        TableName: "SSDNConnections",
       });
     });
 
@@ -138,10 +138,27 @@ describe("DynamoConnectionRepository", () => {
         fakeMetadataService,
         fakeDocumentClient,
       );
-      await connectionRepository.put(buildConnection({ creationDate: "", updateDate: "" }));
+      await connectionRepository.put(
+        buildConnection({ creationDate: "", endpoint: "https://red.com", updateDate: "" }),
+      );
       const item = fakeDocumentClient.impl.put!.mock.calls[0][0].Item;
       expect(new Date(item.creationDate).getTime()).toBeGreaterThan(0);
       expect(new Date(item.updateDate).getTime()).toBeGreaterThan(0);
+    });
+
+    it("inserts a connection updating its create and update time", async () => {
+      const connectionRepository = new DynamoConnectionRepository(
+        fakeMetadataService,
+        fakeDocumentClient,
+      );
+
+      for (const badUrl of ["javascript:alert(1)", "failsvalidation", "localhost:1234"]) {
+        const result = connectionRepository.put(buildConnection({ endpoint: badUrl }));
+        await expect(result).rejects.toHaveProperty(
+          "message",
+          "The endpoint for the connection is not valid.",
+        );
+      }
     });
   });
 });

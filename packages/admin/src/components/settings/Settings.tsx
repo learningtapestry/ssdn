@@ -60,7 +60,7 @@ export default function Settings() {
     <section id="admin-settings">
       <h1>Settings</h1>
       <p>
-        This section displays the CloudFormation settings for the stack that backs this Nucleus
+        This section displays the CloudFormation settings for the stack that backs this SSDN
         instance.
       </p>
       <SettingsTable settings={instance.settings} />

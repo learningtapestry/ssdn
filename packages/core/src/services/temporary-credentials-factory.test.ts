@@ -14,7 +14,7 @@ describe("TemporaryCredentialsFactory", () => {
       expect((tempCredentials as any).service.config.params).toEqual({
         ExternalId: "TestExternalId",
         RoleArn: "TestArn",
-        RoleSessionName: expect.stringContaining("Nucleus-"),
+        RoleSessionName: expect.stringContaining("SSDN-"),
       });
     });
   });

@@ -6,8 +6,10 @@ import CloudWatchLogs from "aws-sdk/clients/cloudwatchlogs";
 import CognitoIdentityServiceProvider from "aws-sdk/clients/cognitoidentityserviceprovider";
 import find from "lodash/fp/find";
 
+import Lambda from "aws-sdk/clients/lambda";
 import Instance from "../interfaces/instance";
 import LogEvent from "../interfaces/log-event";
+import QueueMapping from "../interfaces/queueMapping";
 import Setting from "../interfaces/setting";
 import User from "../interfaces/user";
 
@@ -55,6 +57,17 @@ export default class AWSAdapter {
     return logEvents.map((event) => ({
       creationDate: new Date(event.timestamp!),
       message: event.message!,
+    }));
+  }
+
+  public static convertEventSourceMappings(
+    eventSourceMappings: Lambda.EventSourceMappingsList,
+  ): QueueMapping[] {
+    return eventSourceMappings.map((mapping) => ({
+      arn: mapping.EventSourceArn!,
+      modificationDate: new Date(mapping.LastModified!),
+      status: mapping.State!,
+      uuid: mapping.UUID!,
     }));
   }
 }

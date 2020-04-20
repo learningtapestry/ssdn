@@ -1,38 +1,41 @@
-# nucleus-collection-agent
+# SSDN Browser Collection Agent
 
 ## Introduction
 
-_nucleus-collection-agent_ is a browser library for sending messages to a [Nucleus](https://github.com/learningtapestry/nucleus) instance. By default, it encodes messages in the [xAPI](https://xapi.com/overview/) format and pushes them via [image beacons](https://en.wikipedia.org/wiki/Web_beacon). It features two data collection strategies out of the box: one for tracking user visits, and one for tracking user interactions with embedded videos.
+_ssdn-collection-agent_ is a browser library for sending messages to a [SSDN](https://github.com/awslabs/secure-student-data-network)
+instance. By default, it encodes messages in the [xAPI](https://xapi.com/overview/) format and pushes them via
+[image beacons](https://en.wikipedia.org/wiki/Web_beacon). It features two data collection strategies out of the box:
+one for tracking user visits, and one for tracking user interactions with embedded videos.
 
 ## Usage
 
-The recommended way to use the library is by using the Nucleus JavaScript snippet.
-When the snippet is included in a web page, it takes care of initialising a Nucleus
+The recommended way to use the library is by using the SSDN JavaScript snippet.
+When the snippet is included in a web page, it takes care of initialising a SSDN
 instance according to the provided configuration:
 
 ```html
-<!-- nucleus-collection-agent -->
+<!-- ssdn-collection-agent -->
 <script>
-  window.nucleus = window.nucleus || {
+  window.ssdn = window.ssdn || {
     configure: function() {
-      (window.nucleus.args = window.nucleus.args || []).push(arguments);
+      (window.ssdn.args = window.ssdn.args || []).push(arguments);
     },
   };
-  nucleus.configure("server", "<URL TO NUCLEUS SERVER>");
-  nucleus.configure("apiKey", "<AGENT API KEY+>");
-  nucleus.configure("defaultNamespace", "<DEFAULT EVENT NAMESPACE>"); // Optional
-  nucleus.configure("collectors", [
+  ssdn.configure("server", "<URL TO SSDN SERVER>");
+  ssdn.configure("apiKey", "<AGENT API KEY+>");
+  ssdn.configure("defaultNamespace", "<DEFAULT EVENT NAMESPACE>"); // Optional
+  ssdn.configure("collectors", [
     "video",
     ["heartbeat", { heartbeatInterval: 5000 }],
     // Additional collectors
   ]);
-  nucleus.configure("user", {
+  ssdn.configure("user", {
     id: "<USER ID OR EMAIL>",
     extensions: { homePage: "<URL FOR USER LOGIN (xAPI)>" },
   });
 </script>
 <script src="https://url/to/agent.js" async></script>
-<!-- /nucleus-collection-agent -->
+<!-- /ssdn-collection-agent -->
 ```
 
 If necessary, it is also possible to postpone agent initialisation:
@@ -41,16 +44,17 @@ If necessary, it is also possible to postpone agent initialisation:
 <script src="https://url/to/agent.js" async></script>
 <script>
   $(function() {
-    nucleus.configure("server", "<URL TO NUCLEUS SERVER>");
-    // ... more nucleus configuration with `nucleus.configure` ...
-    nucleus.bootstrap();
+    ssdn.configure("server", "<URL TO SSDN SERVER>");
+    // ... more ssdn configuration with `ssdn.configure` ...
+    ssdn.bootstrap();
   });
 </script>
 ```
 
 ## Implementation
 
-_nucleus-collection-agent_ is written in [TypeScript](https://www.typescriptlang.org/) and relies on the `Node.js` tooling ecosystem to test and build its browser component. The following tools are used in the project:
+_ssdn-collection-agent_ is written in [TypeScript](https://www.typescriptlang.org/) and relies on the `Node.js`
+tooling ecosystem to test and build its browser component. The following tools are used in the project:
 
 - [Yarn](https://yarnpkg.com/en/): manages dependencies and project scripts.
 - [Parcel](https://parceljs.org/): provides a zero-config application bundler.
@@ -58,20 +62,24 @@ _nucleus-collection-agent_ is written in [TypeScript](https://www.typescriptlang
   production builds.
 - [Jest](https://jestjs.io/): runs unit and integration tests.
 - [WebdriverIO](https://webdriver.io): runs end-to-end tests.
-- [TSLint](https://palantir.github.io/tslint/) and [Prettier](https://prettier.io/): provide linting rules and formatting automation to enforce conventions across the codebase.
+- [TSLint](https://palantir.github.io/tslint/) and [Prettier](https://prettier.io/): provide linting rules and
+  formatting automation to enforce conventions across the codebase.
 
 ## Requirements
 
-In order to build the project, you'll need [Node.js](https://nodejs.org/en/download/) (version 10.15 or higher) and [Yarn](https://yarnpkg.com/en/).
+In order to build the project, you'll need [Node.js](https://nodejs.org/en/download/) (version 10.15 or higher) and
+[Yarn](https://yarnpkg.com/en/).
 
-To run end-to-end tests in the default configuration, you should have a recent version of [Google Chrome](https://www.google.com/chrome/) installed.
+To run end-to-end tests in the default configuration, you should have a recent version of
+[Google Chrome](https://www.google.com/chrome/) installed.
 
 ## Project layout
 
-The project has been modeled after the [Nucleus server](https://github.com/learningtapestry/nucleus) application.
+The project has been modeled after the [SSDN Core](https://github.com/awslabs/secure-student-data-network/tree/master/packages/core) 
+application.
 
 ```bash
-nucleus-collection-agent/
+ssdn-collection-agent/
 ├── dist/                 # Output folder that contains the generated build
 ├── tmp/                  # Temporary files generated by test or build processes, can be safely deleted
 ├── docs/                 # Additional project documentation
@@ -81,7 +89,7 @@ nucleus-collection-agent/
 │   └── wdio.conf.js      # Configuration file for WebdriverIO, the E2E test runner
 ├── src/                  # Main source folder
 │   ├── collectors/       # Data collectors
-│   ├── messages/         # Nucleus message types
+│   ├── messages/         # SSDN message types
 │   ├── polyfills/        # Browser polyfills
 │   ├── agent.ts          # Source code file
 │   └── agent.test.ts     # Unit test for the corresponding code file

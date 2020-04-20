@@ -1,7 +1,7 @@
 import { LAMBDAS, STREAMS } from "../src/interfaces/aws-metadata-keys";
 import { MetadataValue } from "../src/interfaces/base-types";
 import { getMetadataService } from "../src/services";
-import { getStreamRecords, invokeLambda } from "../test-support/aws";
+import { getStreamRecords, invokeLambda } from "../test-support/integration";
 import putXAPIStatementEvent from "../test-support/lambda-events/put-xapi-statement-event.json";
 
 const metadata = getMetadataService();

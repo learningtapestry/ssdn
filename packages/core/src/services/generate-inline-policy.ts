@@ -1,9 +1,9 @@
-import { Connection, PublicNucleusMetadata } from "../interfaces/connection";
+import { Connection, PublicSSDNMetadata } from "../interfaces/connection";
 import { StreamStatus } from "../interfaces/stream";
 import logger from "../logger";
 
 export default class GenerateInlinePolicy {
-  public static generate(metadata: PublicNucleusMetadata, connection: Connection) {
+  public static generate(metadata: PublicSSDNMetadata, connection: Connection) {
     const statements = [];
 
     if (connection.isConsumer) {
@@ -22,9 +22,8 @@ export default class GenerateInlinePolicy {
           Action: ["s3:GetObject"],
           Effect: "Allow",
           Resource: [
-            `arn:aws:s3:::${metadata.UploadS3Bucket}/${outputStream.namespace}/${
-              outputStream.format
-            }/*`,
+            // tslint:disable-next-line:max-line-length
+            `arn:aws:s3:::${metadata.UploadS3Bucket}/${outputStream.namespace}/${outputStream.format}/*`,
           ],
         });
       }

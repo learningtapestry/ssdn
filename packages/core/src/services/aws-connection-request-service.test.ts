@@ -1,12 +1,12 @@
 import { buildConnectionRequest } from "../../test-support/factories";
 import { fakeImpl, mocked } from "../../test-support/jest-helper";
-import { AWS_NUCLEUS } from "../interfaces/aws-metadata-keys";
+import { AWS_SSDN } from "../interfaces/aws-metadata-keys";
 import { ConnectionRequestStatus } from "../interfaces/connection-request";
 import { ConnectionRequestRepository } from "../repositories/connection-request-repository";
 import AwsConnectionRequestService from "./aws-connection-request-service";
 import ExchangeService from "./exchange-service";
 import LambdaService from "./lambda-service";
-import NucleusMetadataService from "./nucleus-metadata-service";
+import SSDNMetadataService from "./ssdn-metadata-service";
 
 const fakeRepository = fakeImpl<ConnectionRequestRepository>({
   getIncoming: jest.fn(() => Promise.reject()),
@@ -16,14 +16,14 @@ const fakeRepository = fakeImpl<ConnectionRequestRepository>({
   updateStatus: jest.fn(),
 });
 
-const fakeMetadata = fakeImpl<NucleusMetadataService>({
+const fakeMetadata = fakeImpl<SSDNMetadataService>({
   getEndpoint: jest.fn(() => Promise.resolve({ value: "https://red.com" })),
   getMetadataValue: jest.fn((k: string) =>
     Promise.resolve({
       value: ({
-        [AWS_NUCLEUS.awsAccountId]: "nucleusaccountid",
-        [AWS_NUCLEUS.namespace]: "nucleus-test.learningtapestry.com",
-        [AWS_NUCLEUS.nucleusId]: "nucleus-test",
+        [AWS_SSDN.awsAccountId]: "ssdnaccountid",
+        [AWS_SSDN.namespace]: "ssdn-test.learningtapestry.com",
+        [AWS_SSDN.ssdnId]: "ssdn-test",
       } as any)[k],
     }),
   ),
@@ -55,7 +55,7 @@ describe("AwsConnectionRequestService", () => {
           acceptanceToken: "",
           connection: {
             awsAccountId: "",
-            nucleusId: "",
+            ssdnId: "",
           },
           consumerEndpoint: "",
           creationDate: "",
@@ -70,12 +70,12 @@ describe("AwsConnectionRequestService", () => {
       expect(connectionRequest.acceptanceToken.split("-")).toHaveLength(5);
       expect(connectionRequest.formats).toEqual(["Caliper"]);
       expect(connectionRequest.connection).toEqual({
-        awsAccountId: "nucleusaccountid",
-        nucleusId: "nucleus-test",
+        awsAccountId: "ssdnaccountid",
+        ssdnId: "ssdn-test",
       });
       expect(connectionRequest.consumerEndpoint).toEqual("https://red.com");
       expect(connectionRequest.creationDate).not.toHaveLength(0);
-      expect(connectionRequest.namespace).toEqual("nucleus-test.learningtapestry.com");
+      expect(connectionRequest.namespace).toEqual("ssdn-test.learningtapestry.com");
       expect(connectionRequest.status).toEqual(ConnectionRequestStatus.Created);
       expect(connectionRequest.verificationCode).not.toHaveLength(0);
       expect(fakeRepository.put).toHaveBeenCalledWith(connectionRequest);

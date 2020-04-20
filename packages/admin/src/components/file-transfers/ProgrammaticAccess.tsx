@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import SyntaxHighlighter from "react-syntax-highlighter";
-import atom from "react-syntax-highlighter/dist/styles/hljs/atom-one-dark";
+import { atomOneDark } from "react-syntax-highlighter/dist/esm/styles/hljs";
 import UploadCredentialsService from "../../services/upload-credentials-service";
 
 export default function ProgrammaticAccess() {
@@ -22,7 +22,7 @@ const querystring = require("querystring");
         
 const endpoint = $ENDPOINT;
 const apiKey = $API_KEY;
-const client = "nucleus.learningtapestry.com";
+const client = "ssdn.learningtapestry.com";
 const format = "xAPI";
   
 axios.post(endpoint, querystring.stringify({ client, format })).then((response) => {
@@ -41,7 +41,7 @@ axios.post(endpoint, querystring.stringify({ client, format })).then((response) 
 
       <h2>Instance values</h2>
       <p>
-        These are the values that belong to this Nucleus instance. Make sure to replace the
+        These are the values that belong to this SSDN instance. Make sure to replace the
         placeholders with them when you make the actual call.
       </p>
       <p>
@@ -52,16 +52,16 @@ axios.post(endpoint, querystring.stringify({ client, format })).then((response) 
       </p>
       <hr />
       <h3>Using cURL</h3>
-      <SyntaxHighlighter language="bash" style={atom}>
-        curl --data 'client=nucleus.learningtapestry.com' --data 'format=xAPI' --header
+      <SyntaxHighlighter language="bash" style={atomOneDark}>
+        curl --data 'client=ssdn.learningtapestry.com' --data 'format=xAPI' --header
         'X-Api-Key:$API_KEY' $ENDPOINT
       </SyntaxHighlighter>
       <h3>Using HTTPie</h3>
-      <SyntaxHighlighter language="bash" style={atom}>
-        http -f POST $ENDPOINT client=nucleus.learningtapestry.com format=xAPI X-Api-Key:$API_KEY
+      <SyntaxHighlighter language="bash" style={atomOneDark}>
+        http -f POST $ENDPOINT client=ssdn.learningtapestry.com format=xAPI X-Api-Key:$API_KEY
       </SyntaxHighlighter>
       <h3>Using Node</h3>
-      <SyntaxHighlighter language="javascript" style={atom}>
+      <SyntaxHighlighter language="javascript" style={atomOneDark}>
         {axiosCode}
       </SyntaxHighlighter>
     </section>

@@ -1,4 +1,5 @@
 import Kinesis from "aws-sdk/clients/kinesis";
+
 import {
   getApiGateway,
   getCloudFormation,
@@ -11,23 +12,26 @@ import {
   getSts,
 } from "./aws-clients";
 import { readEnv } from "./helpers/app-helper";
+import { PUBLIC_METADATA } from "./interfaces/aws-metadata-keys";
 import { Connection } from "./interfaces/connection";
 import DynamoConnectionRepository from "./repositories/dynamo-connection-repository";
 import DynamoConnectionRequestRepository from "./repositories/dynamo-connection-request-repository";
 import DynamoDemoEventRepository from "./repositories/dynamo-demo-event-repository";
 import DynamoFileTransferNotificationRepository from "./repositories/dynamo-file-transfer-notification-repository";
 import DynamoFormatRepository from "./repositories/dynamo-format-repository";
+import DynamoSQSIntegrationNotificationRepository from "./repositories/dynamo-sqs-integration-notification-repository";
 import KinesisEventRepository from "./repositories/kinesis-event-repository";
 import ApiGatewayService from "./services/api-gateway-service";
 import AwsConnectionRequestService from "./services/aws-connection-request-service";
 import AwsConnectionService from "./services/aws-connection-service";
 import AwsEventRouter from "./services/aws-event-router";
 import AwsExchangeService from "./services/aws-exchange-service";
-import AwsNucleusMetadataService from "./services/aws-nucleus-metadata-service";
-import ExternalNucleusMetadataService from "./services/external-nucleus-metadata-service";
+import AwsSSDNMetadataService from "./services/aws-ssdn-metadata-service";
+import ExternalSSDNMetadataService from "./services/external-ssdn-metadata-service";
 import IamService from "./services/iam-service";
 import LambdaService from "./services/lambda-service";
 import S3TransferService from "./services/s3-transfer-service";
+import SQSMessageService from "./services/sqs-message-service";
 import TemporaryCredentialsFactory from "./services/temporary-credentials-factory";
 import UploadCredentialsService from "./services/upload-credentials-service";
 
@@ -70,6 +74,13 @@ export function getFileTransferNotificationRepository() {
   );
 }
 
+export function getSQSIntegrationNotificationRepository() {
+  return singleton(
+    "SQSIntegrationNotificationRepository",
+    () => new DynamoSQSIntegrationNotificationRepository(getMetadataService(), getDocumentClient()),
+  );
+}
+
 export function getIamService() {
   return singleton("IamService", () => new IamService(getIam(), getMetadataService()));
 }
@@ -94,10 +105,10 @@ export function getExchangeService() {
   );
 }
 
-export function getMetadataService() {
+export function getMetadataService(stackId = readEnv("SSDN_STACK_ID")) {
   return singleton(
-    "AwsNucleusMetadataService",
-    () => new AwsNucleusMetadataService(getCloudFormation(), readEnv("NUCLEUS_STACK_ID")),
+    "AwsSSDNMetadataService",
+    () => new AwsSSDNMetadataService(getCloudFormation(), stackId),
   );
 }
 
@@ -133,14 +144,15 @@ export function getEventRouter() {
   return new AwsEventRouter(getConnectionRepository(), getExchangeService());
 }
 
-export function getExternalEventRepository(
-  metadataParams: ConstructorParameters<typeof ExternalNucleusMetadataService>,
+export async function getExternalEventRepository(
+  metadataParams: ConstructorParameters<typeof ExternalSSDNMetadataService>,
   kinesisParams: ConstructorParameters<typeof Kinesis>,
 ) {
-  return new KinesisEventRepository(
-    getExternalMetadataService(...metadataParams),
-    getKinesis(...kinesisParams),
-  );
+  const externalMetadata = getExternalMetadataService(...metadataParams);
+  const region = await externalMetadata.getMetadataValue(PUBLIC_METADATA.AwsRegion);
+  const clientParams = { region: region.value, ...kinesisParams[0] };
+
+  return new KinesisEventRepository(externalMetadata, getKinesis(clientParams));
 }
 
 export function getTemporaryCredentialsFactory() {
@@ -148,7 +160,7 @@ export function getTemporaryCredentialsFactory() {
 }
 
 export function getExternalMetadataService(connection: Connection) {
-  return new ExternalNucleusMetadataService(connection);
+  return new ExternalSSDNMetadataService(connection);
 }
 
 export function getS3TransferService() {
@@ -166,6 +178,10 @@ export function getUploadCredentialsService() {
 
 export function getFormatRepository() {
   return new DynamoFormatRepository(getMetadataService(), getDocumentClient());
+}
+
+export function getSQSMessageService() {
+  return new SQSMessageService(getMetadataService(), getSns());
 }
 
 export function getDemoEventRepository() {

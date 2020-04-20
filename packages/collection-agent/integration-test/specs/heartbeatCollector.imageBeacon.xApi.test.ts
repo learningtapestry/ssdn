@@ -2,7 +2,7 @@ import uuid from "lil-uuid";
 
 import { baseUrl, getMessages, homePage } from "../specUtil";
 
-const xApiBase = "https://learningtapestry.github.io/xapi/nucleus/collection";
+const xApiBase = "https://learningtapestry.github.io/xapi/ssdn/collection";
 
 const extensions = {
   heartbeatId: `${xApiBase}/extensions/heartbeatId`,
@@ -43,7 +43,7 @@ describe("heartbeatCollector.imageBeacon.xApi", () => {
 
     // Verb is set
     expect(firstMessage.event.verb).toEqual({
-      id: "https://learningtapestry.github.io/xapi/nucleus/collection/verbs/heartbeat",
+      id: "https://learningtapestry.github.io/xapi/ssdn/collection/verbs/heartbeat",
     });
 
     // Extensions are set

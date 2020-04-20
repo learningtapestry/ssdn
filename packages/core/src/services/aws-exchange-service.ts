@@ -4,8 +4,8 @@ import Axios from "axios";
 import { RequestOptions } from "https";
 import { parse } from "url";
 
-import { NucleusError } from "../errors/nucleus-error";
-import { AWS_NUCLEUS } from "../interfaces/aws-metadata-keys";
+import { SSDNError } from "../errors/ssdn-error";
+import { AWS_SSDN } from "../interfaces/aws-metadata-keys";
 import {
   Connection,
   ConsumerIssuedConnection,
@@ -17,8 +17,8 @@ import { ProviderIssuedAcceptance, StreamUpdate } from "../interfaces/exchange";
 import logger from "../logger";
 import KinesisEventRepository from "../repositories/kinesis-event-repository";
 import ExchangeService from "./exchange-service";
-import ExternalNucleusMetadataService from "./external-nucleus-metadata-service";
-import NucleusMetadataService from "./nucleus-metadata-service";
+import ExternalSSDNMetadataService from "./external-ssdn-metadata-service";
+import SSDNMetadataService from "./ssdn-metadata-service";
 import TemporaryCredentialsFactory from "./temporary-credentials-factory";
 
 type SignedRequestOptions = RequestOptions & {
@@ -39,17 +39,17 @@ export const incomingRequestsPath = (endpoint: string) =>
 export const streamsPath = (endpoint: string) => `${endpoint}/connections/streams/update`;
 
 type ExternalRepoFactory = (
-  p1: ConstructorParameters<typeof ExternalNucleusMetadataService>,
+  p1: ConstructorParameters<typeof ExternalSSDNMetadataService>,
   p2: ConstructorParameters<typeof Kinesis>,
-) => KinesisEventRepository;
+) => Promise<KinesisEventRepository>;
 
 export default class AwsExchangeService implements ExchangeService {
-  private metadata: NucleusMetadataService;
+  private metadata: SSDNMetadataService;
   private temporaryCredentialsFactory: TemporaryCredentialsFactory;
   private kinesisEventRepoFactory: ExternalRepoFactory;
 
   constructor(
-    metadata: NucleusMetadataService,
+    metadata: SSDNMetadataService,
     temporaryCredentialsFactory: TemporaryCredentialsFactory,
     kinesisEventRepoFactory: ExternalRepoFactory,
   ) {
@@ -62,15 +62,16 @@ export default class AwsExchangeService implements ExchangeService {
     connectionRequest: ConnectionRequest,
     providerAcceptance: ProviderIssuedAcceptance,
   ) {
-    const response = await Axios.post(
-      connectionRequestsAcceptPath(connectionRequest.consumerEndpoint, connectionRequest.id),
-      providerAcceptance,
-      {
-        headers: {
-          Authorization: `Bearer ${connectionRequest.acceptanceToken}`,
-        },
-      },
+    const acceptancePath = connectionRequestsAcceptPath(
+      connectionRequest.consumerEndpoint,
+      connectionRequest.id,
     );
+    const response = await Axios.post(acceptancePath, providerAcceptance, {
+      headers: {
+        Authorization: `Bearer ${connectionRequest.acceptanceToken}`,
+      },
+    });
+    logger.info(`Sent acceptance response to ${acceptancePath}.`);
 
     return response.data as ConsumerIssuedConnection;
   }
@@ -78,13 +79,14 @@ export default class AwsExchangeService implements ExchangeService {
   public async sendConnectionRequest(connectionRequest: ConnectionRequest) {
     const submitUrl = incomingRequestsPath(connectionRequest.providerEndpoint);
     await Axios.post(submitUrl, connectionRequest);
+    logger.info(`Sent request to ${submitUrl}.`);
   }
 
   public async sendEvents(connection: Connection, events: Event[]) {
     logger.info(`Sending events to ${connection.endpoint}`);
     const { arn, externalId } = connection.externalConnection;
     const credentials = await this.temporaryCredentialsFactory.getCredentials(arn, externalId);
-    const externalRepository = this.kinesisEventRepoFactory([connection], [{ credentials }]);
+    const externalRepository = await this.kinesisEventRepoFactory([connection], [{ credentials }]);
     const endpoint = await this.metadata.getEndpoint();
     const annotatedEvents: Event[] = events.map((evt) => ({
       ...evt,
@@ -93,12 +95,16 @@ export default class AwsExchangeService implements ExchangeService {
       },
     }));
     await externalRepository.storeBatch(annotatedEvents);
-    logger.info(`Wrote to ${connection.endpoint}'s stream.`);
+    logger.info(`Wrote ${annotatedEvents.length} events to ${connection.endpoint}'s stream.`);
   }
 
   public async sendRejection(connectionRequest: ConnectionRequest) {
+    const acceptancePath = connectionRequestsAcceptPath(
+      connectionRequest.consumerEndpoint,
+      connectionRequest.id,
+    );
     await Axios.post(
-      connectionRequestsAcceptPath(connectionRequest.consumerEndpoint, connectionRequest.id),
+      acceptancePath,
       {
         accepted: false,
       },
@@ -108,33 +114,38 @@ export default class AwsExchangeService implements ExchangeService {
         },
       },
     );
+    logger.info(`Sent rejection to ${acceptancePath}.`);
   }
 
   public async sendStreamUpdate(connection: Connection, streamUpdate: StreamUpdate) {
+    const path = streamsPath(connection.endpoint);
     await this.signedRequest(
       {
         arn: connection.externalConnection.arn,
         externalId: connection.externalConnection.externalId,
       },
       "POST",
-      streamsPath(connection.endpoint),
+      path,
       streamUpdate,
     );
+    logger.info(`Sent stream update to ${path}.`);
   }
 
   public async verifyConnectionRequest(connectionRequest: ConnectionRequest) {
     try {
-      await Axios.get(
-        connectionRequestVerifyPath(connectionRequest.consumerEndpoint, connectionRequest.id),
-        {
-          headers: {
-            Authorization: `Bearer ${connectionRequest.acceptanceToken}`,
-          },
-        },
+      const verifyPath = connectionRequestVerifyPath(
+        connectionRequest.consumerEndpoint,
+        connectionRequest.id,
       );
+      await Axios.get(verifyPath, {
+        headers: {
+          Authorization: `Bearer ${connectionRequest.acceptanceToken}`,
+        },
+      });
+      logger.info(`Verified connection for ${verifyPath}.`);
       return;
     } catch {
-      throw new NucleusError("We could not verify the request with the consumer endpoint.", 422);
+      throw new SSDNError("We could not verify the request with the consumer endpoint.", 422);
     }
   }
 

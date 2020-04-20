@@ -1,13 +1,13 @@
 {
-  "name": "nucleus-cli",
-  "version": "1.0.0",
-  "description": "Amazon Nucleus CLI",
+  "name": "ssdn-cli",
+  "version": "1.1.0",
+  "description": "Secure Student Data Network - CLI",
   "author": {
     "name": "Learning Tapestry",
     "email": "social@learningtapestry.com",
     "url": "http://learningtapestry.com/"
   },
-  "homepage": "https://github.com/learningtapestry/nucleus/tree/master/packages/cli",
+  "homepage": "https://github.com/awslabs/secure-student-data-network/tree/master/packages/cli",
   "contributors": [
     "Steve Midgley <steve@learningtapestry.com>",
     "Abraham Sánchez <abraham@learningtapestry.com>",
@@ -15,7 +15,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/learningtapestry/nucleus"
+    "url": "https://github.com/awslabs/secure-student-data-network"
   },
   "license": "Apache-2.0",
   "private": true,
@@ -24,9 +24,9 @@
     "npm": ">= 6.0.0"
   },
   "dependencies": {
-    "commander": "^2.20.0",
-    "execa": "^1.0.0",
-    "inquirer": "^6.3.1"
+    "commander": "^3.0.2",
+    "execa": "^2.0.5",
+    "inquirer": "^7.0.0"
   },
   "scripts": {
     "start": "parcel watch ./src/**/*.ts --target node --bundle-node-modules",
@@ -35,7 +35,7 @@
     "lint": "tslint  -p tsconfig.json -c ../../tslint.json"
   },
   "devDependencies": {
-    "@types/execa": "^0.9.0",
-    "@types/inquirer": "^6.0.1"
+    "@types/execa": "^2.0.0",
+    "@types/inquirer": "^6.5.0"
   }
 }

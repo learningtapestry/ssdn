@@ -2,6 +2,7 @@ import { APIGatewayProxyHandler } from "aws-lambda";
 import filenamify from "filenamify";
 import querystring, { ParsedUrlQuery } from "querystring";
 
+import logger from "../../logger";
 import { getFormatRepository, getUploadCredentialsService } from "../../services";
 
 export const handler: APIGatewayProxyHandler = async (event) => {
@@ -15,6 +16,8 @@ export const handler: APIGatewayProxyHandler = async (event) => {
     filenamify(params.client as string, { replacement: "__" }),
     params.format as string,
   );
+
+  logger.info(`Generated credentials for ${params.client}/${params.format}`);
 
   return buildResponse(credentials, 200);
 };

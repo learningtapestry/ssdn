@@ -1,7 +1,8 @@
-import "jest-dom/extend-expect";
+import "@testing-library/jest-dom/extend-expect";
 
 import React from "react";
-import { fireEvent, render, wait } from "react-testing-library";
+
+import { fireEvent, render, wait } from "@testing-library/react";
 
 import { buildFormat, uploadCredentials } from "../../../test-support/factories";
 import AWSService from "../../services/aws-service";
@@ -46,13 +47,13 @@ describe("<CreateConnectionRequest/>", () => {
     await wait(() => getByDisplayValue("Caliper"));
 
     fireEvent.change(getByLabelText("Namespace"), {
-      target: { value: "nucleus-test.learningtapestry.com/foo/bar" },
+      target: { value: "ssdn-test.learningtapestry.com/foo/bar" },
     });
     fireEvent.click(getByText("Generate"));
 
     await wait(() => {
       getByText("Your temporary S3 credentials have been generated successfully!");
-      getByText("'nucleus-test.learningtapestry.com__foo__bar/xAPI'");
+      getByText("'ssdn-test.learningtapestry.com__foo__bar/xAPI'");
       getByText("Access Key ID");
       getByText("Secret Access Key");
       getByText("Session Token");

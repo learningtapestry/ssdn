@@ -1,7 +1,8 @@
-import "jest-dom/extend-expect";
+import "@testing-library/jest-dom/extend-expect";
 
 import React from "react";
-import { fireEvent, render } from "react-testing-library";
+
+import { fireEvent, render } from "@testing-library/react";
 
 import * as factories from "../../../test-support/factories";
 import ConnectionRequestModal from "./ConnectionRequestModal";
@@ -21,7 +22,8 @@ describe("<ConnectionRequestModal />", () => {
   it("renders the dialog components", () => {
     const { getByRole } = render(<ConnectionRequestModal {...props} />);
 
-    expect(getByRole("dialog")).toBeVisible();
+    // @ts-ignore
+    expect(getByRole("dialog", { hidden: true })).toBeVisible();
   });
 
   it("renders the title", () => {

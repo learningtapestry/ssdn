@@ -25,6 +25,6 @@ export interface ConnectionRequest {
   status: ConnectionRequestStatus | IncomingConnectionRequestStatus;
   connection: {
     awsAccountId: string;
-    nucleusId: string;
+    ssdnId: string;
   };
 }

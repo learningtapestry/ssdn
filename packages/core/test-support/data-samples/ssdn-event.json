@@ -1,0 +1,96 @@
+{
+  "content": {
+    "version": "1.0.0",
+    "id": "d1eec41f-1e93-4ed6-acbf-5c4bd0c24269",
+    "actor": {
+      "objectType": "Agent",
+      "name": "Joe Schmoe",
+      "mbox": "mailto:joe@example.com"
+    },
+    "verb": {
+      "id": "http://adlnet.gov/expapi/verbs/completed",
+      "display": {
+        "en-US": "completed"
+      }
+    },
+    "object": {
+      "objectType": "Activity",
+      "id": "http://www.example.com/activities/001",
+      "definition": {
+        "name": {
+          "en-US": "Example Activity"
+        },
+        "type": "http://adlnet.gov/expapi/activities/course"
+      }
+    },
+    "result": {
+      "completion": true
+    },
+    "context": {
+      "instructor": {
+        "objectType": "Agent",
+        "mbox": "mailto:joesdad@example.com"
+      },
+      "contextActivities": {
+        "parent": [
+          {
+            "objectType": "Activity",
+            "id": "tag:adlnet.gov,2013:expapi:0.9:activities:non-absolute-activity-id",
+            "definition": {
+              "name": {
+                "en-US": "Another Activity"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "timestamp": "2012-06-01T19:09:13.245Z",
+    "stored": "2012-06-29T15:41:39.165Z",
+    "authority": {
+      "objectType": "Agent",
+      "account": {
+        "homePage": "http://www.example.com",
+        "name": "unknown"
+      }
+    }
+  },
+  "event": {
+    "date": "2015-04-09T12:34:56.000Z",
+    "format": "xAPI",
+    "namespace": "ssdn-test.learningtapestry.com",
+    "operation": "PUT",
+    "origin": "1234567890.execute-api.us-east-1.amazonaws.com/prod/xAPI/statements",
+    "protocol": "HTTP/1.1",
+    "representation": "REST",
+    "request": {
+      "headers": {
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+        "Accept-Encoding": "gzip, deflate, sdch",
+        "Accept-Language": "en-US,en;q=0.8",
+        "Cache-Control": "max-age=0",
+        "CloudFront-Forwarded-Proto": "https",
+        "CloudFront-Is-Desktop-Viewer": "true",
+        "CloudFront-Is-Mobile-Viewer": "false",
+        "CloudFront-Is-SmartTV-Viewer": "false",
+        "CloudFront-Is-Tablet-Viewer": "false",
+        "CloudFront-Viewer-Country": "US",
+        "Content-Type": "application/json",
+        "Host": "1234567890.execute-api.us-east-1.amazonaws.com",
+        "Upgrade-Insecure-Requests": "1",
+        "User-Agent": "Custom User Agent String",
+        "Via": "1.1 08f323deadbeefa7af34d5feb414ce27.cloudfront.net (CloudFront)",
+        "X-Amz-Cf-Id": "cDehVQoZnx43VYQb9j2-nvCh-9z396Uhbp027Y2JvkCPNLmGJHqlaA==",
+        "X-Forwarded-For": "127.0.0.1, 127.0.0.2",
+        "X-Forwarded-Port": "443",
+        "X-Forwarded-Proto": "https",
+        "X-Experience-API-Version": "1.0.3"
+      },
+      "queryStringParameters": {
+        "statementId": "c70c2b85-c294-464f-baca-cebd4fb9b348"
+      }
+    },
+    "resource": "statements",
+    "resourceId": "c70c2b85-c294-464f-baca-cebd4fb9b348"
+  }
+}

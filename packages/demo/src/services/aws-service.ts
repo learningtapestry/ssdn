@@ -4,8 +4,8 @@ import DynamoDB from "aws-sdk/clients/dynamodb";
 import S3 from "aws-sdk/clients/s3";
 import { config } from "aws-sdk/global";
 import FileSaver from "file-saver";
-import { DemoEvent } from "nucleus-core/src/interfaces/demo-event";
 import { basename } from "path";
+import { DemoEvent } from "ssdn-core/src/interfaces/demo-event";
 import awsconfig from "../aws-exports";
 import demoConfig from "../config";
 

@@ -48,27 +48,33 @@ const awsapi = {
       endpoint: ensure("REACT_APP_FILE_TRANSFER_NOTIFICATIONS_ENDPOINT"),
       name: "FileTransferNotificationsApi",
     },
+    {
+      custom_header: async () => ({
+        Authorization: (await Auth.currentSession()).getIdToken().getJwtToken(),
+        "Content-Type": "application/json",
+      }),
+      endpoint: ensure("REACT_APP_SQS_INTEGRATION_NOTIFICATIONS_ENDPOINT"),
+      name: "SQSIntegrationNotificationsApi",
+    },
   ],
 };
-
-const ENV = process.env ? process.env : (window as any).Cypress ? (window as any).Cypress : {};
 
 const awsconfiguration = {
   Api: awsapi,
   Auth: {
     identityPoolId: ensure("REACT_APP_IDENTITY_POOL_ID"),
-    nucleusId: ensure("REACT_APP_NUCLEUS_ID"),
     region: ensure("REACT_APP_AWS_REGION"),
+    ssdnId: ensure("REACT_APP_SSDN_ID"),
     stackName: ensure("REACT_APP_STACK_NAME"),
     userPoolId: ensure("REACT_APP_USER_POOL_ID"),
     userPoolWebClientId: ensure("REACT_APP_USER_POOL_WEB_CLIENT_ID"),
   },
   Storage: {
-    nucleusConnectionRequests: `Nucleus-${ensure("REACT_APP_NUCLEUS_ID")}-ConnectionRequests`,
-    nucleusConnections: `Nucleus-${ensure("REACT_APP_NUCLEUS_ID")}-Connections`,
-    nucleusFormats: `Nucleus-${ensure("REACT_APP_NUCLEUS_ID")}-Formats`,
-    nucleusIncomingConnectionRequests: `Nucleus-${ensure(
-      "REACT_APP_NUCLEUS_ID",
+    ssdnConnectionRequests: `SSDN-${ensure("REACT_APP_SSDN_ID")}-ConnectionRequests`,
+    ssdnConnections: `SSDN-${ensure("REACT_APP_SSDN_ID")}-Connections`,
+    ssdnFormats: `SSDN-${ensure("REACT_APP_SSDN_ID")}-Formats`,
+    ssdnIncomingConnectionRequests: `SSDN-${ensure(
+      "REACT_APP_SSDN_ID",
     )}-IncomingConnectionRequests`,
   },
 };

@@ -6,32 +6,32 @@ import { Message, MessageEncoder } from "./messages";
  *
  * @param [error]    A truthy object, if an error happened, or a falsy object if
  *                   none occurred.
- * @param [response] An object representing the response from the Nucleus server.
+ * @param [response] An object representing the response from the SSDN server.
  * @param [request]  An object representing the original request performed by the
  *                   client.
  */
 export type ClientSendMessageCallback = (error?: any, response?: any, request?: any) => void;
 
 /**
- * A network client for sending messages to a Nucleus server instance.
+ * A network client for sending messages to a SSDN server instance.
  */
 export interface Client {
   /**
-   * The base URL for the Nucleus server instance.
+   * The base URL for the SSDN server instance.
    * @example https://example.com
    */
   baseUrl: string;
   /**
-   * The API key for connecting with the Nucleus server instance.
+   * The API key for connecting with the SSDN server instance.
    * @example 5a96c142-7abc-4611-b38e-e37ee4169ef9
    */
   apiKey: string;
   /**
-   * The message encoder for encoding Nucleus messages into the desired format.
+   * The message encoder for encoding SSDN messages into the desired format.
    */
   encoder: MessageEncoder;
   /**
-   * Sends a message to the Nucleus server.
+   * Sends a message to the SSDN server.
    *
    * @param message    The message.
    * @param [callback] An optional callback for handling responses and errors for

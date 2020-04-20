@@ -1,5 +1,7 @@
 import APIGateway from "aws-sdk/clients/apigateway";
 import CloudFormation from "aws-sdk/clients/cloudformation";
+import CloudWatchLogs from "aws-sdk/clients/cloudwatchlogs";
+import CodePipeline from "aws-sdk/clients/codepipeline";
 import DynamoDB from "aws-sdk/clients/dynamodb";
 import IAM from "aws-sdk/clients/iam";
 import Kinesis from "aws-sdk/clients/kinesis";
@@ -7,14 +9,23 @@ import Lambda from "aws-sdk/clients/lambda";
 import S3 from "aws-sdk/clients/s3";
 import SNS from "aws-sdk/clients/sns";
 import STS from "aws-sdk/clients/sts";
+
 import { readEnv } from "./helpers/app-helper";
+
+export function getCloudWatchLogs(clientSettings = {}) {
+  return new CloudWatchLogs({
+    apiVersion: "2014-03-28",
+    endpoint: readEnv("SSDN_CLOUDWATCH_LOGS_ENDPOINT", undefined),
+    ...clientSettings,
+  });
+}
 
 export function getDocumentClient(clientSettings = {}) {
   return new DynamoDB.DocumentClient(
     Object.assign(
       {
         apiVersion: "2012-08-10",
-        endpoint: readEnv("NUCLEUS_DYNAMODB_ENDPOINT", undefined),
+        endpoint: readEnv("SSDN_DYNAMODB_ENDPOINT", undefined),
       },
       clientSettings,
     ),
@@ -26,11 +37,19 @@ export function getApiGateway(clientSettings = {}) {
     Object.assign(
       {
         apiVersion: "2015-07-09",
-        endpoint: readEnv("NUCLEUS_API_GATEWAY_ENDPOINT", undefined),
+        endpoint: readEnv("SSDN_API_GATEWAY_ENDPOINT", undefined),
       },
       clientSettings,
     ),
   );
+}
+
+export function getCodePipeline(clientSettings = {}) {
+  return new CodePipeline({
+    apiVersion: "2015-07-09",
+    endpoint: readEnv("SSDN_CODE_PIPELINE_ENDPOINT", undefined),
+    ...clientSettings,
+  });
 }
 
 export function getIam(clientSettings = {}) {
@@ -38,7 +57,7 @@ export function getIam(clientSettings = {}) {
     Object.assign(
       {
         apiVersion: "2010-05-08",
-        endpoint: readEnv("NUCLEUS_IAM_ENDPOINT", undefined),
+        endpoint: readEnv("SSDN_IAM_ENDPOINT", undefined),
       },
       clientSettings,
     ),
@@ -50,7 +69,7 @@ export function getCloudFormation(clientSettings = {}) {
     Object.assign(
       {
         apiVersion: "2010-05-15",
-        endpoint: readEnv("NUCLEUS_CLOUDFORMATION_ENDPOINT", undefined),
+        endpoint: readEnv("SSDN_CLOUDFORMATION_ENDPOINT", undefined),
       },
       clientSettings,
     ),
@@ -58,15 +77,11 @@ export function getCloudFormation(clientSettings = {}) {
 }
 
 export function getKinesis(clientSettings = {}) {
-  return new Kinesis(
-    Object.assign(
-      {
-        apiVersion: "2013-12-02",
-        endpoint: readEnv("NUCLEUS_KINESIS_ENDPOINT", undefined),
-      },
-      clientSettings,
-    ),
-  );
+  return new Kinesis({
+    apiVersion: "2013-12-02",
+    endpoint: readEnv("SSDN_KINESIS_ENDPOINT", undefined),
+    ...clientSettings,
+  });
 }
 
 export function getLambda(clientSettings = {}) {
@@ -74,7 +89,7 @@ export function getLambda(clientSettings = {}) {
     Object.assign(
       {
         apiVersion: "2015-03-31",
-        endpoint: readEnv("NUCLEUS_LAMBDA_ENDPOINT", undefined),
+        endpoint: readEnv("SSDN_LAMBDA_ENDPOINT", undefined),
       },
       clientSettings,
     ),
@@ -84,7 +99,7 @@ export function getLambda(clientSettings = {}) {
 export function getSts(clientSettings = {}) {
   return new STS({
     apiVersion: "2011-06-15",
-    endpoint: readEnv("NUCLEUS_STS_ENDPOINT", undefined),
+    endpoint: readEnv("SSDN_STS_ENDPOINT", undefined),
     ...clientSettings,
   });
 }
@@ -94,7 +109,7 @@ export function getS3(clientSettings = {}) {
     Object.assign(
       {
         apiVersion: "2006-03-01",
-        endpoint: readEnv("NUCLEUS_S3_ENDPOINT", undefined),
+        endpoint: readEnv("SSDN_S3_ENDPOINT", undefined),
       },
       clientSettings,
     ),
@@ -104,7 +119,7 @@ export function getS3(clientSettings = {}) {
 export function getSns(clientSettings = {}) {
   return new SNS({
     apiVersion: "2010-03-31",
-    endpoint: readEnv("NUCLEUS_SNS_ENDPOINT", undefined),
+    endpoint: readEnv("SSDN_SNS_ENDPOINT", undefined),
     ...clientSettings,
   });
 }

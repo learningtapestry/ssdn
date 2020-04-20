@@ -1,7 +1,8 @@
-import "jest-dom/extend-expect";
+import "@testing-library/jest-dom/extend-expect";
 
 import React from "react";
-import { fireEvent, render } from "react-testing-library";
+
+import { fireEvent, render } from "@testing-library/react";
 
 import ConfirmationModal from "./ConfirmationModal";
 
@@ -17,7 +18,8 @@ describe("<ConfirmationModal />", () => {
   it("renders the dialog components", () => {
     const { getByRole, getByText } = render(<ConfirmationModal {...props} />);
 
-    expect(getByRole("dialog")).toBeVisible();
+    // @ts-ignore
+    expect(getByRole("dialog", { hidden: true })).toBeVisible();
     expect(getByText("Children element")).toBeVisible();
   });
 

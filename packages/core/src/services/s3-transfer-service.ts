@@ -11,12 +11,12 @@ import {
   SNSFileTransferNotification,
 } from "../interfaces/file-transfer-notification";
 import logger from "../logger";
-import NucleusMetadataService from "./nucleus-metadata-service";
+import SSDNMetadataService from "./ssdn-metadata-service";
 import TemporaryCredentialsFactory from "./temporary-credentials-factory";
 
 export default class S3TransferService {
   constructor(
-    private metadata: NucleusMetadataService,
+    private metadata: SSDNMetadataService,
     private readonly s3ClientFactory: Factory<S3>,
     private tempCredentialsFactory: TemporaryCredentialsFactory,
     private snsClient: SNS,
@@ -62,15 +62,9 @@ export default class S3TransferService {
         type: FileTransferNotificationType.Info,
       });
     } catch (error) {
-      const errorDetails = error.trace
-        ? error.trace()
-        : error.message
-        ? error.message
-        : "Unexpected error";
-
       await this.sendNotification({
         bucket: connection.metadata.UploadS3Bucket,
-        details: errorDetails,
+        details: error.stack,
         file: objectKey,
         message: "There was a problem transferring the file",
         subject: error.message,

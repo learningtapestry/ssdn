@@ -30,12 +30,12 @@ export class HeartbeatCollector implements Collector {
   public readonly heartbeatId: string = uuid();
 
   /**
-   * The Nucleus agent client.
+   * The SSDN agent client.
    */
   public client: Client;
 
   /**
-   * The Nucleus message user.
+   * The SSDN message user.
    */
   public user: User;
 
@@ -52,8 +52,8 @@ export class HeartbeatCollector implements Collector {
 
   /**
    * Builds a new `HeartbeatCollector`.
-   * @param client   The Nucleus agent client.
-   * @param user     The Nucleus message user.
+   * @param client   The SSDN agent client.
+   * @param user     The SSDN message user.
    * @param [config] Configuration for the heartbeat collector.
    */
   constructor(client: Client, user: User, config?: HeartbeatCollectorConfiguration) {

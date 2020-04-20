@@ -4,7 +4,7 @@ import has from "lodash/fp/has";
 import isEmpty from "lodash/fp/isEmpty";
 import trim from "lodash/fp/trim";
 
-import { AWS_NUCLEUS } from "../../interfaces/aws-metadata-keys";
+import { AWS_SSDN } from "../../interfaces/aws-metadata-keys";
 import XAPIStatementParser from "../../parsers/xapi-statement-parser";
 import { getEventRepository, getMetadataService } from "../../services";
 import XAPIStatementService from "../../services/xapi-statement-service";
@@ -23,7 +23,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
     );
   }
 
-  const namespace = await getMetadataService().getMetadataValue(AWS_NUCLEUS.namespace);
+  const namespace = await getMetadataService().getMetadataValue(AWS_SSDN.namespace);
   const results = await XAPIStatementService.process(
     new XAPIStatementParser(event, namespace.value).parse(),
     new XAPIValidator(),

@@ -1,22 +1,20 @@
-import "jest-dom/extend-expect";
+import "@testing-library/jest-dom/extend-expect";
 
 import React from "react";
+
 import {
   fireEvent,
   render,
   wait,
   waitForElement,
   waitForElementToBeRemoved,
-} from "react-testing-library";
+} from "@testing-library/react";
 
 import * as factories from "../../../test-support/factories";
 import { nullConnectionRequest } from "../../app-helper";
 import AWSService from "../../services/aws-service";
 import Incoming, { acceptTermsMessage } from "./Incoming";
 
-/* FIXME: The nasty warning about test not wrapped in act(...) should go away when this is resolved:
- *        https://github.com/facebook/react/issues/14769
- */
 describe("<Incoming />", () => {
   beforeAll(() => {
     AWSService.retrieveConnectionRequests = jest
@@ -34,17 +32,17 @@ describe("<Incoming />", () => {
 
     getByText("Incoming Requests");
     await wait(() => {
-      getByText("https://nucleus.adam.acme.org/");
+      getByText("https://ssdn.adam.acme.org/");
       getByText("Stoltenberg-Harvey");
       queryByText("2/13/2019");
       getByText("Accepted");
 
-      getByText("https://nucleus.jonah.acme.org/");
+      getByText("https://ssdn.jonah.acme.org/");
       getByText("Disney");
       queryByText("4/14/2019");
       getByText("Created");
 
-      getByText("https://nucleus.mickey.acme.org/");
+      getByText("https://ssdn.mickey.acme.org/");
       getByText("Heaney, Hackett and Jacobson");
       queryByText("4/14/2019");
       getByText("Rejected");
@@ -67,16 +65,18 @@ describe("<Incoming />", () => {
     );
     await waitForElement(() => getAllByText("Accept"));
     fireEvent.click(getAllByText("Accept")[0]);
-    await waitForElement(() => getByRole("dialog"));
+    // @ts-ignore
+    await waitForElement(() => getByRole("dialog", { hidden: true }));
     fireEvent.change(getByPlaceholderText("Verification Code"), {
       target: { value: "VerifyJonah" },
     });
     fireEvent.click(getByLabelText(acceptTermsMessage));
     fireEvent.click(getByText("Confirm"));
-    await waitForElementToBeRemoved(() => getByRole("dialog"));
+    // @ts-ignore
+    await waitForElementToBeRemoved(() => getByRole("dialog", { hidden: true }));
     expect(AWSService.acceptConnectionRequest).toHaveBeenCalledTimes(1);
     expect(AWSService.acceptConnectionRequest).toHaveBeenCalledWith(
-      "https://nucleus.jonah.acme.org/",
+      "https://ssdn.jonah.acme.org/",
       "ConnReqIdJonah",
       true,
     );
@@ -87,7 +87,8 @@ describe("<Incoming />", () => {
 
     await waitForElement(() => getAllByText("Accept"));
     fireEvent.click(getAllByText("Accept")[0]);
-    await waitForElement(() => getByRole("dialog"));
+    // @ts-ignore
+    await waitForElement(() => getByRole("dialog", { hidden: true }));
     fireEvent.click(getByText("Confirm"));
 
     await waitForElement(() => getByText("You must agree before accepting this request."));
@@ -97,12 +98,14 @@ describe("<Incoming />", () => {
     const { getByText, getAllByText, getByRole } = render(<Incoming />);
     await waitForElement(() => getAllByText("Reject"));
     fireEvent.click(getAllByText("Reject")[0]);
-    await waitForElement(() => getByRole("dialog"));
+    // @ts-ignore
+    await waitForElement(() => getByRole("dialog", { hidden: true }));
     fireEvent.click(getByText("Confirm"));
-    await waitForElementToBeRemoved(() => getByRole("dialog"));
+    // @ts-ignore
+    await waitForElementToBeRemoved(() => getByRole("dialog", { hidden: true }));
     expect(AWSService.acceptConnectionRequest).toHaveBeenCalledTimes(1);
     expect(AWSService.acceptConnectionRequest).toHaveBeenCalledWith(
-      "https://nucleus.jonah.acme.org/",
+      "https://ssdn.jonah.acme.org/",
       "ConnReqIdJonah",
       false,
     );
@@ -112,8 +115,10 @@ describe("<Incoming />", () => {
     const { getAllByText, getByRole } = render(<Incoming />);
     await waitForElement(() => getAllByText("View info"));
     fireEvent.click(getAllByText("View info")[0]);
-    await waitForElement(() => getByRole("dialog"));
+    // @ts-ignore
+    await waitForElement(() => getByRole("dialog", { hidden: true }));
     fireEvent.click(getAllByText("Close")[0]);
-    await waitForElementToBeRemoved(() => getByRole("dialog"));
+    // @ts-ignore
+    await waitForElementToBeRemoved(() => getByRole("dialog", { hidden: true }));
   });
 });

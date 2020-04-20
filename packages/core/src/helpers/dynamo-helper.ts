@@ -1,6 +1,6 @@
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 
-import { NucleusError } from "../errors/nucleus-error";
+import { SSDNError } from "../errors/ssdn-error";
 
 export async function getOrFail<T>(
   client: DocumentClient,
@@ -18,5 +18,5 @@ export async function getOrFail<T>(
     return item.Item as T;
   }
 
-  throw new NucleusError(`Item ${JSON.stringify(key)} not found.`, 404);
+  throw new SSDNError(`Item ${JSON.stringify(key)} not found.`, 404);
 }

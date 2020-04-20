@@ -1,14 +1,15 @@
-import "jest-dom/extend-expect";
+import "@testing-library/jest-dom/extend-expect";
+
 import React from "react";
-import { fireEvent, wait } from "react-testing-library";
+
+import { fireEvent, wait } from "@testing-library/react";
+
+import { act } from "react-dom/test-utils";
 import * as factories from "../../../test-support/factories";
 import { renderWithRouter } from "../../../test-support/test-helper";
 import AWSService from "../../services/aws-service";
 import Notifications from "./Notifications";
 
-/* FIXME: The nasty warning about test not wrapped in act(...) should go away when this is resolved:
- *        https://github.com/facebook/react/issues/14769
- */
 describe("<Notifications/>", () => {
   beforeAll(() => {
     AWSService.retrieveFileTransferNotifications = jest
@@ -29,13 +30,13 @@ describe("<Notifications/>", () => {
       getByText("This is a test message");
       getByText("Network error has occurred");
       getByText("example-bucket");
-      getByText("nucleus-test.learningtapestry.com/xAPI/test.txt");
+      getByText("ssdn-test.learningtapestry.com/xAPI/test.txt");
       getByText("Info");
       getByText("7/7/2019, 6:55:08 AM");
       getByText("This is another test message");
       getByText("File was successfully transferred");
       getByText("another-bucket");
-      getByText("nucleus-test.learningtapestry.com/Caliper/file.pdf");
+      getByText("ssdn-test.learningtapestry.com/Caliper/file.pdf");
     });
   });
 
@@ -60,8 +61,11 @@ describe("<Notifications/>", () => {
     await wait(() => {
       fireEvent.click(getAllByText("Delete")[0]);
       getByText("Are you sure you want to delete notification 'This is a test message'?");
+
+      act(() => {
+        fireEvent.click(getByText("Confirm"));
+      });
     });
-    fireEvent.click(getByText("Confirm"));
 
     expect(AWSService.deleteFileTransferNotification).toHaveBeenCalled();
   });

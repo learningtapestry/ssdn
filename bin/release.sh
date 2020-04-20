@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 
-VERSION="1.0.0.pre2"
+VERSION=$(node -p "require('./lerna.json').version")
+
 ROOT_DIR=$(pwd)
-RELEASE_PATH="releases/nucleus-${VERSION}"
+RELEASE_PATH="releases/ssdn-${VERSION}"
 
 setup_release () {
   rm -rf ${RELEASE_PATH}
@@ -43,13 +44,14 @@ build_cli () {
 
 copy_extra () {
   mkdir ${RELEASE_PATH}/bin
-  cp -r bin/nucleus ${RELEASE_PATH}/bin
+  cp -r bin/ssdn ${RELEASE_PATH}/bin
   cp package.json ${RELEASE_PATH}
+  cp lerna.json ${RELEASE_PATH}
   cp yarn.lock ${RELEASE_PATH}
 }
 
 cleanup_release () {
-  (cd ${RELEASE_PATH} && zip -r ../nucleus-${VERSION}.zip .)
+  (cd ${RELEASE_PATH} && zip -r ../ssdn-${VERSION}.zip .)
   rm -rf ${RELEASE_PATH}
 }
 

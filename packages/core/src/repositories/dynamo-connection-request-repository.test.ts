@@ -4,14 +4,14 @@ import isoRegex from "regex-iso-date";
 import { buildConnectionRequest } from "../../test-support/factories";
 import { fakeAws, fakeImpl, mocked } from "../../test-support/jest-helper";
 import { ConnectionRequestStatus } from "../interfaces/connection-request";
-import NucleusMetadataService from "../services/nucleus-metadata-service";
+import SSDNMetadataService from "../services/ssdn-metadata-service";
 import DynamoConnectionRequestRepository from "./dynamo-connection-request-repository";
 
-const fakeMetadataService = fakeImpl<NucleusMetadataService>({
+const fakeMetadataService = fakeImpl<SSDNMetadataService>({
   getMetadataValue: jest.fn((k: string) => {
     const values: any = {
-      NucleusConnectionRequestsTable: "NucleusConnectionRequests",
-      NucleusIncomingConnectionRequestsTable: "NucleusIncomingConnectionRequests",
+      SSDNConnectionRequestsTable: "SSDNConnectionRequests",
+      SSDNIncomingConnectionRequestsTable: "SSDNIncomingConnectionRequests",
     };
     return values[k]
       ? Promise.resolve({ value: values[k] })
@@ -22,10 +22,10 @@ const fakeMetadataService = fakeImpl<NucleusMetadataService>({
 const fakeDocumentClient = fakeAws<DocumentClient>({
   get: jest.fn((params: any) => {
     const data: any = {
-      NucleusConnectionRequests: {
+      SSDNConnectionRequests: {
         "1": buildConnectionRequest({ id: "1", providerEndpoint: "https://testdest.com" }),
       },
-      NucleusIncomingConnectionRequests: {
+      SSDNIncomingConnectionRequests: {
         "1.https://testsrc.com": buildConnectionRequest({
           consumerEndpoint: "https://testsrc.com",
           id: "1",
@@ -116,7 +116,7 @@ describe("DynamoConnectionRequestRepository", () => {
         Key: {
           id: "1",
         },
-        TableName: "NucleusConnectionRequests",
+        TableName: "SSDNConnectionRequests",
         UpdateExpression: "SET #status = :status",
       });
     });
@@ -145,7 +145,7 @@ describe("DynamoConnectionRequestRepository", () => {
           consumerEndpoint: "https://testsrc.com",
           id: "1",
         },
-        TableName: "NucleusIncomingConnectionRequests",
+        TableName: "SSDNIncomingConnectionRequests",
         UpdateExpression: "SET #status = :status",
       });
     });
@@ -158,13 +158,41 @@ describe("DynamoConnectionRequestRepository", () => {
         fakeDocumentClient,
       );
 
-      await connReqRepo.put(buildConnectionRequest());
+      await connReqRepo.put(
+        buildConnectionRequest({
+          consumerEndpoint: "https://red.com",
+          providerEndpoint: "https://blue.com",
+        }),
+      );
       expect(mocked(fakeDocumentClient.put).mock.calls[0][0]).toMatchObject({
         Item: {
           creationDate: expect.stringMatching(isoRegex()),
         },
-        TableName: "NucleusConnectionRequests",
+        TableName: "SSDNConnectionRequests",
       });
+    });
+
+    it("validates the URL", async () => {
+      const connReqRepo = new DynamoConnectionRequestRepository(
+        fakeMetadataService,
+        fakeDocumentClient,
+      );
+
+      for (const badUrl of ["javascript:alert(1)", "failsvalidation", "localhost:1234"]) {
+        const result = connReqRepo.put(buildConnectionRequest({ consumerEndpoint: badUrl }));
+        await expect(result).rejects.toHaveProperty(
+          "message",
+          "The endpoint for the connection is not valid.",
+        );
+      }
+
+      for (const badUrl of ["javascript:alert(1)", "failsvalidation", "localhost:1234"]) {
+        const result = connReqRepo.put(buildConnectionRequest({ providerEndpoint: badUrl }));
+        await expect(result).rejects.toHaveProperty(
+          "message",
+          "The endpoint for the connection is not valid.",
+        );
+      }
     });
   });
 
@@ -175,13 +203,45 @@ describe("DynamoConnectionRequestRepository", () => {
         fakeDocumentClient,
       );
 
-      await connReqRepo.putIncoming(buildConnectionRequest());
+      await connReqRepo.putIncoming(
+        buildConnectionRequest({
+          consumerEndpoint: "https://red.com",
+          providerEndpoint: "https://blue.com",
+        }),
+      );
       expect(mocked(fakeDocumentClient.put).mock.calls[0][0]).toMatchObject({
         Item: {
           creationDate: expect.stringMatching(isoRegex()),
         },
-        TableName: "NucleusIncomingConnectionRequests",
+        TableName: "SSDNIncomingConnectionRequests",
       });
+    });
+
+    it("validates the URL", async () => {
+      const connReqRepo = new DynamoConnectionRequestRepository(
+        fakeMetadataService,
+        fakeDocumentClient,
+      );
+
+      for (const badUrl of ["javascript:alert(1)", "failsvalidation", "localhost:1234"]) {
+        const result = connReqRepo.putIncoming(
+          buildConnectionRequest({ consumerEndpoint: badUrl }),
+        );
+        await expect(result).rejects.toHaveProperty(
+          "message",
+          "The endpoint for the connection is not valid.",
+        );
+      }
+
+      for (const badUrl of ["javascript:alert(1)", "failsvalidation", "localhost:1234"]) {
+        const result = connReqRepo.putIncoming(
+          buildConnectionRequest({ providerEndpoint: badUrl }),
+        );
+        await expect(result).rejects.toHaveProperty(
+          "message",
+          "The endpoint for the connection is not valid.",
+        );
+      }
     });
   });
 });

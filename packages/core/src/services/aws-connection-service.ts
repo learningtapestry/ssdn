@@ -1,7 +1,7 @@
 import isEqual from "lodash/fp/isEqual";
 
-import { NucleusError } from "../errors/nucleus-error";
-import { AWS_NUCLEUS, POLICIES } from "../interfaces/aws-metadata-keys";
+import { SSDNError } from "../errors/ssdn-error";
+import { AWS_SSDN, POLICIES } from "../interfaces/aws-metadata-keys";
 import { Connection, ProviderIssuedConnection } from "../interfaces/connection";
 import {
   ConnectionRequest,
@@ -18,7 +18,7 @@ import ConnectionService from "./connection-service";
 import ExchangeService from "./exchange-service";
 import GenerateInlinePolicy from "./generate-inline-policy";
 import IamService from "./iam-service";
-import NucleusMetadataService from "./nucleus-metadata-service";
+import SSDNMetadataService from "./ssdn-metadata-service";
 
 export default class AwsConnectionService implements ConnectionService {
   private repository: ConnectionRepository;
@@ -26,7 +26,7 @@ export default class AwsConnectionService implements ConnectionService {
   private connectionRequestService: ConnectionRequestService;
   private iamService: IamService;
   private exchangeService: ExchangeService;
-  private metadata: NucleusMetadataService;
+  private metadata: SSDNMetadataService;
 
   constructor(
     repository: ConnectionRepository,
@@ -34,7 +34,7 @@ export default class AwsConnectionService implements ConnectionService {
     connectionRequestService: ConnectionRequestService,
     exchangeService: ExchangeService,
     iamService: IamService,
-    metadata: NucleusMetadataService,
+    metadata: SSDNMetadataService,
   ) {
     this.repository = repository;
     this.connectionRequestRepository = connectionRequestRepository;
@@ -47,24 +47,31 @@ export default class AwsConnectionService implements ConnectionService {
   public async createForConsumerRequest(connectionRequest: ConnectionRequest) {
     await this.connectionRequestService.assertConnectionRequestUpdatable(connectionRequest);
 
+    logger.info(
+      // tslint:disable-next-line:max-line-length
+      `Processing connection request ${connectionRequest.consumerEndpoint} - ${connectionRequest.id}`,
+    );
+
     let connection;
     let isNew;
     [connection, isNew] = await this.findOrInitializeConnection(
       connectionRequest.consumerEndpoint,
       {
         awsAccountId: connectionRequest.connection.awsAccountId,
-        nucleusId: connectionRequest.connection.nucleusId,
+        ssdnId: connectionRequest.connection.ssdnId,
       },
     );
 
-    const awsAccountId = await this.metadata.getMetadataValue(AWS_NUCLEUS.awsAccountId);
-    const nucleusId = await this.metadata.getMetadataValue(AWS_NUCLEUS.nucleusId);
+    logger.info(`Initialized connection request.`);
+
+    const awsAccountId = await this.metadata.getMetadataValue(AWS_SSDN.awsAccountId);
+    const ssdnId = await this.metadata.getMetadataValue(AWS_SSDN.ssdnId);
     const acceptanceResponse = await this.exchangeService.sendAcceptance(connectionRequest, {
       accepted: true,
       details: {
         connection: {
           awsAccountId: awsAccountId.value,
-          nucleusId: nucleusId.value,
+          ssdnId: ssdnId.value,
         },
         externalConnection: {
           arn: connection.connection.arn,
@@ -73,6 +80,8 @@ export default class AwsConnectionService implements ConnectionService {
         metadata: await this.metadata.getPublicMetadata(),
       },
     });
+
+    logger.info(`Sent request acceptance.`);
 
     connection = {
       ...connection,
@@ -103,6 +112,8 @@ export default class AwsConnectionService implements ConnectionService {
       connection.endpoint,
     );
 
+    logger.info(`Updated connection policies.`);
+
     await this.repository.put(connection);
 
     await this.connectionRequestRepository.updateIncomingStatus(
@@ -110,6 +121,8 @@ export default class AwsConnectionService implements ConnectionService {
       connectionRequest.id,
       ConnectionRequestStatus.Accepted,
     );
+
+    logger.info(`Saved connection.`);
 
     return connection;
   }
@@ -136,6 +149,11 @@ export default class AwsConnectionService implements ConnectionService {
     connectionRequest: ConnectionRequest,
     connectionDetails: ProviderIssuedConnection,
   ) {
+    logger.info(
+      // tslint:disable-next-line:max-line-length
+      `Processing connection request ${connectionRequest.consumerEndpoint} - ${connectionRequest.id}`,
+    );
+
     await this.connectionRequestService.assertConnectionRequestUpdatable(connectionRequest);
 
     let connection;
@@ -144,15 +162,16 @@ export default class AwsConnectionService implements ConnectionService {
       connectionRequest.providerEndpoint,
       {
         awsAccountId: connectionDetails.connection.awsAccountId,
-        nucleusId: connectionDetails.connection.nucleusId,
+        ssdnId: connectionDetails.connection.ssdnId,
       },
     );
 
+    logger.info(`Initialized connection.`);
+
     if (!isNew && !isEqual(connection.externalConnection, connectionDetails.externalConnection)) {
       logger.info(
-        `The external connection details for ${
-          connection.endpoint
-        } have been updated and are being reassigned.`,
+        // tslint:disable-next-line:max-line-length
+        `The external connection details for ${connection.endpoint} have been updated and are being reassigned.`,
       );
     }
 
@@ -191,12 +210,16 @@ export default class AwsConnectionService implements ConnectionService {
       connection.endpoint,
     );
 
+    logger.info(`Updated connection policies.`);
+
     await this.repository.put(connection);
 
     await this.connectionRequestRepository.updateStatus(
       connectionRequest.id,
       ConnectionRequestStatus.Accepted,
     );
+
+    logger.info(`Saved connection.`);
 
     return connection;
   }
@@ -229,7 +252,7 @@ export default class AwsConnectionService implements ConnectionService {
 
   private async findOrInitializeConnection(
     endpoint: string,
-    connectionOptions: { awsAccountId: string; nucleusId: string },
+    connectionOptions: { awsAccountId: string; ssdnId: string },
   ): Promise<[Connection, boolean]> {
     let connection: Connection;
     let isNew = false;
@@ -242,8 +265,8 @@ export default class AwsConnectionService implements ConnectionService {
           arn: "",
           awsAccountId: "",
           externalId: "",
-          nucleusId: "",
           roleName: "",
+          ssdnId: "",
         },
         creationDate: "",
         endpoint,
@@ -255,6 +278,7 @@ export default class AwsConnectionService implements ConnectionService {
         isConsumer: false,
         isProvider: false,
         metadata: {
+          AwsRegion: "",
           EventProcessorStream: "",
           UploadS3Bucket: "",
         },
@@ -273,8 +297,8 @@ export default class AwsConnectionService implements ConnectionService {
         arn: role.arn,
         awsAccountId: connectionOptions.awsAccountId,
         externalId: role.externalId,
-        nucleusId: connectionOptions.nucleusId,
         roleName: role.name,
+        ssdnId: connectionOptions.ssdnId,
       };
     }
 
@@ -296,22 +320,22 @@ export default class AwsConnectionService implements ConnectionService {
     );
 
     if (!oldStream) {
-      throw new NucleusError(
+      throw new SSDNError(
         "A stream update has been attempted for a stream which does not exist.",
         400,
       );
     }
 
     if (oldStream.status === StreamStatus.PausedExternal && isInternalUpdate) {
-      throw new NucleusError("A stream can't be resumed after it has been paused externally.", 400);
+      throw new SSDNError("A stream can't be resumed after it has been paused externally.", 400);
     }
 
     if (oldStream.status === StreamStatus.Paused && !isInternalUpdate) {
-      throw new NucleusError("A stream can't be resumed externally.", 400);
+      throw new SSDNError("A stream can't be resumed externally.", 400);
     }
 
     if (oldStream.status === status) {
-      throw new NucleusError("The status has already been set.");
+      throw new SSDNError("The status has already been set.");
     }
 
     if (status === StreamStatus.Paused && !isInternalUpdate) {

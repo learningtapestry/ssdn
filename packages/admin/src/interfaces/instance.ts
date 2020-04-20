@@ -1,5 +1,5 @@
 /**
- * instance.ts: Interface that carries information about a Nucleus instance
+ * instance.ts: Interface that carries information about a SSDN instance
  */
 
 import Setting from "./setting";

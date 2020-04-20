@@ -28,7 +28,7 @@ export class VideoMessage implements Message {
 
   /**
    * Creates a video message.
-   * @param user The `Nucleus` message user (xAPI agent).
+   * @param user The `SSDN` message user (xAPI agent).
    * @param data Custom data for this message.
    */
   constructor(user: User, data: VideoMessageData) {

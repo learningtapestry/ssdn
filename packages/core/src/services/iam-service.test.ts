@@ -1,13 +1,13 @@
 import IAM from "aws-sdk/clients/iam";
 
 import { fakeAws, fakeImpl } from "../../test-support/jest-helper";
-import { AWS_NUCLEUS } from "../interfaces/aws-metadata-keys";
+import { AWS_SSDN } from "../interfaces/aws-metadata-keys";
 import IamService from "./iam-service";
-import NucleusMetadataService from "./nucleus-metadata-service";
+import SSDNMetadataService from "./ssdn-metadata-service";
 
-const fakeMetadata = fakeImpl<NucleusMetadataService>({
+const fakeMetadata = fakeImpl<SSDNMetadataService>({
   getMetadataValue: jest.fn((key: string) => ({
-    value: ({ [AWS_NUCLEUS.nucleusId]: "RedNucleusId" } as any)[key],
+    value: ({ [AWS_SSDN.ssdnId]: "RedSSDNId" } as any)[key],
   })),
 });
 
@@ -21,7 +21,7 @@ const fakeIam = fakeAws<IAM>({
     }),
   ),
   listRoles: jest.fn(({ PathPrefix }) =>
-    PathPrefix === "/nucleus/RedNucleusId/externaltest.learningtapestry.com/"
+    PathPrefix === "/ssdn/RedSSDNId/externaltest.learningtapestry.com/"
       ? Promise.resolve({
           Roles: [
             {
@@ -83,7 +83,7 @@ describe("IamService", () => {
         "https://newrole.learningtapestry.com",
         "654321",
       );
-      expect(result.arn).toContain("nucleus_ex_RedNucleusId_newrole.learni_");
+      expect(result.arn).toContain("ssdn_ex_RedSSDNId_newrole.learni_");
       expect(result.externalId).toBeTruthy();
       expect(result.externalId.split("-")).toHaveLength(5); // It's an UUID v4
     });

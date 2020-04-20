@@ -14,7 +14,7 @@ export function cloudFormationStacks() {
         ChangeSetId: `arn:aws:cloudformation:us-east-1:111111111111:changeSet/
       awscli-cloudformation-package-deploy-1553650707/2dfd29f8-1a23-4a7b-91a4-9652702d6476`,
         CreationTime: "2019-03-15T12:43:46.201Z",
-        Description: "SAM Template for Nucleus",
+        Description: "SAM Template for SSDN",
         DisableRollback: false,
         DriftInformation: { StackDriftStatus: "NOT_CHECKED" },
         LastUpdatedTime: "2019-03-27T01:38:44.794Z",
@@ -23,18 +23,24 @@ export function cloudFormationStacks() {
           {
             Description: "Name of the Event Processor Kinesis Data Stream",
             OutputKey: "EventProcessorStreamName",
-            OutputValue: "Nucleus-Development-EventProcessor",
+            OutputValue: "SSDN-Development-EventProcessor",
           },
           {
-            Description: "Hello Nucleus Lambda Function ARN",
-            OutputKey: "HelloNucleusFunction",
+            Description: "Hello SSDN Lambda Function ARN",
+            OutputKey: "HelloSSDNFunction",
             OutputValue: `arn:aws:lambda:us-east-1:111111111111:function:
-          Nucleus-Dev-HelloNucleusFunction-HCJE3P62QE5P`,
+          SSDN-Dev-HelloSSDNFunction-HCJE3P62QE5P`,
+          },
+          {
+            Description: "Reads and processes a message from an SQS queue",
+            OutputKey: "ProcessSQSMessageFunction",
+            OutputValue:
+              "arn:aws:lambda:us-east-1:111111111111:function:SSDN-ProcessSQSMessageFunction-18XOSMJC66JZK",
           },
           {
             Description: "Endpoint that generates temporary upload credentials to specific folders",
             OutputKey: "GenerateUploadCredentialsApi",
-            OutputValue: "https://nucleus.example.org/Development",
+            OutputValue: "https://ssdn.example.org/Development",
           },
           {
             Description: "Default API Key to access the upload credentials endpoint",
@@ -45,27 +51,27 @@ export function cloudFormationStacks() {
         Parameters: [
           {
             ParameterKey: "NotificationEmail",
-            ParameterValue: "nucleus@example.org",
+            ParameterValue: "ssdn@example.org",
           },
           {
             ParameterKey: "Environment",
             ParameterValue: "Development",
           },
         ],
-        RoleARN: "arn:aws:iam::111111111111:role/cloudformation-Nucleus-service-role",
+        RoleARN: "arn:aws:iam::111111111111:role/cloudformation-SSDN-service-role",
         RollbackConfiguration: { RollbackTriggers: [] },
-        StackId: `arn:aws:cloudformation:us-east-1:111111111111:stack/Nucleus-Dev/
+        StackId: `arn:aws:cloudformation:us-east-1:111111111111:stack/SSDN-Dev/
         f928cdf0-471f-11e9-90f4-0a3a983b5e88`,
-        StackName: "Nucleus-Dev",
+        StackName: "SSDN-Dev",
         StackStatus: "UPDATE_COMPLETE",
         Tags: [],
       },
       {
         Capabilities: ["CAPABILITY_IAM"],
-        ChangeSetId: `arn:aws:cloudformation:us-east-1:111111111111:changeSet/nucleus-change-set/
+        ChangeSetId: `arn:aws:cloudformation:us-east-1:111111111111:changeSet/ssdn-change-set/
       50bb5abb-488d-4f81-9843-1b33c862bda7`,
         CreationTime: "2019-01-24T14:38:18.076Z",
-        Description: "SAM Template for Nucleus",
+        Description: "SAM Template for SSDN",
         DisableRollback: false,
         DriftInformation: { StackDriftStatus: "NOT_CHECKED" },
         LastUpdatedTime: "2019-03-27T19:00:21.120Z",
@@ -74,19 +80,25 @@ export function cloudFormationStacks() {
           {
             Description: "Name of the Event Processor Kinesis Data Stream",
             OutputKey: "EventProcessorStreamName",
-            OutputValue: "Nucleus-Production-EventProcessor",
+            OutputValue: "SSDN-Production-EventProcessor",
           },
           {
-            Description: "Hello Nucleus Lambda Function ARN",
-            OutputKey: "HelloNucleusFunction",
+            Description: "Hello SSDN Lambda Function ARN",
+            OutputKey: "HelloSSDNFunction",
             OutputValue:
               `arn:aws:lambda:us-east-1:111111111111:function:` +
-              `Nucleus-HelloNucleusFunction-60K87QSYCYTJ`,
+              `SSDN-HelloSSDNFunction-60K87QSYCYTJ`,
+          },
+          {
+            Description: "Reads and processes a message from an SQS queue",
+            OutputKey: "ProcessSQSMessageFunction",
+            OutputValue:
+              "arn:aws:lambda:us-east-1:111111111111:function:SSDN-ProcessSQSMessageFunction-18XOSMJC66JZK",
           },
           {
             Description: "Endpoint that generates temporary upload credentials to specific folders",
             OutputKey: "GenerateUploadCredentialsApi",
-            OutputValue: "https://nucleus.example.org/Production",
+            OutputValue: "https://ssdn.example.org/Production",
           },
           {
             Description: "Default API Key to access the upload credentials endpoint",
@@ -101,11 +113,11 @@ export function cloudFormationStacks() {
           },
           { ParameterKey: "Environment", ParameterValue: "Production" },
         ],
-        RoleARN: "arn:aws:iam::111111111111:role/cloudformation-Nucleus-service-role",
+        RoleARN: "arn:aws:iam::111111111111:role/cloudformation-SSDN-service-role",
         RollbackConfiguration: { RollbackTriggers: [] },
-        StackId: `arn:aws:cloudformation:us-east-1:111111111111:stack/Nucleus/
+        StackId: `arn:aws:cloudformation:us-east-1:111111111111:stack/SSDN/
       b07ee9b0-1fe5-11e9-9c58-0a515b01a4a4`,
-        StackName: "Nucleus",
+        StackName: "SSDN",
         StackStatus: "UPDATE_COMPLETE",
         Tags: [],
       },
@@ -191,24 +203,22 @@ export const connectionRequestAdam = nullConnectionRequest({
   connection: {
     awsAccountId: "AwsAccountIdAdam",
     externalId: "ExternalIdAdam",
-    nucleusId: "NucleusIdAdam",
+    ssdnId: "SSDNIdAdam",
   },
-  consumerEndpoint: "https://nucleus.adam.acme.org/",
+  consumerEndpoint: "https://ssdn.adam.acme.org/",
   creationDate: "2019-02-13T12:21:36.120Z",
   formats: ["Caliper"],
   id: "ConnReqIdAdam",
   organization: "Stoltenberg-Harvey",
-  providerEndpoint: "https://nucleus.ajax.org",
+  providerEndpoint: "https://ssdn.ajax.org",
   status: ConnectionRequestStatus.Accepted,
   verificationCode: "VerifyAdam",
 });
 
 export const connectionAdam = nullConnection({
-  endpoint: "https://nucleus.adam.acme.org/",
-  inputStreams: [{ format: "xAPI", namespace: "nucleus.ajax.org", status: StreamStatus.Active }],
-  outputStreams: [
-    { format: "xAPI", namespace: "nucleus.adam.acme.org", status: StreamStatus.Active },
-  ],
+  endpoint: "https://ssdn.adam.acme.org/",
+  inputStreams: [{ format: "xAPI", namespace: "ssdn.ajax.org", status: StreamStatus.Active }],
+  outputStreams: [{ format: "xAPI", namespace: "ssdn.adam.acme.org", status: StreamStatus.Active }],
 });
 
 export const connectionRequestJonah = nullConnectionRequest({
@@ -216,23 +226,23 @@ export const connectionRequestJonah = nullConnectionRequest({
   connection: {
     awsAccountId: "AwsAccountIdJonah",
     externalId: "ExternalIdJonah",
-    nucleusId: "NucleusIdJonah",
+    ssdnId: "SSDNIdJonah",
   },
-  consumerEndpoint: "https://nucleus.jonah.acme.org/",
+  consumerEndpoint: "https://ssdn.jonah.acme.org/",
   creationDate: "2019-04-14T15:31:55.120Z",
   formats: ["xAPI"],
   id: "ConnReqIdJonah",
   organization: "Disney",
-  providerEndpoint: "https://nucleus.ajax.org",
+  providerEndpoint: "https://ssdn.ajax.org",
   status: ConnectionRequestStatus.Created,
   verificationCode: "VerifyJonah",
 });
 
 export const connectionJonah = nullConnection({
-  endpoint: "https://nucleus.jonah.acme.org/",
-  inputStreams: [{ format: "xAPI", namespace: "nucleus.ajax.org", status: StreamStatus.Paused }],
+  endpoint: "https://ssdn.jonah.acme.org/",
+  inputStreams: [{ format: "xAPI", namespace: "ssdn.ajax.org", status: StreamStatus.Paused }],
   outputStreams: [
-    { format: "xAPI", namespace: "nucleus.jonah.acme.org", status: StreamStatus.Paused },
+    { format: "xAPI", namespace: "ssdn.jonah.acme.org", status: StreamStatus.Paused },
   ],
 });
 
@@ -241,25 +251,25 @@ export const connectionRequestMickey = nullConnectionRequest({
   connection: {
     awsAccountId: "AwsAccountIdMickey",
     externalId: "ExternalIdMickey",
-    nucleusId: "NucleusIdMickey",
+    ssdnId: "SSDNIdMickey",
   },
-  consumerEndpoint: "https://nucleus.mickey.acme.org/",
+  consumerEndpoint: "https://ssdn.mickey.acme.org/",
   creationDate: "2019-04-14T11:31:55.120Z",
   formats: ["xAPI", "Caliper"],
   id: "ConnReqIdMickey",
   organization: "Heaney, Hackett and Jacobson",
-  providerEndpoint: "https://nucleus.ajax.org",
+  providerEndpoint: "https://ssdn.ajax.org",
   status: ConnectionRequestStatus.Rejected,
   verificationCode: "VerifyMickey",
 });
 
 export const connectionMickey = nullConnection({
-  endpoint: "https://nucleus.mickey.acme.org/",
+  endpoint: "https://ssdn.mickey.acme.org/",
   inputStreams: [
-    { format: "xAPI", namespace: "nucleus.ajax.org", status: StreamStatus.PausedExternal },
+    { format: "xAPI", namespace: "ssdn.ajax.org", status: StreamStatus.PausedExternal },
   ],
   outputStreams: [
-    { format: "xAPI", namespace: "nucleus.mickey.acme.org", status: StreamStatus.PausedExternal },
+    { format: "xAPI", namespace: "ssdn.mickey.acme.org", status: StreamStatus.PausedExternal },
   ],
 });
 
@@ -280,19 +290,19 @@ export function logGroups() {
     logGroups: [
       {
         arn:
-          `arn:aws:logs:us-east-1:111111111111:log-group:/aws/lambda/Nucleus-` +
+          `arn:aws:logs:us-east-1:111111111111:log-group:/aws/lambda/SSDN-` +
           `AuthorizeBeaconFunction-1P2GO4YF9VZA7:*`,
         creationTime: 1555202318486,
-        logGroupName: "/aws/lambda/Nucleus-AuthorizeBeaconFunction-1P2GO4YF9VZA7",
+        logGroupName: "/aws/lambda/SSDN-AuthorizeBeaconFunction-1P2GO4YF9VZA7",
         metricFilterCount: 0,
         storedBytes: 0,
       },
       {
         arn:
-          `arn:aws:logs:us-east-1:111111111111:log-group:/aws/lambda/Nucleus-` +
+          `arn:aws:logs:us-east-1:111111111111:log-group:/aws/lambda/SSDN-` +
           `ProcessXAPIStatementFunction-HCJE3P62QE5P:*`,
         creationTime: 1553517132468,
-        logGroupName: "/aws/lambda/Nucleus-ProcessXAPIStatementFunction-HCJE3P62QE5P",
+        logGroupName: "/aws/lambda/SSDN-ProcessXAPIStatementFunction-HCJE3P62QE5P",
         metricFilterCount: 0,
         storedBytes: 0,
       },
@@ -305,7 +315,7 @@ export function logStreams() {
     logStreams: [
       {
         arn:
-          `arn:aws:logs:us-east-1:264441468378:log-group:/aws/lambda/Nucleus-Dev-` +
+          `arn:aws:logs:us-east-1:264441468378:log-group:/aws/lambda/SSDN-Dev-` +
           `AuthorizeBeaconFunction-1P2GO4YF9VZA7:log-stream:2019/04/14/[$LATEST]` +
           `b9dbeb8808d54f398aed8a654c9ddf5c`,
         creationTime: 1555255087383,
@@ -318,7 +328,7 @@ export function logStreams() {
       },
       {
         arn:
-          `arn:aws:logs:us-east-1:264441468378:log-group:/aws/lambda/Nucleus-Dev-` +
+          `arn:aws:logs:us-east-1:264441468378:log-group:/aws/lambda/SSDN-Dev-` +
           `AuthorizeBeaconFunction-1P2GO4YF9VZA7:log-stream:2019/04/14/[$LATEST]` +
           `10b6496f1bfc4428b05f51dfca0e40d4`,
         creationTime: 1555254475694,
@@ -332,6 +342,7 @@ export function logStreams() {
     ],
   };
 }
+
 export function logEvents() {
   return {
     events: [
@@ -356,8 +367,95 @@ export function apiKey() {
     enabled: true,
     id: "okothmfzma",
     lastUpdatedDate: "2019-06-02T19:10:11.000Z",
-    name: "Nucleus-learning-tapestry-as25vydn3ekjn2e-GenerateUploadCredentialsApiKey",
+    name: "SSDN-learning-tapestry-as25vydn3ekjn2e-GenerateUploadCredentialsApiKey",
     stageKeys: [],
     value: "K4I8vkxjRz3OUZ8HBPKdS9Y8hCIh4fjY5F4JPFfn",
+  };
+}
+
+export function queues() {
+  return {
+    QueueUrls: [
+      "https://sqs.us-east-1.amazonaws.com/111111111111/ssdn-one-queue",
+      "https://sqs.us-east-1.amazonaws.com/111111111111/ssdn-another-queue",
+    ],
+    ResponseMetadata: { RequestId: "a560a9e7-77cb-5ea7-af98-fff66c35d8b8" },
+  };
+}
+
+export function queueAttributes(name: string = "ssdn-one-queue") {
+  return {
+    Attributes: { QueueArn: `arn:aws:sqs:us-east-1:111111111111:${name}` },
+    ResponseMetadata: { RequestId: "a24b46ac-771d-58c6-bc9e-10bd6b4b25cd" },
+  };
+}
+
+export function queueMappings() {
+  return {
+    EventSourceMappings: [
+      {
+        BatchSize: 10,
+        EventSourceArn: "arn:aws:sqs:us-east-1:111111111111:ssdn-one-queue",
+        FunctionArn:
+          "arn:aws:lambda:us-east-1:111111111111:function:SSDN-ProcessSQSMessageFunction-18XOSMJC66JZK",
+        LastModified: "2019-10-02T17:25:18.199Z",
+        LastProcessingResult: null,
+        MaximumBatchingWindowInSeconds: null,
+        State: "Enabled",
+        StateTransitionReason: "USER_INITIATED",
+        UUID: "48aeaf30-abc6-4cc4-9bdf-9fc6d8f4f9ad",
+      },
+      {
+        BatchSize: 10,
+        EventSourceArn: "arn:aws:sqs:us-east-1:111111111111:ssdn-another-queue",
+        FunctionArn:
+          "arn:aws:lambda:us-east-1:111111111111:function:SSDN-ProcessSQSMessageFunction-18XOSMJC66JZK",
+        LastModified: "2019-10-03T11:32:32.102Z",
+        LastProcessingResult: null,
+        MaximumBatchingWindowInSeconds: null,
+        State: "Disabled",
+        StateTransitionReason: "USER_INITIATED",
+        UUID: "3d865ff0-5949-4cd9-810c-f31a481f8b1a",
+      },
+    ],
+    NextMarker: null,
+  };
+}
+
+export function functionConfiguration() {
+  return {
+    CodeSha256: "E8yOSF/pvAqCRL2s0ceH0H7RbPtofY+pXfzRKnP5Ziw=",
+    CodeSize: 1003792,
+    DeadLetterConfig: {
+      TargetArn: "arn:aws:sns:us-east-1:111111111111:SSDN-LambdaDeadLetterQueueTopic-PRZVYUH0L7K9",
+    },
+    Description: "",
+    Environment: {
+      Variables: {
+        SSDN_AWS_ACCOUNT_ID: "111111111111",
+        SSDN_ENVIRONMENT: "Development",
+        SSDN_ID: "learning-tapestry-dev",
+        SSDN_LOG_LEVEL: "info",
+        SSDN_NAMESPACE: "test.example.com",
+        SSDN_STACK_ID:
+          "arn:aws:cloudformation:us-east-1:111111111111:stack/SSDN/00390200-a309-11e9-99ba-12ff035a5bdc",
+        SSDN_STACK_NAME: "SSDN",
+      },
+    },
+    FunctionArn:
+      "arn:aws:lambda:us-east-1:111111111111:function:SSDN-ProcessSQSMessageFunction-18XOSMJC66JZK",
+    FunctionName: "SSDN-ProcessSQSMessageFunction-18XOSMJC66JZK",
+    Handler: "index.handler",
+    KMSKeyArn: null,
+    LastModified: "2019-10-04T12:07:33.559+0000",
+    MasterArn: null,
+    MemorySize: 128,
+    RevisionId: "5faa934e-982f-4a39-930e-75acbc86e2e8",
+    Role: "arn:aws:iam::111111111111:role/SSDN-ProcessSQSMessageFunctionRole-ARFHDPUYI00Y",
+    Runtime: "nodejs10.x",
+    Timeout: 30,
+    TracingConfig: { Mode: "PassThrough" },
+    Version: "$LATEST",
+    VpcConfig: { SubnetIds: [], SecurityGroupIds: [], VpcId: "" },
   };
 }

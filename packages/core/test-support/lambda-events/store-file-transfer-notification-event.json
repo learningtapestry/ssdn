@@ -22,7 +22,7 @@
           },
           "File": {
             "Type": "String",
-            "Value": "nucleus-test.learningtapestry.com/xAPI/test.txt"
+            "Value": "ssdn-test.learningtapestry.com/xAPI/test.txt"
           },
           "Bucket": {
             "Type": "String",

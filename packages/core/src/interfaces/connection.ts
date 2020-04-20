@@ -1,6 +1,7 @@
 import { Stream } from "./stream";
 
-export interface PublicNucleusMetadata {
+export interface PublicSSDNMetadata {
+  AwsRegion: string;
   EventProcessorStream: string;
   UploadS3Bucket: string;
 }
@@ -9,7 +10,7 @@ export interface ConnectionDetails {
   arn: string;
   awsAccountId: string;
   externalId: string;
-  nucleusId: string;
+  ssdnId: string;
   roleName: string;
 }
 
@@ -21,19 +22,19 @@ export interface ExternalConnectionDetails {
 export interface ProviderIssuedConnection {
   connection: {
     awsAccountId: string;
-    nucleusId: string;
+    ssdnId: string;
   };
   externalConnection: ExternalConnectionDetails;
-  metadata: PublicNucleusMetadata;
+  metadata: PublicSSDNMetadata;
 }
 
 export interface ConsumerIssuedConnection {
   externalConnection: ExternalConnectionDetails;
-  metadata: PublicNucleusMetadata;
+  metadata: PublicSSDNMetadata;
 }
 
 /**
- * An established connection between two Nucleus instances.
+ * An established connection between two SSDN instances.
  * `Connection` models always refer to the _other_ instance.
  * That is, if we have a connection stored on instance "Bob", it will always
  * refer to "Alice" (or any other instance but itself).
@@ -42,7 +43,7 @@ export interface Connection {
   /**
    * Metadata about the other instance. For example, AWS resource ARNs.
    */
-  metadata: PublicNucleusMetadata;
+  metadata: PublicSSDNMetadata;
   /**
    * The endpoint to the other instance.
    */
@@ -59,7 +60,7 @@ export interface Connection {
    * Connection details for the _other_ instance to connect to this one.
    * For example, the role name that the other instance uses when
    * issuing `assume-role`.
-   * Also the nucleus ID of the other instance, the AWS account of the other
+   * Also the ssdn ID of the other instance, the AWS account of the other
    * instance, etc.
    */
   connection: ConnectionDetails;

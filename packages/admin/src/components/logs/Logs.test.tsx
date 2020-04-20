@@ -1,15 +1,13 @@
-import "jest-dom/extend-expect";
+import "@testing-library/jest-dom/extend-expect";
 
 import React from "react";
-import { fireEvent, render, wait } from "react-testing-library";
+
+import { fireEvent, render, wait } from "@testing-library/react";
 
 import * as factories from "../../../test-support/factories";
 import AWSService from "../../services/aws-service";
 import Logs from "./Logs";
 
-/* FIXME: The nasty warning about test not wrapped in act(...) should go away when this is resolved:
- *        https://github.com/facebook/react/issues/14769
- */
 describe("<Logs/>", () => {
   beforeAll(() => {
     AWSService.retrieveLogGroups = jest.fn().mockReturnValue(factories.logGroups());
@@ -21,7 +19,7 @@ describe("<Logs/>", () => {
 
     getByText("Logs");
     await wait(() => {
-      getByText("/aws/lambda/Nucleus-AuthorizeBeaconFunction-1P2GO4YF9VZA7");
+      getByText("/aws/lambda/SSDN-AuthorizeBeaconFunction-1P2GO4YF9VZA7");
     });
   });
 
@@ -40,8 +38,8 @@ describe("<Logs/>", () => {
     const { getByText } = render(<Logs />);
 
     await wait(() => {
-      fireEvent.click(getByText("/aws/lambda/Nucleus-AuthorizeBeaconFunction-1P2GO4YF9VZA7"));
-      fireEvent.click(getByText("/aws/lambda/Nucleus-ProcessXAPIStatementFunction-HCJE3P62QE5P"));
+      fireEvent.click(getByText("/aws/lambda/SSDN-AuthorizeBeaconFunction-1P2GO4YF9VZA7"));
+      fireEvent.click(getByText("/aws/lambda/SSDN-ProcessXAPIStatementFunction-HCJE3P62QE5P"));
     });
 
     expect(AWSService.retrieveLogEvents).toHaveBeenCalled();

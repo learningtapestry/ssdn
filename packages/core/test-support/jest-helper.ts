@@ -5,7 +5,7 @@ import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { Factory } from "../src/interfaces/base-types";
 
 type FunctionPropertyNames<T> = {
-  [K in keyof T]: T[K] extends (...args: any[]) => any ? K : never
+  [K in keyof T]: T[K] extends (...args: any[]) => any ? K : never;
 }[keyof T];
 type FunctionProperties<T> = Pick<T, FunctionPropertyNames<T>>;
 
@@ -37,7 +37,7 @@ export function fakeAws<T extends Service | DocumentClient>(subject: FakeImpl<T>
   const wrappedSubject: { [k: string]: any } = {};
   for (const [methodName, methodDef] of Object.entries(subject)) {
     wrappedSubject[methodName] = jest.fn((params: any) => ({
-      promise: () => methodDef!(params),
+      promise: () => (methodDef! as any)(params),
     }));
     (wrappedSubject[methodName] as any).impl = methodDef;
   }

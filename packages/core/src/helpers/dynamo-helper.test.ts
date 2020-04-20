@@ -17,7 +17,7 @@ describe("getOrFail", () => {
     await expect(result).resolves.toEqual({ id: 1 });
   });
 
-  it("throws nucleus error when none is found", async () => {
+  it("throws ssdn error when none is found", async () => {
     const result = getOrFail(fakeDocumentClient, { id: "2" }, "Test");
     await expect(result).rejects.toBeTruthy();
     await expect(result).rejects.toHaveProperty("message", 'Item {"id":"2"} not found.');

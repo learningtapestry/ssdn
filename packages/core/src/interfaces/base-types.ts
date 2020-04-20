@@ -1,7 +1,7 @@
 import {
   API,
   API_KEYS,
-  AWS_NUCLEUS,
+  AWS_SSDN,
   BUCKETS,
   LAMBDAS,
   POLICIES,
@@ -17,7 +17,7 @@ export type Factory<T> = (...params: any[]) => T;
 export type MetadataKey =
   | API
   | API_KEYS
-  | AWS_NUCLEUS
+  | AWS_SSDN
   | BUCKETS
   | LAMBDAS
   | POLICIES

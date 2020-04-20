@@ -8,7 +8,7 @@ const logger = Pino(
   {
     prettyPrint: { colorize: false, translateTime: true },
   },
-  Pino.destination("./nucleus.log"),
+  Pino.destination("./ssdn.log"),
 );
 
 export default logger;

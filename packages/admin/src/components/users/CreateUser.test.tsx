@@ -1,6 +1,9 @@
-import "jest-dom/extend-expect";
+import "@testing-library/jest-dom/extend-expect";
+
 import React from "react";
-import { fireEvent, render, wait, waitForElement } from "react-testing-library";
+
+import { fireEvent, render, wait, waitForElement } from "@testing-library/react";
+
 import AWSService from "../../services/aws-service";
 import CreateUser from "./CreateUser";
 

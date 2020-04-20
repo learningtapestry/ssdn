@@ -1,21 +1,19 @@
-import "jest-dom/extend-expect";
+import "@testing-library/jest-dom/extend-expect";
 
 import React from "react";
+
 import {
   fireEvent,
   render,
   wait,
   waitForElement,
   waitForElementToBeRemoved,
-} from "react-testing-library";
+} from "@testing-library/react";
 
 import * as factories from "../../../test-support/factories";
 import AWSService from "../../services/aws-service";
 import Streams from "./Streams";
 
-/* FIXME: The nasty warning about test not wrapped in act(...) should go away when this is resolved:
- *        https://github.com/facebook/react/issues/14769
- */
 describe("<Streams />", () => {
   describe("consumers", () => {
     beforeAll(() => {
@@ -32,16 +30,16 @@ describe("<Streams />", () => {
 
       getByText("Consumer Streams");
       await wait(() => {
-        getByText("https://nucleus.adam.acme.org/");
-        getByText("nucleus.adam.acme.org");
+        getByText("https://ssdn.adam.acme.org/");
+        getByText("ssdn.adam.acme.org");
         getByText("Active");
 
-        getByText("https://nucleus.jonah.acme.org/");
-        getByText("nucleus.jonah.acme.org");
+        getByText("https://ssdn.jonah.acme.org/");
+        getByText("ssdn.jonah.acme.org");
         getByText("Paused");
 
-        getByText("https://nucleus.mickey.acme.org/");
-        getByText("nucleus.mickey.acme.org");
+        getByText("https://ssdn.mickey.acme.org/");
+        getByText("ssdn.mickey.acme.org");
         getByText("Paused (External)");
       });
     });
@@ -59,14 +57,16 @@ describe("<Streams />", () => {
       const { getByText, getByRole } = render(<Streams streamType="output" />);
       await waitForElement(() => getByText("Pause"));
       fireEvent.click(getByText("Pause"));
-      await waitForElement(() => getByRole("dialog"));
+      // @ts-ignore
+      await waitForElement(() => getByRole("dialog", { hidden: true }));
       fireEvent.click(getByText("Confirm"));
-      await waitForElementToBeRemoved(() => getByRole("dialog"));
+      // @ts-ignore
+      await waitForElementToBeRemoved(() => getByRole("dialog", { hidden: true }));
       expect(AWSService.updateStream).toHaveBeenCalledTimes(1);
       expect(AWSService.updateStream).toHaveBeenCalledWith(
-        "https://nucleus.adam.acme.org/",
+        "https://ssdn.adam.acme.org/",
         "xAPI",
-        "nucleus.adam.acme.org",
+        "ssdn.adam.acme.org",
         "paused",
         "output",
       );
@@ -76,14 +76,16 @@ describe("<Streams />", () => {
       const { getByText, getByRole } = render(<Streams streamType="output" />);
       await waitForElement(() => getByText("Resume"));
       fireEvent.click(getByText("Resume"));
-      await waitForElement(() => getByRole("dialog"));
+      // @ts-ignore
+      await waitForElement(() => getByRole("dialog", { hidden: true }));
       fireEvent.click(getByText("Confirm"));
-      await waitForElementToBeRemoved(() => getByRole("dialog"));
+      // @ts-ignore
+      await waitForElementToBeRemoved(() => getByRole("dialog", { hidden: true }));
       expect(AWSService.updateStream).toHaveBeenCalledTimes(1);
       expect(AWSService.updateStream).toHaveBeenCalledWith(
-        "https://nucleus.jonah.acme.org/",
+        "https://ssdn.jonah.acme.org/",
         "xAPI",
-        "nucleus.jonah.acme.org",
+        "ssdn.jonah.acme.org",
         "active",
         "output",
       );
@@ -103,7 +105,9 @@ describe("<Streams />", () => {
     it("renders title and requests in the list", async () => {
       const { getByText } = render(<Streams streamType="input" />);
 
-      getByText("Provider Streams");
+      await wait(() => {
+        getByText("Provider Streams");
+      });
     });
   });
 });

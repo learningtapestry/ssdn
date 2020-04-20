@@ -2,7 +2,7 @@ import Kinesis from "aws-sdk/clients/kinesis";
 
 import xAPIJson from "../../test-support/data-samples/xapi.json";
 import { fakeAws, fakeImpl } from "../../test-support/jest-helper";
-import NucleusMetadataService from "../services/nucleus-metadata-service";
+import SSDNMetadataService from "../services/ssdn-metadata-service";
 import KinesisEventRepository from "./kinesis-event-repository";
 
 const fakeKinesis = fakeAws<Kinesis>({
@@ -29,7 +29,7 @@ const fakeKinesis = fakeAws<Kinesis>({
   ),
 });
 
-const fakeMetadataService = fakeImpl<NucleusMetadataService>({
+const fakeMetadataService = fakeImpl<SSDNMetadataService>({
   getMetadataValue: jest.fn(() =>
     Promise.resolve({
       EventProcessorStream: "EventProcessorStream",
