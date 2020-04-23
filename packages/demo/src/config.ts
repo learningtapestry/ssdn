@@ -1,14 +1,14 @@
 export default {
   format: "xAPI",
-  youtubeApiKey: "AIzaSyAg6eK7Gl3tDD-717PPWgJPPh1lSWnkO-I",
+  youtubeApiKey: "AIzaSyD8W7p7h78RLgsbFwXHYOng-I9fUT2J97E",
 
   // Provider
-  demoEventsTable: "Nucleus-ssdn-sample-provider-giuwqh48qfzyzbc-DemoEvents",
-  namespace: "ssdnsampleprovider",
-  uploadBucket: "nucleus-ssdn-sample-provider-giuwq-uploads3bucket-13dsdpsvw03yd",
+  demoEventsTable: "SSDN-demo-provider-2ulfc3qfwzdx2rz-DemoEvents",
+  namespace: "demoprovider.awsssdn.com",
+  uploadBucket: "ssdn-demo-provider-2ulfc3qfwzdx2rz-uploads3bucket-8z7ckzxsflp",
 
   // Consumer
-  // demoEventsTable: "Nucleus-ssdn-sample-ed-inst-3uicajs9v2vqsz2-DemoEvents",
-  // namespace: "ssdnsampleedinst",
-  // uploadBucket: "nucleus-ssdn-sample-ed-inst-3uicaj-uploads3bucket-divcec0vjyb0",
+  // demoEventsTable: "SSDN-demo-consumer-5kdzo1dwua34jl8-DemoEvents",
+  // namespace: "democonsumer.awsssdn.com",
+  // uploadBucket: "ssdn-demo-consumer-5kdzo1dwua34jl8-uploads3bucket-992d8j6wv8ly",
 };
