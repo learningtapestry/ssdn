@@ -2,57 +2,52 @@
 0 silly argv   lernaVersion: '3.22.1',
 0 silly argv   '$0':
 0 silly argv    '/Users/isenbs/Documents/GitHub/ssdn/ssdn/node_modules/.bin/lerna',
-0 silly argv   bump: '1.1.3' }
+0 silly argv   bump: '1.1.4' }
 1 notice cli v3.22.1
 2 verbose rootPath /Users/isenbs/Documents/GitHub/ssdn/ssdn
-3 info current version 1.1.2
+3 info current version 1.1.3
 4 silly isAnythingCommitted
 5 verbose isAnythingCommitted 1
 6 silly currentBranch
 7 verbose currentBranch master
 8 silly remoteBranchExists
 9 silly isBehindUpstream
-10 silly isBehindUpstream master is behind origin/master by 0 commit(s) and ahead by 1
+10 silly isBehindUpstream master is behind origin/master by 0 commit(s) and ahead by 0
 11 silly hasTags
 12 verbose hasTags true
-13 silly git-describe.sync "052d431" => {"refCount":"352","sha":"052d431","isDirty":false}
-14 info Assuming all packages changed
-15 verbose updated ssdn-admin
-16 verbose updated ssdn-cli
-17 verbose updated ssdn-collection-agent
-18 verbose updated ssdn-core
-19 verbose git-describe undefined => "052d431"
-20 silly git-describe parsed => {"refCount":"352","sha":"052d431","isDirty":false}
-21 info execute Skipping releases
-22 silly lifecycle No script for "preversion" in "ssdn", continuing
-23 silly lifecycle No script for "preversion" in "ssdn-admin", continuing
-24 silly lifecycle No script for "preversion" in "ssdn-cli", continuing
-25 silly lifecycle No script for "preversion" in "ssdn-collection-agent", continuing
-26 silly lifecycle No script for "preversion" in "ssdn-core", continuing
-27 silly lifecycle No script for "version" in "ssdn-cli", continuing
-28 silly lifecycle No script for "version" in "ssdn-collection-agent", continuing
-29 silly lifecycle No script for "version" in "ssdn-admin", continuing
-30 silly lifecycle No script for "version" in "ssdn-core", continuing
+13 silly git-describe.sync "v1.1.3-6-g4cea97b" => {"lastTagName":"v1.1.3","lastVersion":"v1.1.3","refCount":"6","sha":"4cea97b","isDirty":false}
+14 info Looking for changed packages since v1.1.3
+15 silly checking diff packages/admin
+16 silly found diff in packages/admin/.eslintcache
+16 silly found diff in packages/admin/tsconfig.json
+17 verbose filtered diff [ 'packages/admin/.eslintcache',
+17 verbose filtered diff   'packages/admin/tsconfig.json' ]
+18 silly checking diff packages/cli
+19 silly no diff found in ssdn-cli
+20 silly checking diff packages/collection-agent
+21 silly no diff found in ssdn-collection-agent
+22 silly checking diff packages/core
+23 silly no diff found in ssdn-core
+24 verbose updated ssdn-admin
+25 verbose git-describe undefined => "v1.1.3-6-g4cea97b"
+26 silly git-describe parsed => {"lastTagName":"v1.1.3","lastVersion":"v1.1.3","refCount":"6","sha":"4cea97b","isDirty":false}
+27 info execute Skipping releases
+28 silly lifecycle No script for "preversion" in "ssdn", continuing
+29 silly lifecycle No script for "preversion" in "ssdn-admin", continuing
+30 silly lifecycle No script for "version" in "ssdn-admin", continuing
 31 silly lifecycle No script for "version" in "ssdn", continuing
-32 silly gitAdd [ 'packages/cli/package.json',
-32 silly gitAdd   'packages/collection-agent/package.json',
-32 silly gitAdd   'packages/admin/package.json',
-32 silly gitAdd   'packages/core/package.json',
-32 silly gitAdd   'lerna.json' ]
-33 silly gitCommit v1.1.3
-34 verbose git [ 'commit', '-m', 'v1.1.3' ]
-35 silly gitTag v1.1.3
-36 verbose git [ 'tag', 'v1.1.3', '-m', 'v1.1.3' ]
+32 silly gitAdd [ 'packages/admin/package.json', 'lerna.json' ]
+33 silly gitCommit v1.1.4
+34 verbose git [ 'commit', '-m', 'v1.1.4' ]
+35 silly gitTag v1.1.4
+36 verbose git [ 'tag', 'v1.1.4', '-m', 'v1.1.4' ]
 37 silly lifecycle No script for "postversion" in "ssdn-admin", continuing
-38 silly lifecycle No script for "postversion" in "ssdn-cli", continuing
-39 silly lifecycle No script for "postversion" in "ssdn-collection-agent", continuing
-40 silly lifecycle No script for "postversion" in "ssdn-core", continuing
-41 silly lifecycle No script for "postversion" in "ssdn", continuing
-42 info git Pushing tags...
-43 silly gitPush origin master
-44 error Error: Command failed: git push --follow-tags --no-verify --atomic origin master
-44 error remote: Invalid username or password.
-44 error fatal: Authentication failed for 'https://github.com/awslabs/ssdn.git/'
-44 error
-44 error     at makeError (/Users/isenbs/Documents/GitHub/ssdn/ssdn/node_modules/execa/index.js:174:9)
-44 error     at Promise.all.then.arr (/Users/isenbs/Documents/GitHub/ssdn/ssdn/node_modules/execa/index.js:278:16)
+38 silly lifecycle No script for "postversion" in "ssdn", continuing
+39 info git Pushing tags...
+40 silly gitPush origin master
+41 error Error: Command failed: git push --follow-tags --no-verify --atomic origin master
+41 error remote: Invalid username or password.
+41 error fatal: Authentication failed for 'https://github.com/awslabs/ssdn.git/'
+41 error
+41 error     at makeError (/Users/isenbs/Documents/GitHub/ssdn/ssdn/node_modules/execa/index.js:174:9)
+41 error     at Promise.all.then.arr (/Users/isenbs/Documents/GitHub/ssdn/ssdn/node_modules/execa/index.js:278:16)
