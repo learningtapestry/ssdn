@@ -1,6 +1,6 @@
 {
   "name": "ssdn-collection-agent",
-  "version": "1.1.2",
+  "version": "1.1.3",
   "description": "Secure Student Data Network - Browser Collection Agent",
   "main": "src/agent.ts",
   "author": {
