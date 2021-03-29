@@ -195,7 +195,7 @@ the application is easier.
 ## High level diagram
 
 
-![SSDN - High Level Architecture](https://user-images.githubusercontent.com/1306310/57625133-8dbb1080-7593-11e9-9b81-7325dee03923.png)
+![SSDN - High Level Architecture](https://github.com/awslabs/ssdn/blob/master/docs/SSDN%20%2B%20SQS.png)
 
 
 ## Tools & Frameworks
